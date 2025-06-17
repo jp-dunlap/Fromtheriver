@@ -1,5 +1,5 @@
 /* --- Fromtheriver.org | styles.css --- */
-/* Concept: Digital Vellum & Living Ink */
+/* Concept: Digital Vellum & Living Ink - Consolidated & Refined */
 
 /* --- Root Variables & Global Styles --- */
 :root {
@@ -8,6 +8,7 @@
     --text-secondary: #A0AEC0;
     --accent-color: #9AE6B4; /* Mint Green */
     --border-color: #4A5568;
+    --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
     --font-serif: 'DM Serif Display', serif;
     --font-sans: 'Work Sans', sans-serif;
 }
@@ -30,6 +31,12 @@ h1, h2, h3, .font-serif {
     text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
 
+.text-gray-400 { color: var(--text-secondary); }
+.text-gray-500 { color: #6b7280; }
+.text-gray-600 { color: #4b5563; }
+.text-white { color: #ffffff; }
+
+/* --- Link Styling --- */
 .resource-link {
     display: inline-block;
     color: var(--text-secondary);
@@ -51,100 +58,7 @@ h1, h2, h3, .font-serif {
     transform: translateY(-2px);
 }
 
-/* --- SVG "River" Path Styling --- */
-#svg-path-container {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    /* Applying a filter for a hand-drawn look */
-    filter: url(#hand-drawn-filter);
-}
-
-#river-path {
-    stroke-dasharray: 2000;
-    stroke-dashoffset: 2000;
-    transition: stroke-dashoffset 2s ease-in-out;
-    stroke: var(--border-color);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-}
-
-/* --- Content Node Styling & "Unfolding" Animation --- */
-.content-node {
-    opacity: 0;
-    /* Starts slightly rotated for the unfolding effect */
-    transform: perspective(1000px) rotateX(-20deg) translateY(50px);
-    transform-origin: top center;
-    transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1), transform 1s cubic-bezier(0.19, 1, 0.22, 1);
-    will-change: opacity, transform;
-    position: relative;
-    z-index: 1;
-    transition-delay: 0.1s;
-}
-
-.content-node.is-visible {
-    opacity: 1;
-    transform: perspective(1000px) rotateX(0deg) translateY(0);
-}
-
-/* Card styling to look like layered paper */
-.node-card {
-    background-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(74, 85, 104, 0.5); /* Muted border */
-    border-radius: 8px;
-    box-shadow: 
-        inset 0 1px 2px rgba(255, 255, 255, 0.05), /* Subtle inner highlight */
-        0 10px 30px rgba(0, 0, 0, 0.6); /* Deeper shadow for depth */
-    padding: 2rem;
-    transition: border-color 0.4s ease, box-shadow 0.4s ease;
-}
-
-.node-card:hover {
-    border-color: rgba(154, 230, 180, 0.7); /* --accent-color at 70% opacity */
-    box-shadow: 
-        inset 0 1px 2px rgba(255, 255, 255, 0.05),
-        0 10px 30px rgba(0, 0, 0, 0.6),
-        0 0 15px rgba(154, 230, 180, 0.2); /* The subtle glow effect */
-}
-
-/* Specific alignment for left and right nodes */
-.node-left {
-    justify-content: flex-start;
-}
-.node-right {
-    justify-content: flex-end;
-}
-
-/* --- Image Styling Correction --- */
-.node-image-container {
-    position: relative;
-    border-radius: 6px;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-    /* CORRECTED: Removed background-color to stop the duotone effect */
-}
-
-.node-image-container img {
-    width: 100%;
-    height: auto;
-    display: block;
-    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-    /* CORRECTED: Removed blend-mode, opacity, and filter to show original image colors */
-}
-
-/* CORRECTED: Changed selector for robustness */
-.node-card:hover .node-image-container img {
-    transform: scale(1.05);
-}
-
-/* --- Header & Footer Specifics --- */
+/* --- Header & Footer --- */
 #header {
     background: linear-gradient(110deg, #121212 0%, #1A202C 35%, #1A202C 65%, #121212 100%);
     background-size: 200% 200%;
@@ -158,32 +72,124 @@ h1, h2, h3, .font-serif {
     -webkit-text-fill-color: transparent;
 }
 
-/* --- Custom Scrollbar --- */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #1A202C;
-}
-::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
-    border: 2px solid #1A202C;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #718096;
+/* --- SVG "River" Path Styling --- */
+#svg-path-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    filter: url(#hand-drawn-filter);
 }
 
-/* --- Animations --- */
-/* CORRECTED: Moved keyframes to the root level for correct syntax */
-@keyframes subtle-gradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+#river-path {
+    stroke-dasharray: 1; /* Set via JS */
+    stroke-dashoffset: 1; /* Set via JS */
+    transition: stroke-dashoffset 0.1s linear; /* Fast transition for smooth drawing */
+    stroke: var(--border-color);
+    stroke-width: 1.5;
+    stroke-linecap: round;
 }
+
+/* --- Content Node Styling --- */
+.node-container {
+    margin-bottom: 6rem; /* Consistent spacing */
+}
+.node-left { justify-content: flex-start; }
+.node-right { justify-content: flex-end; }
+
+/* Main animation for nodes appearing */
+.content-node {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    will-change: opacity, transform;
+    position: relative;
+    z-index: 1;
+}
+
+.content-node.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card styling to look like layered paper with a subtle glow on hover */
+.node-card {
+    background-color: var(--card-bg-color);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(74, 85, 104, 0.5);
+    border-radius: 8px;
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.05),
+        0 10px 30px rgba(0, 0, 0, 0.6);
+    padding: 2rem;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.node-card:hover {
+    border-color: rgba(154, 230, 180, 0.7); /* accent-color at 70% opacity */
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.05),
+        0 10px 30px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(154, 230, 180, 0.2); /* The subtle glow effect */
+}
+
+/* --- Image Styling --- */
+/* REVISED: Removed background color and blend modes to show original images */
+.node-image-container {
+    position: relative;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    overflow: hidden; /* This is crucial for the image zoom effect */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.node-image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* REVISED: Robust selector for image zoom on card hover */
+.node-card:hover .node-image-container img {
+    transform: scale(1.05);
+}
+
+/* --- Utility & Animations --- */
+.flex { display: flex; }
+.relative { position: relative; }
+.text-center { text-align: center; }
+.space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
+
+/* For the bouncing arrow */
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* For the header gradient */
+@keyframes subtle-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #1A202C; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #718096; }
