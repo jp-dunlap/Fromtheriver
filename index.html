@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From The River To The Sea | A Living Resource for Palestine</title>
+    <meta name="description" content="An interactive journey through the history, culture, and struggle of Palestine. A living resource for education, action, and solidarity.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: DM Serif Display for headings, Work Sans for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Base Styling & Typography --- */
+        body {
+            background-color: #121212;
+            color: #EAEAEA;
+            font-family: 'Work Sans', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'DM Serif Display', serif;
+        }
+
+        /* --- SVG Vine Styling --- */
+        #svg-path-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none; /* Allows clicking through the SVG */
+        }
+
+        #river-path {
+            stroke-dasharray: 2000; /* A large value to start */
+            stroke-dashoffset: 2000; /* Initially invisible */
+            transition: stroke-dashoffset 2s ease-in-out;
+            stroke: #4A5568; /* Muted gray for the path */
+            stroke-width: 1.5;
+        }
+        
+        /* --- Content Node Styling & Animation --- */
+        .content-node {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, transform;
+            position: relative;
+            z-index: 1; /* Ensures content is above the SVG path */
+        }
+
+        .content-node.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom alignment for left and right nodes */
+        .node-left {
+            justify-content: flex-start;
+        }
+        .node-right {
+            justify-content: flex-end;
+        }
+
+        /* --- Link & UI Element Styling --- */
+        .resource-link {
+            display: block;
+            color: #A0AEC0; /* Lighter gray for links */
+            text-decoration: none;
+            position: relative;
+            padding-bottom: 4px;
+            transition: color 0.3s;
+        }
+        .resource-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: #9AE6B4; /* Mint green accent */
+            transition: width 0.4s ease-in-out;
+        }
+        .resource-link:hover {
+            color: #FFFFFF;
+        }
+        .resource-link:hover:after {
+            width: 100%;
+        }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1A202C; }
+        ::-webkit-scrollbar-thumb { background: #4A5568; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #718096; }
+    </style>
+</head>
+<body class="w-full">
+
+    <!-- SVG Container for the "River" Path -->
+    <div id="svg-path-container">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <path id="river-path" fill="none"/>
+        </svg>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header Section -->
+        <header id="header" class="min-h-screen flex flex-col justify-center items-center text-center py-20 relative z-10">
+            <h1 class="text-6xl md:text-8xl font-bold text-white leading-tight tracking-tighter">
+                From The River
+            </h1>
+            <p class="mt-6 text-xl md:text-2xl text-gray-400 max-w-3xl">
+                A living archive of Palestinian history, culture, and the ongoing struggle for liberation. This is a journey of understanding.
+            </p>
+            <div class="mt-12 text-gray-500 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </div>
+        </header>
+        
+        <!-- Main Content Wrapper -->
+        <div id="content-wrapper" class="py-20">
+
+            <!-- Node 1: The Roots (Left) -->
+            <section class="content-node node-container flex node-left mb-24 md:mb-32">
+                <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <h2 class="font-serif text-4xl text-white mb-4">The Roots</h2>
+                    <p class="text-gray-400 mb-6">Understand the historical and legal foundations of Palestine. This is where the story begins, in the soil and soul of a land and its people.</p>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="resource-link">Palestine 101: A Visual History</a></li>
+                        <li><a href="#" class="resource-link">The Nakba of 1948: An Ongoing Catastrophe</a></li>
+                        <li><a href="#" class="resource-link">Defining Zionism as a Settler-Colonial Project</a></li>
+                        <li><a href="#" class="resource-link">Key UN Resolutions and International Law</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Node 2: Resistance (Right) -->
+            <section class="content-node node-container flex node-right mb-24 md:mb-32">
+                <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <h2 class="font-serif text-4xl text-white mb-4">The Resistance</h2>
+                    <p class="text-gray-400 mb-6">Explore the many forms of Palestinian resistance, from popular uprisings and armed struggle to the enduring power of cultural and intellectual defiance.</p>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="resource-link">Chronology of Intifadas: The People's Uprisings</a></li>
+                        <li><a href="#" class="resource-link">Literary Resistance: The Poetry of Mahmoud Darwish</a></li>
+                        <li><a href="#" class="resource-link">Sumud: The Art of Steadfastness</a></li>
+                        <li><a href="#" class="resource-link">The Global Boycott, Divestment, Sanctions (BDS) Movement</a></li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Node 3: The Culture (Left) -->
+            <section class="content-node node-container flex node-left mb-24 md:mb-32">
+                <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <h2 class="font-serif text-4xl text-white mb-4">The Culture</h2>
+                    <p class="text-gray-400 mb-6">Experience the richness of Palestinian life and identity—a culture that thrives as a form of resistance itself, rooted in centuries of tradition and creativity.</p>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="resource-link">Cuisine as Identity: A Taste of Palestine</a></li>
+                        <li><a href="#" class="resource-link">Tatreez: The Embroidery of a Nation's Story</a></li>
+                        <li><a href="#" class="resource-link">Palestinian Cinema: Voices on Screen</a></li>
+                        <li><a href="#" class="resource-link">Music of a Movement: From Folk to Hip-Hop</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Node 4: The Action (Right) -->
+            <section class="content-node node-container flex node-right mb-24 md:mb-32">
+                <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <h2 class="font-serif text-4xl text-white mb-4">The Action</h2>
+                    <p class="text-gray-400 mb-6">Solidarity is a verb. Here are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold power accountable.</p>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="resource-link">Donate: Vetted Aid and Solidarity Funds</a></li>
+                        <li><a href="#" class="resource-link">Find Your Local SJP or JVP Chapter</a></li>
+                        <li><a href="#" class="resource-link">Toolkits for Talking to Friends, Family & Representatives</a></li>
+                        <li><a href="#" class="resource-link">Support Palestinian Businesses and Artisans</a></li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+        
+        <!-- Footer Section -->
+        <footer id="footer" class="text-center py-10 border-t border-gray-800 relative z-10">
+            <p class="text-gray-500">From The River To The Sea, Palestine Will Be Free.</p>
+            <p class="text-xs text-gray-600 mt-2">fromtheriver.org - A project of solidarity.</p>
+        </footer>
+
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const contentNodes = document.querySelectorAll('.content-node');
+        const svgPath = document.getElementById('river-path');
+        const pathContainer = document.getElementById('svg-path-container');
+        const header = document.getElementById('header');
+        const footer = document.getElementById('footer');
+        const contentWrapper = document.getElementById('content-wrapper');
+
+        // --- Intersection Observer for Fade-in Animation ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // Animate only once
+                }
+            });
+        }, {
+            root: null,
+            threshold: 0.1, // Trigger when 10% of the element is visible
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        contentNodes.forEach(node => {
+            observer.observe(node);
+        });
+        observer.observe(header);
+        observer.observe(footer);
+
+
+        // --- SVG Path Drawing Logic ---
+        function drawSVGPath() {
+            if (!svgPath || !contentWrapper) return;
+
+            // Clear previous path
+            svgPath.setAttribute('d', '');
+
+            const wrapperRect = contentWrapper.getBoundingClientRect();
+            const startY = wrapperRect.top + window.scrollY;
+            const endY = wrapperRect.bottom + window.scrollY;
+
+            // Path starts at the bottom of the header
+            let pathData = `M ${window.innerWidth / 2} ${header.offsetHeight}`;
+            let lastY = header.offsetHeight;
+            const waveAmplitude = 100; // How much the path deviates left/right
+            const waveFrequency = 0.003; // How wavy the path is
+
+            contentNodes.forEach((node, index) => {
+                const rect = node.getBoundingClientRect();
+                const nodeCenterY = rect.top + window.scrollY + rect.height / 2;
+                
+                // Draw a wavy line to the node
+                for(let y = lastY; y < nodeCenterY; y++) {
+                    const x = (window.innerWidth / 2) + Math.sin((y - header.offsetHeight) * waveFrequency) * waveAmplitude * (index % 2 === 0 ? -1 : 1);
+                    pathData += ` L ${x} ${y}`;
+                }
+                
+                lastY = nodeCenterY;
+            });
+            
+            // End the path at the top of the footer
+            pathData += ` L ${window.innerWidth / 2} ${footer.getBoundingClientRect().top + window.scrollY}`;
+
+            svgPath.setAttribute('d', pathData);
+            const pathLength = svgPath.getTotalLength();
+            svgPath.style.strokeDasharray = pathLength;
+            svgPath.style.strokeDashoffset = pathLength;
+
+            // Animate on scroll
+            window.addEventListener('scroll', () => {
+                const scrollPercentage = (window.scrollY) / (document.body.scrollHeight - window.innerHeight);
+                const drawLength = pathLength * scrollPercentage;
+                svgPath.style.strokeDashoffset = pathLength - drawLength;
+            }, { passive: true });
+        }
+        
+        // Use a timeout to ensure all elements are rendered before calculating positions
+        setTimeout(drawSVGPath, 100);
+        window.addEventListener('resize', drawSVGPath);
+    });
+    </script>
+
+</body>
+</html>
