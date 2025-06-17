@@ -8,8 +8,9 @@
     --text-secondary: #A0AEC0;
     --accent-color: #9AE6B4; /* Mint Green */
     --border-color: #4A5568;
-    --font-serif: 'Inter', sans-serif; /* Changed from DM Serif Display */
-    --font-sans: 'Inter', sans-serif;  /* Changed from Work Sans */
+    --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
+    --font-serif: 'Inter', sans-serif; /* Changed for headings */
+    --font-sans: 'Inter', sans-serif;  /* Changed for body text */
 }
 
 body {
