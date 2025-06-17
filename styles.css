@@ -1,16 +1,17 @@
 /* --- Fromtheriver.org | styles.css --- */
-/* Concept: Digital Vellum & Living Ink - Consolidated & Corrected */
+/* Concept: Digital Vellum & Living Ink - Consolidated & Revised */
 
 /* --- Root Variables & Global Styles --- */
 :root {
     --bg-color: #121212;
     --text-primary: #EAEAEA;
-    --text-secondary: #A0AEC0;
-    --accent-color: #9AE6B4; /* Mint Green */
+    --text-secondary: #A0AEC0; /* Grey description text */
+    --accent-color: #9AE6B4; /* Mint Green for hover effects */
+    --link-color: #A3B8B0; /* NEW: Subtle mint-grey for default link state */
     --border-color: #4A5568;
     --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
-    --font-serif: 'Inter', sans-serif; /* Changed for headings */
-    --font-sans: 'Inter', sans-serif;  /* Changed for body text */
+    --font-serif: 'Inter', sans-serif;
+    --font-sans: 'Inter', sans-serif;
 }
 
 body {
@@ -37,9 +38,10 @@ h1, h2, h3, .font-serif {
 .text-white { color: #ffffff; }
 
 /* --- Link Styling --- */
+/* REVISED: This rule now uses the new --link-color variable for a subtle appearance. */
 .resource-link {
     display: inline-block;
-    color: var(--accent-color); /* CHANGED: Links now use the accent color by default. */
+    color: var(--link-color); /* CHANGED: Using the new subtle color. */
     font-weight: 500; /* ADDED: Slightly bolder text for further differentiation. */
     text-decoration: none;
     position: relative;
@@ -53,14 +55,14 @@ h1, h2, h3, .font-serif {
     transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out, transform 0.3s ease;
 }
 
+/* The hover state is now more impactful, shifting from mint-grey to bright white. */
 .resource-link:hover {
-    color: var(--text-primary);
+    color: var(--text-primary); /* Links will now turn bright white on hover. */
     background-size: 100% 1px;
     transform: translateY(-2px);
 }
 
 /* --- Header & Footer --- */
-/* CORRECTED: Removed conflicting rules. This single rule ensures a solid background color. */
 #header {
     background-color: var(--bg-color); 
 }
