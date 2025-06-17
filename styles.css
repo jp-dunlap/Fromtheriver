@@ -8,9 +8,8 @@
     --text-secondary: #A0AEC0;
     --accent-color: #9AE6B4; /* Mint Green */
     --border-color: #4A5568;
-    --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
-    --font-serif: 'DM Serif Display', serif;
-    --font-sans: 'Work Sans', sans-serif;
+    --font-serif: 'Inter', sans-serif; /* Changed from DM Serif Display */
+    --font-sans: 'Inter', sans-serif;  /* Changed from Work Sans */
 }
 
 body {
@@ -65,11 +64,8 @@ h1, h2, h3, .font-serif {
     animation: subtle-gradient 15s ease infinite;
 }
 
-#header h1 {
-    /* Adding a subtle gradient to the main title */
-    background: -webkit-linear-gradient(45deg, #FFFFFF, #B2F5EA);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+#header {
+    background-color: var(--bg-color); /* Sets a solid background color */
 }
 
 /* --- SVG "River" Path Styling --- */
@@ -184,13 +180,6 @@ h1, h2, h3, .font-serif {
     transform: translateY(0);
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
-}
-
-/* For the header gradient */
-@keyframes subtle-gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 /* --- Custom Scrollbar --- */
