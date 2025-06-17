@@ -37,6 +37,7 @@
             height: 100%;
             z-index: 0;
             pointer-events: none; /* Allows clicking through the SVG */
+            filter: url(#hand-drawn-filter); /* This now works because the filter is defined below */
         }
 
         #river-path {
@@ -77,7 +78,7 @@
             text-decoration: none;
             position: relative;
             padding-bottom: 4px;
-            transition: color 0.3s;
+            transition: color 0.3s, transform 0.3s ease; /* Added transform */
         }
         .resource-link:after {
             content: '';
@@ -91,6 +92,7 @@
         }
         .resource-link:hover {
             color: #FFFFFF;
+            transform: translateY(-2px); /* Added lift effect */
         }
         .resource-link:hover:after {
             width: 100%;
@@ -101,6 +103,29 @@
         ::-webkit-scrollbar-track { background: #1A202C; }
         ::-webkit-scrollbar-thumb { background: #4A5568; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #718096; }
+
+        /* --- Added for Image Styling --- */
+        .node-image-container {
+            background-color: #9AE6B4; /* Accent color for duotone */
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .node-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            mix-blend-mode: luminosity;
+            opacity: 0.8;
+            filter: grayscale(100%) contrast(1.2);
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .w-full.md\:w-1\/2:hover .node-image-container img {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="w-full">
@@ -108,6 +133,13 @@
     <!-- SVG Container for the "River" Path -->
     <div id="svg-path-container">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <!-- CORRECTED: Added the missing SVG filter definition -->
+            <defs>
+                <filter id="hand-drawn-filter">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise"/>
+                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+                </filter>
+            </defs>
             <path id="river-path" fill="none"/>
         </svg>
     </div>
@@ -135,11 +167,14 @@
             <!-- Node 1: The Roots (Left) -->
             <section class="content-node node-container flex node-left mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <div class="node-image-container">
+                        <img src="https://images.unsplash.com/photo-1561021794-73d047321528?q=80&w=2070&auto=format&fit=crop" alt="Ancient olive trees stand in a field, representing deep roots.">
+                    </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Roots</h2>
                     <p class="text-gray-400 mb-6">Understand the historical and legal foundations of Palestine. This is where the story begins, in the soil and soul of a land and its people.</p>
                     <ul class="space-y-3">
                         <li><a href="https://101.visualizingpalestine.org/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestine 101: A Visual History</a></li>
-                       <li><a href="https://www.aljazeera.com/features/2017/5/23/the-nakba-did-not-start-or-end-in-1948" class="resource-link" target="_blank" rel="noopener noreferrer">The Nakba of 1948: An Ongoing Catastrophe</a></li>
+                        <li><a href="https://www.aljazeera.com/features/2017/5/23/the-nakba-did-not-start-or-end-in-1948" class="resource-link" target="_blank" rel="noopener noreferrer">The Nakba of 1948: An Ongoing Catastrophe</a></li>
                         <li><a href="https://decolonizepalestine.com/zionism/" class="resource-link" target="_blank" rel="noopener noreferrer">Defining Zionism as a Settler-Colonial Project</a></li>
                         <li><a href="https://www.un.org/unispal/history/" class="resource-link" target="_blank" rel="noopener noreferrer">Key UN Resolutions and International Law</a></li>
                     </ul>
@@ -149,13 +184,17 @@
             <!-- Node 2: Resistance (Right) -->
             <section class="content-node node-container flex node-right mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <div class="node-image-container">
+                        <img src="https://images.unsplash.com/photo-1623862220453-56885a089928?q=80&w=1974&auto=format&fit=crop" alt="A hand holds a Palestinian flag against a blurred background, symbolizing resistance.">
+                    </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Resistance</h2>
                     <p class="text-gray-400 mb-6">Explore the many forms of Palestinian resistance, from popular uprisings and armed struggle to the enduring power of cultural and intellectual defiance.</p>
                     <ul class="space-y-3">
                         <li><a href="https://remix.aljazeera.com/aje/PalestineRemix/timeline_main.html" class="resource-link" target="_blank" rel="noopener noreferrer">Chronology of Intifadas: The People's Uprisings</a></li>
                         <li><a href="https://www.poetryfoundation.org/poets/mahmoud-darwish" class="resource-link" target="_blank" rel="noopener noreferrer">Literary Resistance: The Poetry of Mahmoud Darwish</a></li>
-                       <li><a href="https://www.palquest.org/en/highlight/22198/sumud-steadfastness" class="resource-link" target="_blank" rel="noopener noreferrer">Sumud: The Art of Steadfastness</a></li>
-                        
+                        <li><a href="https://www.palquest.org/en/highlight/22198/sumud-steadfastness" class="resource-link" target="_blank" rel="noopener noreferrer">Sumud: The Art of Steadfastness</a></li>
+                        <!-- CORRECTED: Added missing BDS link -->
+                        <li><a href="https://bdsmovement.net/" class="resource-link" target="_blank" rel="noopener noreferrer">The Global Boycott, Divestment, Sanctions (BDS) Movement</a></li>
                     </ul>
                 </div>
             </section>
@@ -163,13 +202,17 @@
             <!-- Node 3: The Culture (Left) -->
             <section class="content-node node-container flex node-left mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                    <div class="node-image-container">
+                        <img src="https://images.unsplash.com/photo-1589270149323-7a9155995963?q=80&w=1974&auto=format&fit=crop" alt="A close-up of colorful Palestinian embroidery (Tatreez).">
+                    </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Culture</h2>
                     <p class="text-gray-400 mb-6">Experience the richness of Palestinian life and identity—a culture that thrives as a form of resistance itself, rooted in centuries of tradition and creativity.</p>
                     <ul class="space-y-3">
                         <li><a href="https://sustainablefoodtrust.org/news-views/a-taste-of-palestine-cultivating-resistance/" class="resource-link" target="_blank" rel="noopener noreferrer">Cuisine as Identity: A Taste of Palestine</a></li>
                         <li><a href="https://www.palestineinamerica.com/blog/untangledtatreez" class="resource-link" target="_blank" rel="noopener noreferrer">Tatreez: The Embroidery of a Nation's Story</a></li>
+                        <!-- CORRECTED: Removed duplicate link -->
                         <li><a href="https://arabfilminstitute.org/palestinian-voices/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestinian Cinema: Voices on Screen</a></li>
-                        <li><a href="https://arabfilminstitute.org/palestinian-voices/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestinian Cinema: Voices on Screen</a></li>
+                         <li><a href="https://www.middleeasteye.net/discover/palestine-dabke-dance-keeps-culture-alive" class="resource-link" target="_blank" rel="noopener noreferrer">Music and Dabke: The Rhythms of a Movement</a></li>
                     </ul>
                 </div>
             </section>
@@ -177,6 +220,9 @@
             <!-- Node 4: The Action (Right) -->
             <section class="content-node node-container flex node-right mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
+                     <div class="node-image-container">
+                        <img src="https://images.unsplash.com/photo-1587135304387-a417a7e805f6?q=80&w=1974&auto=format&fit=crop" alt="A crowd of people marching in a street protest, holding signs.">
+                    </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Action</h2>
                     <p class="text-gray-400 mb-6">Solidarity is a verb. Here are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold power accountable.</p>
                     <ul class="space-y-3">
@@ -204,81 +250,100 @@
 
         const contentNodes = document.querySelectorAll('.content-node');
         const svgPath = document.getElementById('river-path');
-        const pathContainer = document.getElementById('svg-path-container');
         const header = document.getElementById('header');
         const footer = document.getElementById('footer');
-        const contentWrapper = document.getElementById('content-wrapper');
 
-        // --- Intersection Observer for Fade-in Animation ---
-        const observer = new IntersectionObserver((entries) => {
+        if (!svgPath || !header || !footer || contentNodes.length === 0) {
+            console.error("Essential elements for the interactive map are missing.");
+            return;
+        }
+
+        // --- Intersection Observer for Content Node Animation ---
+        const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target); // Animate only once
+                    observer.unobserve(entry.target);
                 }
             });
         }, {
             root: null,
-            threshold: 0.1, // Trigger when 10% of the element is visible
+            threshold: 0.2,
             rootMargin: '0px 0px -50px 0px'
         });
 
-        contentNodes.forEach(node => {
-            observer.observe(node);
-        });
-        observer.observe(header);
-        observer.observe(footer);
+        contentNodes.forEach(node => observer.observe(node));
 
+        // --- SVG Path Drawing & Animation Logic ---
+        let pathLength = 0;
 
-        // --- SVG Path Drawing Logic ---
         function drawSVGPath() {
-            if (!svgPath || !contentWrapper) return;
-
-            // Clear previous path
-            svgPath.setAttribute('d', '');
-
-            const wrapperRect = contentWrapper.getBoundingClientRect();
-            const startY = wrapperRect.top + window.scrollY;
-            const endY = wrapperRect.bottom + window.scrollY;
-
-            // Path starts at the bottom of the header
-            let pathData = `M ${window.innerWidth / 2} ${header.offsetHeight}`;
+            const isMobile = window.innerWidth < 768;
+            const pathStartX = window.innerWidth / 2;
+            let pathData = `M ${pathStartX} ${header.offsetHeight}`;
             let lastY = header.offsetHeight;
-            const waveAmplitude = 100; // How much the path deviates left/right
-            const waveFrequency = 0.003; // How wavy the path is
-
+            
             contentNodes.forEach((node, index) => {
                 const rect = node.getBoundingClientRect();
                 const nodeCenterY = rect.top + window.scrollY + rect.height / 2;
                 
-                // Draw a wavy line to the node
-                for(let y = lastY; y < nodeCenterY; y++) {
-                    const x = (window.innerWidth / 2) + Math.sin((y - header.offsetHeight) * waveFrequency) * waveAmplitude * (index % 2 === 0 ? -1 : 1);
-                    pathData += ` L ${x} ${y}`;
-                }
+                // On desktop, the connection point is the edge of the card. On mobile, it's the center.
+                const nodeConnectX = isMobile ? pathStartX : (index % 2 === 0 ? rect.left + rect.width : rect.left);
+
+                // Use a Bezier curve for a smoother, more organic river-like flow
+                const controlPointY1 = lastY + (nodeCenterY - lastY) * 0.5;
+                const controlPointY2 = nodeCenterY - (nodeCenterY - lastY) * 0.5;
                 
+                pathData += ` C ${pathStartX} ${controlPointY1}, ${nodeConnectX} ${controlPointY2}, ${nodeConnectX} ${nodeCenterY}`;
                 lastY = nodeCenterY;
             });
-            
-            // End the path at the top of the footer
-            pathData += ` L ${window.innerWidth / 2} ${footer.getBoundingClientRect().top + window.scrollY}`;
 
+            const footerTop = footer.getBoundingClientRect().top + window.scrollY;
+            pathData += ` L ${pathStartX} ${footerTop}`;
             svgPath.setAttribute('d', pathData);
-            const pathLength = svgPath.getTotalLength();
+
+            pathLength = svgPath.getTotalLength();
             svgPath.style.strokeDasharray = pathLength;
             svgPath.style.strokeDashoffset = pathLength;
-
-            // Animate on scroll
-            window.addEventListener('scroll', () => {
-                const scrollPercentage = (window.scrollY) / (document.body.scrollHeight - window.innerHeight);
-                const drawLength = pathLength * scrollPercentage;
-                svgPath.style.strokeDashoffset = pathLength - drawLength;
-            }, { passive: true });
+            
+            // Initial animation update after drawing
+            animatePathOnScroll();
         }
-        
-        // Use a timeout to ensure all elements are rendered before calculating positions
+
+        // --- OPTIMIZED SCROLL ANIMATION using requestAnimationFrame ---
+        let ticking = false;
+
+        function animatePathOnScroll() {
+            if (pathLength <= 0) return; // Guard against running if path isn't drawn
+
+            // Calculate the scroll progress relative to the main content area
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercentage = Math.min(1, Math.max(0, window.scrollY / scrollableHeight));
+            
+            const drawLength = pathLength * scrollPercentage;
+            // A multiplier slightly > 1 makes the drawing feel more responsive
+            svgPath.style.strokeDashoffset = Math.max(0, pathLength - drawLength * 1.1); 
+        }
+
+        document.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    animatePathOnScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        // --- Event Listeners ---
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(drawSVGPath, 250);
+        });
+
+        // Use a small timeout to ensure layout is stable before initial draw
         setTimeout(drawSVGPath, 100);
-        window.addEventListener('resize', drawSVGPath);
     });
     </script>
 
