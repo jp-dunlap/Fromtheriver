@@ -1,5 +1,5 @@
 /* --- Fromtheriver.org | styles.css --- */
-/* Concept: Digital Vellum & Living Ink - Consolidated & Refined */
+/* Concept: Digital Vellum & Living Ink - Consolidated & Corrected */
 
 /* --- Root Variables & Global Styles --- */
 :root {
@@ -59,14 +59,9 @@ h1, h2, h3, .font-serif {
 }
 
 /* --- Header & Footer --- */
+/* CORRECTED: Removed conflicting rules. This single rule ensures a solid background color. */
 #header {
-    background: linear-gradient(110deg, #121212 0%, #1A202C 35%, #1A202C 65%, #121212 100%);
-    background-size: 200% 200%;
-    animation: subtle-gradient 15s ease infinite;
-}
-
-#header {
-    background-color: var(--bg-color); /* Sets a solid background color */
+    background-color: var(--bg-color); 
 }
 
 /* --- SVG "River" Path Styling --- */
@@ -135,7 +130,6 @@ h1, h2, h3, .font-serif {
 }
 
 /* --- Image Styling --- */
-/* CORRECTED: Forcefully removing any color overlay from the image container. */
 .node-image-container {
     position: relative;
     border-radius: 6px;
@@ -145,7 +139,6 @@ h1, h2, h3, .font-serif {
     background-color: transparent !important; /* Ensures no background color is applied */
 }
 
-/* CORRECTED: Forcefully resetting blend mode, filter, and opacity on the image itself. */
 .node-image-container img {
     width: 100%;
     height: auto;
@@ -156,7 +149,6 @@ h1, h2, h3, .font-serif {
     opacity: 1 !important; /* Ensures full opacity */
 }
 
-/* REVISED: Robust selector for image zoom on card hover */
 .node-card:hover .node-image-container img {
     transform: scale(1.05);
 }
