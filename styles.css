@@ -31,17 +31,17 @@ h1, h2, h3, .font-serif {
 }
 
 .resource-link {
-    display: inline-block; /* Changed for better text-wrapping */
+    display: inline-block;
     color: var(--text-secondary);
     text-decoration: none;
     position: relative;
-    padding-bottom: 5px; /* Increased padding */
-    transition: color 0.4s ease;
+    padding-bottom: 5px;
     /* "Ink Bleed" effect setup */
     background-image: linear-gradient(var(--accent-color), var(--accent-color));
     background-size: 0% 1px;
     background-position: left bottom;
     background-repeat: no-repeat;
+    /* Consolidated transition for both background and color */
     transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out;
 }
 /* Find this existing block */
