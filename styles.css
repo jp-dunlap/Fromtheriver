@@ -41,16 +41,16 @@ h1, h2, h3, .font-serif {
     background-size: 0% 1px;
     background-position: left bottom;
     background-repeat: no-repeat;
-    /* Consolidated transition for both background and color */
-    transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out;
+    /* Consolidated transition for all hover effects */
+    transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out, transform 0.3s ease;
 }
-/* Find this existing block */
+
 .resource-link:hover {
     color: var(--text-primary);
     background-size: 100% 1px;
-    /* ADD the line below */
     transform: translateY(-2px);
 }
+
 /* --- SVG "River" Path Styling --- */
 #svg-path-container {
     position: absolute;
@@ -71,9 +71,8 @@ h1, h2, h3, .font-serif {
     transition: stroke-dashoffset 2s ease-in-out;
     stroke: var(--border-color);
     stroke-width: 1.5;
-    stroke-linecap: round; /* Smoother line ends */
+    stroke-linecap: round;
 }
-
 
 /* --- Content Node Styling & "Unfolding" Animation --- */
 .content-node {
@@ -85,7 +84,6 @@ h1, h2, h3, .font-serif {
     will-change: opacity, transform;
     position: relative;
     z-index: 1;
-    /* Slight parallax effect */
     transition-delay: 0.1s;
 }
 
@@ -104,9 +102,9 @@ h1, h2, h3, .font-serif {
         inset 0 1px 2px rgba(255, 255, 255, 0.05), /* Subtle inner highlight */
         0 10px 30px rgba(0, 0, 0, 0.6); /* Deeper shadow for depth */
     padding: 2rem;
-    transition: border-color 0.4s ease, box-shadow 0.4s ease; /* ADD THIS LINE */
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
 }
-/* ADD THIS NEW BLOCK */
+
 .node-card:hover {
     border-color: rgba(154, 230, 180, 0.7); /* --accent-color at 70% opacity */
     box-shadow: 
@@ -123,19 +121,36 @@ h1, h2, h3, .font-serif {
     justify-content: flex-end;
 }
 
+/* --- Image Styling Correction --- */
+.node-image-container {
+    position: relative;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    /* CORRECTED: Removed background-color to stop the duotone effect */
+}
+
+.node-image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    /* CORRECTED: Removed blend-mode, opacity, and filter to show original image colors */
+}
+
+/* CORRECTED: Changed selector for robustness */
+.node-card:hover .node-image-container img {
+    transform: scale(1.05);
+}
 
 /* --- Header & Footer Specifics --- */
-/* ADD THIS NEW BLOCK */
 #header {
     background: linear-gradient(110deg, #121212 0%, #1A202C 35%, #1A202C 65%, #121212 100%);
     background-size: 200% 200%;
     animation: subtle-gradient 15s ease infinite;
 }
 
-/* This block should already be here */
-#header h1 {
-    /* ... existing styles ... */
-}
 #header h1 {
     /* Adding a subtle gradient to the main title */
     background: -webkit-linear-gradient(45deg, #FFFFFF, #B2F5EA);
@@ -148,16 +163,19 @@ h1, h2, h3, .font-serif {
     width: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: #1A202C; /* Dark blue-gray track */
+    background: #1A202C;
 }
 ::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 4px;
-    border: 2px solid #1A202C; /* Padding around thumb */
+    border: 2px solid #1A202C;
 }
 ::-webkit-scrollbar-thumb:hover {
     background: #718096;
-/* ADD THIS NEW BLOCK AT THE END OF THE FILE */
+}
+
+/* --- Animations --- */
+/* CORRECTED: Moved keyframes to the root level for correct syntax */
 @keyframes subtle-gradient {
     0% {
         background-position: 0% 50%;
@@ -169,8 +187,3 @@ h1, h2, h3, .font-serif {
         background-position: 0% 50%;
     }
 }
-
-/* Note: This CSS is designed to work with the HTML structure from the "Unfolding Map" concept.
-  The class names like `.content-node`, `.is-visible`, `.node-left`, etc., are essential for the layout and animations.
-  The SVG filter is defined in the HTML file for browser compatibility but is styled and applied here.
-*/
