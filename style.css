@@ -1,0 +1,145 @@
+/* --- Fromtheriver.org | styles.css --- */
+/* Concept: Digital Vellum & Living Ink */
+
+/* --- Root Variables & Global Styles --- */
+:root {
+    --bg-color: #121212;
+    --text-primary: #EAEAEA;
+    --text-secondary: #A0AEC0;
+    --accent-color: #9AE6B4; /* Mint Green */
+    --border-color: #4A5568;
+    --font-serif: 'DM Serif Display', serif;
+    --font-sans: 'Work Sans', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    /* Subtle texture resembling vellum or handmade paper */
+    background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Typography System --- */
+h1, h2, h3, .font-serif {
+    font-family: var(--font-serif);
+    /* Letterpress/engraved effect */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.resource-link {
+    display: inline-block; /* Changed for better text-wrapping */
+    color: var(--text-secondary);
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 5px; /* Increased padding */
+    transition: color 0.4s ease;
+    /* "Ink Bleed" effect setup */
+    background-image: linear-gradient(var(--accent-color), var(--accent-color));
+    background-size: 0% 1px;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+.resource-link:hover {
+    color: var(--text-primary);
+    background-size: 100% 1px;
+}
+
+
+/* --- SVG "River" Path Styling --- */
+#svg-path-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    /* Applying a filter for a hand-drawn look */
+    filter: url(#hand-drawn-filter);
+}
+
+#river-path {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    transition: stroke-dashoffset 2s ease-in-out;
+    stroke: var(--border-color);
+    stroke-width: 1.5;
+    stroke-linecap: round; /* Smoother line ends */
+}
+
+
+/* --- Content Node Styling & "Unfolding" Animation --- */
+.content-node {
+    opacity: 0;
+    /* Starts slightly rotated for the unfolding effect */
+    transform: perspective(1000px) rotateX(-20deg) translateY(50px);
+    transform-origin: top center;
+    transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1), transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+    will-change: opacity, transform;
+    position: relative;
+    z-index: 1;
+    /* Slight parallax effect */
+    transition-delay: 0.1s;
+}
+
+.content-node.is-visible {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0deg) translateY(0);
+}
+
+/* Card styling to look like layered paper */
+.node-card {
+    background-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(74, 85, 104, 0.5); /* Muted border */
+    border-radius: 8px;
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.05), /* Subtle inner highlight */
+        0 10px 30px rgba(0, 0, 0, 0.6); /* Deeper shadow for depth */
+    padding: 2rem;
+}
+
+/* Specific alignment for left and right nodes */
+.node-left {
+    justify-content: flex-start;
+}
+.node-right {
+    justify-content: flex-end;
+}
+
+
+/* --- Header & Footer Specifics --- */
+#header h1 {
+    /* Adding a subtle gradient to the main title */
+    background: -webkit-linear-gradient(45deg, #FFFFFF, #B2F5EA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #1A202C; /* Dark blue-gray track */
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+    border: 2px solid #1A202C; /* Padding around thumb */
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
+/* Note: This CSS is designed to work with the HTML structure from the "Unfolding Map" concept.
+  The class names like `.content-node`, `.is-visible`, `.node-left`, etc., are essential for the layout and animations.
+  The SVG filter is defined in the HTML file for browser compatibility but is styled and applied here.
+*/
