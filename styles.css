@@ -138,20 +138,25 @@ h1, h2, h3, .font-serif {
 }
 
 /* --- Image Styling --- */
-/* REVISED: Removed background color and blend modes to show original images */
+/* CORRECTED: Forcefully removing any color overlay from the image container. */
 .node-image-container {
     position: relative;
     border-radius: 6px;
     margin-bottom: 1.5rem;
     overflow: hidden; /* This is crucial for the image zoom effect */
     box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    background-color: transparent !important; /* Ensures no background color is applied */
 }
 
+/* CORRECTED: Forcefully resetting blend mode, filter, and opacity on the image itself. */
 .node-image-container img {
     width: 100%;
     height: auto;
     display: block;
     transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    mix-blend-mode: normal !important; /* Resets any blend mode */
+    filter: none !important; /* Removes grayscale or any other filter */
+    opacity: 1 !important; /* Ensures full opacity */
 }
 
 /* REVISED: Robust selector for image zoom on card hover */
