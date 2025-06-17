@@ -44,13 +44,13 @@ h1, h2, h3, .font-serif {
     background-repeat: no-repeat;
     transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out;
 }
-
+/* Find this existing block */
 .resource-link:hover {
     color: var(--text-primary);
     background-size: 100% 1px;
+    /* ADD the line below */
+    transform: translateY(-2px);
 }
-
-
 /* --- SVG "River" Path Styling --- */
 #svg-path-container {
     position: absolute;
@@ -104,6 +104,15 @@ h1, h2, h3, .font-serif {
         inset 0 1px 2px rgba(255, 255, 255, 0.05), /* Subtle inner highlight */
         0 10px 30px rgba(0, 0, 0, 0.6); /* Deeper shadow for depth */
     padding: 2rem;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease; /* ADD THIS LINE */
+}
+/* ADD THIS NEW BLOCK */
+.node-card:hover {
+    border-color: rgba(154, 230, 180, 0.7); /* --accent-color at 70% opacity */
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.05),
+        0 10px 30px rgba(0, 0, 0, 0.6),
+        0 0 15px rgba(154, 230, 180, 0.2); /* The subtle glow effect */
 }
 
 /* Specific alignment for left and right nodes */
@@ -116,6 +125,17 @@ h1, h2, h3, .font-serif {
 
 
 /* --- Header & Footer Specifics --- */
+/* ADD THIS NEW BLOCK */
+#header {
+    background: linear-gradient(110deg, #121212 0%, #1A202C 35%, #1A202C 65%, #121212 100%);
+    background-size: 200% 200%;
+    animation: subtle-gradient 15s ease infinite;
+}
+
+/* This block should already be here */
+#header h1 {
+    /* ... existing styles ... */
+}
 #header h1 {
     /* Adding a subtle gradient to the main title */
     background: -webkit-linear-gradient(45deg, #FFFFFF, #B2F5EA);
@@ -137,6 +157,17 @@ h1, h2, h3, .font-serif {
 }
 ::-webkit-scrollbar-thumb:hover {
     background: #718096;
+/* ADD THIS NEW BLOCK AT THE END OF THE FILE */
+@keyframes subtle-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Note: This CSS is designed to work with the HTML structure from the "Unfolding Map" concept.
