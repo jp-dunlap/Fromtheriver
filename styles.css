@@ -39,7 +39,8 @@ h1, h2, h3, .font-serif {
 /* --- Link Styling --- */
 .resource-link {
     display: inline-block;
-    color: var(--text-secondary);
+    color: var(--accent-color); /* CHANGED: Links now use the accent color by default. */
+    font-weight: 500; /* ADDED: Slightly bolder text for further differentiation. */
     text-decoration: none;
     position: relative;
     padding-bottom: 5px;
