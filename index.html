@@ -37,7 +37,7 @@
             height: 100%;
             z-index: 0;
             pointer-events: none; /* Allows clicking through the SVG */
-            filter: url(#hand-drawn-filter); /* This now works because the filter is defined below */
+            filter: url(#hand-drawn-filter);
         }
 
         #river-path {
@@ -78,7 +78,7 @@
             text-decoration: none;
             position: relative;
             padding-bottom: 4px;
-            transition: color 0.3s, transform 0.3s ease; /* Added transform */
+            transition: color 0.3s, transform 0.3s ease;
         }
         .resource-link:after {
             content: '';
@@ -92,7 +92,7 @@
         }
         .resource-link:hover {
             color: #FFFFFF;
-            transform: translateY(-2px); /* Added lift effect */
+            transform: translateY(-2px);
         }
         .resource-link:hover:after {
             width: 100%;
@@ -106,6 +106,7 @@
 
         /* --- Added for Image Styling --- */
         .node-image-container {
+            position: relative; /* Needed for positioning potential child elements like a credit */
             background-color: #9AE6B4; /* Accent color for duotone */
             border-radius: 6px;
             margin-bottom: 1.5rem;
@@ -123,7 +124,8 @@
             transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        .w-full.md\:w-1\/2:hover .node-image-container img {
+        /* Corrected selector for robust hover effect */
+        .bg-black\/20:hover .node-image-container img {
             transform: scale(1.05);
         }
     </style>
@@ -133,7 +135,6 @@
     <!-- SVG Container for the "River" Path -->
     <div id="svg-path-container">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <!-- CORRECTED: Added the missing SVG filter definition -->
             <defs>
                 <filter id="hand-drawn-filter">
                     <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise"/>
@@ -167,9 +168,8 @@
             <!-- Node 1: The Roots (Left) -->
             <section class="content-node node-container flex node-left mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
-                   <div class="node-image-container">
-    <img src="images/ancient-olive-tree.jpg" alt="An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness.">
-                        <p class="photo-credit">Photo by Milada Vigerova on Unsplash</p>
+                    <div class="node-image-container">
+                        <img src="images/ancient-olive-tree.jpg" alt="An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness.">
                     </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Roots</h2>
                     <p class="text-gray-400 mb-6">Understand the historical and legal foundations of Palestine. This is where the story begins, in the soil and soul of a land and its people.</p>
@@ -186,7 +186,7 @@
             <section class="content-node node-container flex node-right mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
                     <div class="node-image-container">
-                        <img src="https://images.unsplash.com/photo-1623862220453-56885a089928?q=80&w=1974&auto=format&fit=crop" alt="A hand holds a Palestinian flag against a blurred background, symbolizing resistance.">
+                        <img src="images/resistance.jpg" alt="A protestor holds a Palestinian flag and a megaphone, vocally symbolizing active resistance.">
                     </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Resistance</h2>
                     <p class="text-gray-400 mb-6">Explore the many forms of Palestinian resistance, from popular uprisings and armed struggle to the enduring power of cultural and intellectual defiance.</p>
@@ -194,7 +194,6 @@
                         <li><a href="https://remix.aljazeera.com/aje/PalestineRemix/timeline_main.html" class="resource-link" target="_blank" rel="noopener noreferrer">Chronology of Intifadas: The People's Uprisings</a></li>
                         <li><a href="https://www.poetryfoundation.org/poets/mahmoud-darwish" class="resource-link" target="_blank" rel="noopener noreferrer">Literary Resistance: The Poetry of Mahmoud Darwish</a></li>
                         <li><a href="https://www.palquest.org/en/highlight/22198/sumud-steadfastness" class="resource-link" target="_blank" rel="noopener noreferrer">Sumud: The Art of Steadfastness</a></li>
-                        <!-- CORRECTED: Added missing BDS link -->
                         <li><a href="https://bdsmovement.net/" class="resource-link" target="_blank" rel="noopener noreferrer">The Global Boycott, Divestment, Sanctions (BDS) Movement</a></li>
                     </ul>
                 </div>
@@ -204,16 +203,15 @@
             <section class="content-node node-container flex node-left mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
                     <div class="node-image-container">
-                        <img src="https://images.unsplash.com/photo-1589270149323-7a9155995963?q=80&w=1974&auto=format&fit=crop" alt="A close-up of colorful Palestinian embroidery (Tatreez).">
+                        <img src="images/palestinian-culture.jpg" alt="A man sells traditional Palestinian keffiyehs, a core symbol of cultural identity.">
                     </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Culture</h2>
                     <p class="text-gray-400 mb-6">Experience the richness of Palestinian life and identity—a culture that thrives as a form of resistance itself, rooted in centuries of tradition and creativity.</p>
                     <ul class="space-y-3">
                         <li><a href="https://sustainablefoodtrust.org/news-views/a-taste-of-palestine-cultivating-resistance/" class="resource-link" target="_blank" rel="noopener noreferrer">Cuisine as Identity: A Taste of Palestine</a></li>
                         <li><a href="https://www.palestineinamerica.com/blog/untangledtatreez" class="resource-link" target="_blank" rel="noopener noreferrer">Tatreez: The Embroidery of a Nation's Story</a></li>
-                        <!-- CORRECTED: Removed duplicate link -->
                         <li><a href="https://arabfilminstitute.org/palestinian-voices/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestinian Cinema: Voices on Screen</a></li>
-                         <li><a href="https://www.middleeasteye.net/discover/palestine-dabke-dance-keeps-culture-alive" class="resource-link" target="_blank" rel="noopener noreferrer">Music and Dabke: The Rhythms of a Movement</a></li>
+                        <li><a href="https://www.middleeasteye.net/discover/palestine-dabke-dance-keeps-culture-alive" class="resource-link" target="_blank" rel="noopener noreferrer">Music and Dabke: The Rhythms of a Movement</a></li>
                     </ul>
                 </div>
             </section>
@@ -221,8 +219,8 @@
             <!-- Node 4: The Action (Right) -->
             <section class="content-node node-container flex node-right mb-24 md:mb-32">
                 <div class="w-full md:w-1/2 bg-black/20 backdrop-blur-md border border-gray-800 p-8 rounded-lg shadow-2xl">
-                     <div class="node-image-container">
-                        <img src="https://images.unsplash.com/photo-1587135304387-a417a7e805f6?q=80&w=1974&auto=format&fit=crop" alt="A crowd of people marching in a street protest, holding signs.">
+                    <div class="node-image-container">
+                        <img src="images/collective-action.jpg" alt="A crowd of people marching in a street protest, embodying the power of collective action and solidarity.">
                     </div>
                     <h2 class="font-serif text-4xl text-white mb-4">The Action</h2>
                     <p class="text-gray-400 mb-6">Solidarity is a verb. Here are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold power accountable.</p>
