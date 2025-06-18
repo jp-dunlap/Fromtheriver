@@ -6,8 +6,7 @@
     "lat": 32.9055,
     "lon": 35.1787,
     "district": "Acre",
-    "story": "A large village east of Acre, known as the birthplace of poet Mahmoud Darwish. It had a long history, two schools, a mosque, and a church. In 1948, villagers resisted, retaking the village for two days after an initial assault before being overwhelmed in a final attack and permanently expelled.",
-    "depopulation_narrative": "Captured during Operation Dekel. After an initial Zionist attack on June 11, 1948, villagers organized a counter-attack and retook the village on June 23. They held it for two days before a major Israeli assault forced a final evacuation. The village was subsequently destroyed.",
+    "story": "A large village east of Acre, known as the birthplace of poet Mahmoud Darwish. It had a long history, two schools, a mosque, a church, and extensive olive groves. In June 1948, Zionist forces captured the village. According to villagers, they organized a counter-attack and retook their homes for two days to harvest their crops before a major Israeli assault, with the support of the Arab Liberation Army, forced a final evacuation. The village was subsequently destroyed.",
     "military_operation": "Dekel",
     "destroyed_by": "Carmeli Brigade",
     "israeli_settlement": "Kibbutz Yas'ur, Moshav Ahihud"
@@ -19,8 +18,7 @@
     "lat": 32.8768,
     "lon": 35.1823,
     "district": "Acre",
-    "story": "A village on the Acre plain with a history dating to the 11th century, containing a shrine to the prophet Dhu al-Kifl. Its economy was based on agriculture and mat-weaving.",
-    "depopulation_narrative": "Captured during the second stage of Operation Dekel on July 15-16, 1948. Villagers were demoralized by the fall of Acre and Nazareth; many fled the initial bombardment, and those who remained were expelled. The village was completely destroyed.",
+    "story": "A village on the Acre plain with a history dating to the 11th century, containing a shrine to the prophet Dhu al-Kifl. Its economy was based on agriculture and mat-weaving. It was captured on July 15-16, 1948, during the second stage of Operation Dekel. Villagers were demoralized by the fall of Acre and Nazareth; many fled the initial bombardment, and those who remained were expelled. The village was completely destroyed.",
     "military_operation": "Dekel",
     "destroyed_by": "Sheva' (7th) Brigade",
     "israeli_settlement": "None on village site; lands used by Yas'ur"
@@ -32,11 +30,10 @@
     "lat": 32.9723,
     "lon": 35.0927,
     "district": "Acre",
-    "story": "A coastal village north of Acre, known to Crusaders as 'Someleria.' Its economy was based on agriculture and stone quarrying.",
-    "depopulation_narrative": "Captured on May 14, 1948, during Operation Ben-Ami. Accounts differ, with Israeli sources claiming villagers fled and Palestinian sources describing heavy fighting. A New York Times photo showed extensive wreckage from 'Jewish demolition squads.' By June 1948, the JNF had begun leveling the village.",
+    "story": "A coastal village north of Acre, known to Crusaders as 'Someleria.' Its economy was based on agriculture and stone quarrying. It was captured on May 14, 1948, during Operation Ben-Ami. While Israeli sources claim villagers fled, Palestinian sources describe heavy fighting. A New York Times photo showed extensive wreckage from 'Jewish demolition squads.' By June 1948, the JNF had begun leveling the village.",
     "military_operation": "Ben-Ami",
     "destroyed_by": "Carmeli Brigade",
-    "israeli_settlement": "Lochamey HaGeta'ot, Shomrat"
+    "israeli_settlement": "Lochamey HaGeta'ot, Shomrat, Regba"
   },
   {
     "id": 4,
@@ -45,8 +42,7 @@
     "lat": 33.073,
     "lon": 35.143,
     "district": "Acre",
-    "story": "A large, mixed Muslim and Christian village in northern Galilee. It was a prosperous community with two schools, a church, and a mosque.",
-    "depopulation_narrative": "Captured on May 14, 1948, during Operation Ben-Ami. After a brief battle, the village surrendered. Villagers were gathered, and according to survivor testimonies, a number of men were summarily executed. The majority of the population was then forcibly expelled across the border into Lebanon. The village was completely leveled, though the church and mosque were left standing.",
+    "story": "A large, prosperous mixed Muslim and Christian village in northern Galilee with two schools, a church, and a mosque. It was captured on May 14, 1948, during Operation Ben-Ami. After a brief battle, the village surrendered. According to survivor testimonies, a number of men were summarily executed. The majority of the population was then forcibly expelled across the border into Lebanon. The village was completely leveled, though the church and mosque were left standing.",
     "military_operation": "Ben-Ami",
     "destroyed_by": "Haganah (Carmeli Brigade)",
     "israeli_settlement": "Betzet, Liman, Shlomi"
@@ -58,11 +54,10 @@
     "lat": 32.7619,
     "lon": 34.9753,
     "district": "Haifa",
-    "story": "One of the largest villages in the Haifa sub-district, known as 'Tira of the almonds.' A major olive oil producer with a history dating to the Crusades.",
-    "depopulation_narrative": "Faced a series of attacks over months, starting with an Irgun bombing in December 1947. The village finally fell on July 16, 1948, during the 'Ten Days' battles. The attack was notable for being the first use of the Israeli Navy in support of land forces, with the warship Eilat bombarding the village before ground units moved in. Remaining villagers were expelled.",
+    "story": "One of the largest villages in the Haifa sub-district, known as 'Tira of the almonds' and a major olive oil producer. It faced a series of attacks, starting with an Irgun bombing in December 1947. The village finally fell on July 16, 1948, during the 'Ten Days' battles. The attack was notable for being the first use of the Israeli Navy in support of land forces, with a warship bombarding the village before ground units moved in. Remaining villagers were expelled.",
     "military_operation": "Dekel",
     "destroyed_by": "Irgun (IZL), Haganah (Golani, Carmeli, Alexandroni Brigades), Israeli Navy",
-    "israeli_settlement": "Tirat Carmel, Kfar Galim, HaHotrim, Megadim"
+    "israeli_settlement": "Tirat Carmel, Kfar Galim, HaHotrim, Megadim, Beit Tzvi"
   },
   {
     "id": 6,
@@ -71,8 +66,7 @@
     "lat": 32.6083,
     "lon": 35.005,
     "district": "Haifa",
-    "story": "Part of the 'Little Triangle' of villages south of Haifa that resisted capture for months. The village had a history of resistance dating back to the 1936-39 Arab revolt.",
-    "depopulation_narrative": "Captured on July 26, 1948, during Operation Shoter ('Operation Policeman'). The assault involved heavy shelling and aerial bombardment from B-17s. A UN report noted atrocities after the capture. Remaining inhabitants were expelled, and the village was systematically destroyed by the IDF.",
+    "story": "Part of the 'Little Triangle' of villages south of Haifa that resisted capture for months. The village had a history of resistance dating back to the 1936-39 Arab revolt. It was captured on July 26, 1948, during Operation Shoter ('Operation Policeman'), an assault that involved heavy shelling and aerial bombardment from B-17s. A UN report noted atrocities after the capture. Remaining inhabitants were expelled, and the village was systematically destroyed by the IDF.",
     "military_operation": "Shoter",
     "destroyed_by": "Golani, Carmeli, and Alexandroni Brigades",
     "israeli_settlement": "Ofer, Ein Ayala"
@@ -84,8 +78,7 @@
     "lat": 32.6256,
     "lon": 35.0083,
     "district": "Haifa",
-    "story": "A large village in the 'Little Triangle' with 'Ayn Ghazal, with a history dating to the Roman period. It had a mosque, a church, and was a center of local resistance.",
-    "depopulation_narrative": "Resisted capture for months. It fell on July 26, 1948, during Operation Shoter after heavy artillery and aerial bombardment. The remaining population was expelled, and the IDF systematically demolished the village houses over the following weeks.",
+    "story": "A large village in the 'Little Triangle' with 'Ayn Ghazal, with a history dating to the Roman period. It had a mosque, a church, and was a center of local resistance. The village resisted capture for months, but fell on July 26, 1948, during Operation Shoter after heavy artillery and aerial bombardment. The remaining population was expelled, and the IDF systematically demolished the village houses over the following weeks.",
     "military_operation": "Shoter",
     "destroyed_by": "Golani, Carmeli, and Alexandroni Brigades",
     "israeli_settlement": "Kerem Maharal"
@@ -97,8 +90,7 @@
     "lat": 32.613,
     "lon": 34.921,
     "district": "Haifa",
-    "story": "A large coastal fishing village with a history dating to the Phoenician period. Its economy was based on fishing, trade, and agriculture.",
-    "depopulation_narrative": "Captured on the night of May 22-23, 1948, by the Alexandroni Brigade. Following its surrender, a large-scale massacre occurred. According to survivor and soldier testimonies, dozens of men were executed on the beach and in the village cemetery. The remaining population was expelled. A mass grave is believed to be under a beach parking lot.",
+    "story": "A large coastal fishing village with a history dating to the Phoenician period. It was captured on the night of May 22-23, 1948, by the Alexandroni Brigade. Following its surrender, a large-scale massacre occurred. According to survivor and soldier testimonies, dozens of men were executed on the beach and in the village cemetery. The remaining population was expelled. A mass grave is believed to be under a beach parking lot, a subject of intense controversy in Israel.",
     "military_operation": "Namal",
     "destroyed_by": "Haganah (Alexandroni Brigade)",
     "israeli_settlement": "Nachsholim, Dor"
@@ -110,8 +102,7 @@
     "lat": 31.767,
     "lon": 35.163,
     "district": "Jerusalem",
-    "story": "A prosperous village west of Jerusalem, revered in Christian tradition as the birthplace of John the Baptist. It was a mixed Muslim and Christian community with significant religious sites and a thriving economy based on agriculture and tourism.",
-    "depopulation_narrative": "Depopulated in stages during July 1948. Its fate was influenced by the Deir Yassin massacre and the fall of surrounding villages. After being shelled on July 10, it was occupied between July 17-21. Most inhabitants fled the bombardment; the few who remained were expelled. Its houses were not demolished but were quickly settled by new Jewish immigrants.",
+    "story": "A prosperous village west of Jerusalem, revered in Christian tradition as the birthplace of John the Baptist. It was a mixed Muslim and Christian community with significant religious sites. Its fate was influenced by the Deir Yassin massacre and the fall of surrounding villages. After being shelled on July 10, it was occupied between July 17-21, 1948. Most inhabitants fled the bombardment; the few who remained were expelled. Its houses were not demolished but were quickly settled by new Jewish immigrants.",
     "military_operation": "Dani",
     "destroyed_by": "Haganah (Harel Brigade)",
     "israeli_settlement": "Incorporated into Jerusalem municipality"
@@ -123,11 +114,10 @@
     "lat": 32.054,
     "lon": 34.814,
     "district": "Jaffa",
-    "story": "A large village east of Jaffa, named after a companion of the Prophet Muhammad. Its economy was based on irrigated agriculture, particularly citrus, with strong commercial ties to Jaffa.",
-    "depopulation_narrative": "Faced attacks for five months starting in December 1947. A major attack by the Alexandroni Brigade on Jan 18, 1948, had the explicit aim 'to cause deaths, blow up houses and to burn everything possible.' The village was finally occupied on April 29, 1948, during Operation Hametz. The inhabitants were completely expelled.",
+    "story": "A large village east of Jaffa with strong commercial ties to the city. Salama faced attacks for five months starting in December 1947. A major attack on Jan 18, 1948, had the explicit aim 'to cause deaths, blow up houses and to burn everything possible.' The village was finally occupied on April 29, 1948, during Operation Hametz. The inhabitants were completely expelled.",
     "military_operation": "Hametz",
     "destroyed_by": "Haganah (Alexandroni Brigade), Irgun (IZL)",
-    "israeli_settlement": "Kfar Shalem (suburb of Tel Aviv)"
+    "israeli_settlement": "Kfar Shalem, Neve Eliezer, Nir Aviv (Tel Aviv suburbs)"
   },
   {
     "id": 11,
@@ -136,11 +126,10 @@
     "lat": 32.0314,
     "lon": 34.8903,
     "district": "Jaffa",
-    "story": "A large village east of Jaffa, formerly known as al-Yahudiyya. It had two mosques, two schools, and a diverse economy based on agriculture and mat-plaiting.",
-    "depopulation_narrative": "The Irgun (IZL) first attacked in December 1947. The village was finally occupied by the Irgun on May 4, 1948, during Operation Hametz. The inhabitants were expelled. In September 1948, David Ben-Gurion received cabinet permission to destroy the village to prevent the return of its inhabitants.",
+    "story": "A large village east of Jaffa, formerly known as al-Yahudiyya. The Irgun first attacked in December 1947. The village was finally occupied by the Irgun on May 4, 1948, during Operation Hametz. The inhabitants were expelled. In September 1948, David Ben-Gurion received cabinet permission to destroy the village to prevent the return of its inhabitants.",
     "military_operation": "Hametz",
     "destroyed_by": "Irgun (IZL)",
-    "israeli_settlement": "Yehud, Magshimim, Ganne Yehuda, Savyon"
+    "israeli_settlement": "Yehud, Magshimim, Ganne Yehuda, Ganne Tiqwa, Savyon"
   },
   {
     "id": 12,
@@ -149,8 +138,7 @@
     "lat": 32.0289,
     "lon": 34.8,
     "district": "Jaffa",
-    "story": "An ancient village on the Jaffa-Ramla highway with a history stretching back to the Assyrian period. Its economy was based on citrus groves and some industry.",
-    "depopulation_narrative": "Subjected to raids from December 1947. The Givati Brigade occupied the village on April 30, 1948, during Operation Hametz. After British withdrawal on May 15, it was fully under Israeli control and used as a military headquarters during Operation Dani.",
+    "story": "An ancient village on the Jaffa-Ramla highway. It was subjected to raids from December 1947. In one incident, Zionist militia bombed a coffeehouse, killing six villagers. The Givati Brigade occupied the village on April 30, 1948, during Operation Hametz. After British withdrawal, it was used as a military headquarters during Operation Dani.",
     "military_operation": "Hametz",
     "destroyed_by": "Haganah (Givati Brigade)",
     "israeli_settlement": "Azor, Holon (expanded onto lands)"
@@ -162,8 +150,7 @@
     "lat": 32.593,
     "lon": 35.184,
     "district": "Jinin",
-    "story": "A strategically located village near the ancient site of Megiddo, on the site of the Roman city of Legio. It had a school, a mosque, and an olive press.",
-    "depopulation_narrative": "Captured by the Golani Brigade on May 30, 1948, shortly after British forces withdrew. The Haganah's operational orders reportedly stated, 'The inhabitants of the village should be expelled.' Most residents fled a mortar barrage; those who remained were forced out. The village was then systematically destroyed with explosives.",
+    "story": "A strategically located village near the ancient site of Megiddo, on the site of the Roman city of Legio. It was captured by the Golani Brigade on May 30, 1948, shortly after British forces withdrew. The Haganah's operational orders reportedly stated, 'The inhabitants of the village should be expelled.' Most residents fled a mortar barrage; those who remained were forced out. The village was then systematically destroyed with explosives.",
     "military_operation": "Gideon",
     "destroyed_by": "Haganah (Golani Brigade)",
     "israeli_settlement": "Kibbutz Megiddo"
@@ -175,8 +162,7 @@
     "lat": 31.8,
     "lon": 35.195,
     "district": "Jerusalem",
-    "story": "An ancient village at the entrance to Jerusalem, identified with the biblical Mei Neftoach. Many of its original stone houses remain standing, though derelict.",
-    "depopulation_narrative": "Depopulation began early. On Dec 28, 1947, a militia attacked a coffee house, killing six. This initiated a period of fear, with Haganah and Irgun forces firing on the village. The final expulsion occurred by February 1948 after continued attacks and destruction of buildings.",
+    "story": "An ancient village at the entrance to Jerusalem. Many of its original stone houses remain standing, though derelict. Depopulation began early. On Dec 28, 1947, a militia attacked a coffee house, killing six. This initiated a period of fear, with Haganah and Irgun forces firing on the village. The final expulsion occurred by February 1948 after continued attacks and destruction of buildings.",
     "military_operation": "(Pre-Nachshon)",
     "destroyed_by": "Haganah, Irgun (IZL), Lehi",
     "israeli_settlement": "Givat Shaul, Romema, Kiryat Moshe (West Jerusalem suburbs)"
@@ -188,8 +174,7 @@
     "lat": 31.797,
     "lon": 35.176,
     "district": "Jerusalem",
-    "story": "A prosperous village west of Jerusalem with an economy based on limestone quarrying. The village had declared neutrality and had a non-aggression pact with neighboring Jewish communities.",
-    "depopulation_narrative": "On April 9, 1948, despite its neutrality, the village was attacked by Irgun and Lehi forces. What followed was a massacre in which over 100 villagers—men, women, and children—were killed. The news of the massacre was widely publicized and became a pivotal event, spreading fear and contributing to the flight of refugees from other areas.",
+    "story": "A prosperous village west of Jerusalem. The village had declared neutrality and had a non-aggression pact with neighboring Jewish communities. On April 9, 1948, despite its neutrality, the village was attacked by Irgun and Lehi forces. What followed was a massacre in which over 100 villagers—men, women, and children—were killed. The news of the massacre became a pivotal event, spreading fear and contributing to the flight of refugees from other areas.",
     "military_operation": "Nachshon (Concurrent)",
     "destroyed_by": "Irgun (IZL), Lehi, with Haganah (Palmach) covering fire",
     "israeli_settlement": "Givat Shaul Bet, Har Nof, Kfar Shaul Mental Health Center"
@@ -201,8 +186,7 @@
     "lat": 31.7956,
     "lon": 35.1442,
     "district": "Jerusalem",
-    "story": "A small but strategically vital village commanding the main Jaffa-Jerusalem highway. Its name derives from a Roman fort, later a Crusader castle.",
-    "depopulation_narrative": "A critical target of Operation Nachshon. Occupied by the Palmach on April 3, 1948. A fierce multi-day battle ensued, during which Palestinian commander 'Abd al-Qadir al-Husayni was killed. After its final capture on April 8-9, Palmach units systematically demolished the village's houses, setting a precedent for other villages.",
+    "story": "A small but strategically vital village commanding the main Jaffa-Jerusalem highway. A critical target of Operation Nachshon, it was occupied by the Palmach on April 3, 1948. A fierce multi-day battle ensued, during which Palestinian commander 'Abd al-Qadir al-Husayni was killed. After its final capture on April 8-9, Palmach units systematically demolished the village's houses, setting a precedent for other villages.",
     "military_operation": "Nachshon",
     "destroyed_by": "Haganah (Palmach's Harel Brigade)",
     "israeli_settlement": "Mevasseret Zion (merged with Ma'oz Tziyyon)"
@@ -214,11 +198,10 @@
     "lat": 31.7572,
     "lon": 35.1779,
     "district": "Jerusalem",
-    "story": "A large suburban village southwest of Jerusalem, identified with the biblical Manahath. The village had a large mosque, a school, and a clinic.",
-    "depopulation_narrative": "Depopulation occurred in stages, with a first wave fleeing after the Deir Yassin massacre. The village was finally attacked and occupied on July 13-14, 1948, by Irgun and Gadna units during operations to consolidate control around Jerusalem. The remaining inhabitants were expelled.",
+    "story": "A large suburban village southwest of Jerusalem. Depopulation occurred in stages, with a first wave fleeing after the Deir Yassin massacre. The village was finally attacked and occupied on July 13-14, 1948, by Irgun and Gadna units during operations to consolidate control around Jerusalem. The remaining inhabitants were expelled. Many of its original stone houses remain and are inhabited by Jewish families.",
     "military_operation": "Dani (Concurrent)",
     "destroyed_by": "Irgun (IZL), Gadna (Youth Battalions)",
-    "israeli_settlement": "Manahat, Ramat Denya, Givat Masua (Jerusalem suburbs)"
+    "israeli_settlement": "Manahat, Ramat Denya, Givat Masua, Ir Ganim (Jerusalem suburbs)"
   },
   {
     "id": 18,
@@ -227,8 +210,7 @@
     "lat": 31.7969,
     "lon": 35.1628,
     "district": "Jerusalem",
-    "story": "A village on the main Jaffa-Jerusalem highway, identified with the Roman settlement of Colonia Amosa. The Jewish settlement of Motza was established nearby on purchased lands in the 19th century.",
-    "depopulation_narrative": "A primary target of Operation Nachshon. On April 11, 1948, after the battle for al-Qastal, Palmach units entered Qalunya and systematically blew up 50 houses, leaving the village ablaze. The remaining inhabitants were ordered out before the destruction.",
+    "story": "A village on the main Jaffa-Jerusalem highway, identified with the Roman settlement of Colonia Amosa. A primary target of Operation Nachshon. On April 11, 1948, after the battle for al-Qastal, Palmach units entered Qalunya and systematically blew up 50 houses, leaving the village ablaze. The remaining inhabitants were ordered out before the destruction.",
     "military_operation": "Nachshon",
     "destroyed_by": "Haganah (Palmach)",
     "israeli_settlement": "Mevasseret Zion, Motza"
@@ -240,8 +222,7 @@
     "lat": 31.7981,
     "lon": 35.0739,
     "district": "Jerusalem",
-    "story": "A village on a high plateau west of Jerusalem. Its economy was agricultural, cultivating grains, olives, and fruit.",
-    "depopulation_narrative": "Attacked and demolished by the Haganah on April 16, 1948, during Operation Nachshon. The Scotsman newspaper reported the destruction of a mosque, a school, and 25 houses. Just before the attack, Haganah chief Israel Galili requested that a settlement be established at Saris 'as soon as possible' for security reasons.",
+    "story": "A village on a high plateau west of Jerusalem. It was attacked and demolished by the Haganah on April 16, 1948, during Operation Nachshon. The Scotsman newspaper reported the destruction of a mosque, a school, and 25 houses. Just before the attack, Haganah chief Israel Galili requested that a settlement be established at Saris 'as soon as possible' for security reasons.",
     "military_operation": "Nachshon",
     "destroyed_by": "Haganah (Harel Brigade)",
     "israeli_settlement": "Shoresh, Sho'eva"
@@ -253,8 +234,7 @@
     "lat": 31.785,
     "lon": 35.1256,
     "district": "Jerusalem",
-    "story": "A village on a mountaintop west of Jerusalem, on the site of the Crusader fortress of Belmont. Its houses were clustered within the fortress remains.",
-    "depopulation_narrative": "Captured on the night of July 12-13, 1948, by the Harel Brigade during Operation Dani. An Associated Press report stated the village was taken 'without combat after a bombardment that drove the Arab defenders' from the heights. Remaining residents either fled or were expelled.",
+    "story": "A village on a mountaintop west of Jerusalem, on the site of the Crusader fortress of Belmont. Its houses were clustered within the fortress remains. It was captured on the night of July 12-13, 1948, by the Harel Brigade during Operation Dani. An Associated Press report stated the village was taken 'without combat after a bombardment that drove the Arab defenders' from the heights. Remaining residents either fled or were expelled.",
     "military_operation": "Dani",
     "destroyed_by": "Haganah (Palmach's Harel Brigade)",
     "israeli_settlement": "Kibbutz Tzova"
@@ -266,8 +246,7 @@
     "lat": 31.7944,
     "lon": 35.0875,
     "district": "Jerusalem",
-    "story": "A large village overlooking the coastal plain. It had a mosque, three schools, and an economy based on rainfed agriculture.",
-    "depopulation_narrative": "A Palestinian stronghold controlling access to the Bab al-Wad pass. It was captured by the Palmach's Harel Brigade on May 11, 1948, after three nights of fierce attacks during Operation Makkabi. After its capture, the village was systematically leveled.",
+    "story": "A large village overlooking the coastal plain. It was a Palestinian stronghold controlling access to the Bab al-Wad pass. It was captured by the Palmach's Harel Brigade on May 11, 1948, after three nights of fierce attacks during Operation Makkabi. After its capture, the village was systematically leveled.",
     "military_operation": "Makkabi",
     "destroyed_by": "Haganah (Palmach's Harel Brigade)",
     "israeli_settlement": "Beit Meir, Mesilat Zion"
@@ -279,8 +258,7 @@
     "lat": 31.7942,
     "lon": 35.1022,
     "district": "Jerusalem",
-    "story": "A village on a mountaintop west of Jerusalem, identified with the biblical city of Chesalon. Agriculture was based on olives, fruit, and grain.",
-    "depopulation_narrative": "Depopulated during Operation Dani. It was 'cleansed' on July 16-18, 1948, by the Harel Brigade. Villagers had either left earlier, fled under mortar barrages, or were expelled by the occupying troops. The village was then destroyed.",
+    "story": "A village on a mountaintop west of Jerusalem, identified with the biblical city of Chesalon. It was depopulated during Operation Dani and 'cleansed' on July 16-18, 1948, by the Harel Brigade. Villagers had either left earlier, fled under mortar barrages, or were expelled by the occupying troops. The village was then destroyed.",
     "military_operation": "Dani",
     "destroyed_by": "Haganah (Harel Brigade)",
     "israeli_settlement": "Ramat Raziel, Ksalon"
@@ -292,8 +270,7 @@
     "lat": 32.083,
     "lon": 34.966,
     "district": "al-Ramla",
-    "story": "A village with a history stretching back to the Crusaders, located on a low hill overlooking the coastal plain. It had a school, a mosque, and a shrine.",
-    "depopulation_narrative": "A key objective during Operation Danny. It was captured by the Alexandroni Brigade on July 10, 1948. After being briefly recaptured by the Jordanian Arab Legion, it was taken permanently on July 18 after a fierce battle. All inhabitants were expelled, and the village was destroyed. A forest was planted over its ruins.",
+    "story": "A village with a history stretching back to the Crusaders. It was a key objective during Operation Danny. It was captured by the Alexandroni Brigade on July 10, 1948. After being briefly recaptured by the Jordanian Arab Legion, it was taken permanently on July 18 after a fierce battle. All inhabitants were expelled, and the village was destroyed. A forest was planted over its ruins.",
     "military_operation": "Danny",
     "destroyed_by": "Israeli Army (Alexandroni Brigade)",
     "israeli_settlement": "Giv'at Ko'ah"
@@ -305,11 +282,10 @@
     "lat": 31.7536,
     "lon": 34.6617,
     "district": "Gaza",
-    "story": "A large, ancient village on the site of the biblical Philistine city of Ashdod. It had a council, two mosques, three shrines, and two elementary schools, with a diverse economy.",
-    "depopulation_narrative": "Became a key frontline position occupied by the Egyptian army. Subjected to heavy aerial and naval bombardment during Operation Yoav. On October 28, 1948, the Egyptian army withdrew, and the bulk of the civilian population fled with them. The 300 villagers who remained were immediately expelled southwards by Israeli forces.",
+    "story": "An large, ancient village on the site of the biblical Philistine city of Ashdod. It became a key frontline position occupied by the Egyptian army and was subjected to heavy aerial and naval bombardment during Operation Yoav. On October 28, 1948, the Egyptian army withdrew, and the bulk of the civilian population fled with them. The 300 villagers who remained were immediately expelled southwards by Israeli forces.",
     "military_operation": "Yoav",
     "destroyed_by": "Givati Brigade",
-    "israeli_settlement": "Ashdod, Sde Uziyahu, Shtulim, Bene Darom"
+    "israeli_settlement": "Ashdod, Sde Uziyahu, Shtulim, Bene Darom, Gan HaDarom"
   },
   {
     "id": 25,
@@ -318,11 +294,10 @@
     "lat": 31.6247,
     "lon": 34.7478,
     "district": "Gaza",
-    "story": "A large village named after a 14th-century Sufi master buried there. It had two schools, a large mosque, and a renowned dyehouse.",
-    "depopulation_narrative": "Became the site of the 'Faluja pocket,' where 4,000 Egyptian troops were besieged. The 1949 Armistice Agreement stipulated that civilians would be allowed to remain safely. Israeli forces violated this provision, using a campaign of intimidation to force all 3,140 inhabitants to leave by April 1949. The village was then destroyed.",
+    "story": "A large village that became the site of the 'Faluja pocket,' where 4,000 Egyptian troops (including future Egyptian president Gamal Abdel Nasser) were besieged. The 1949 Armistice Agreement stipulated that civilians would be allowed to remain safely. Israeli forces violated this provision, using a campaign of intimidation to force all 3,140 inhabitants to leave by April 1949. The village was then destroyed.",
     "military_operation": "(Post-Yoav Siege)",
     "destroyed_by": "Givati Brigade (conducted siege and expulsion)",
-    "israeli_settlement": "Kiryat Gat, Plugot Forest, Shahar, Noga"
+    "israeli_settlement": "Kiryat Gat, Plugot Forest, Shahar, Noga, Nir Hen, Nehora"
   },
   {
     "id": 26,
@@ -331,8 +306,7 @@
     "lat": 31.6486,
     "lon": 34.6928,
     "district": "Gaza",
-    "story": "A village whose strategic importance was defined by a fortified British police station (a Tegart fort) that stood nearby. Its economy was based on grain.",
-    "depopulation_narrative": "The police fort was handed to the Egyptian army in May 1948. After eight unsuccessful Israeli attempts to capture it, the fort and village finally fell on November 9, 1948, during Operation Yoav, after a massive aerial and artillery bombardment. The village was destroyed.",
+    "story": "A village whose strategic importance was defined by a fortified British police station (a Tegart fort). After eight unsuccessful Israeli attempts to capture it, the fort and village finally fell on November 9, 1948, during Operation Yoav, after a massive aerial and artillery bombardment that included strikes from B-17 bombers. The village was destroyed.",
     "military_operation": "Yoav",
     "destroyed_by": "8th Armored Brigade",
     "israeli_settlement": "Yad Natan, Otzem, Sde Yo'av"
@@ -344,8 +318,7 @@
     "lat": 31.7575,
     "lon": 34.7847,
     "district": "Gaza",
-    "story": "A large village at a major road junction on the southern coastal plain. It had two mosques, two schools, a clinic, and a weekly market.",
-    "depopulation_narrative": "Fell during Operation An-Far. It was captured by the Givati Brigade on July 9-11, 1948, as part of 'clearing operations' to secure the rear guard. The inhabitants were expelled upon its capture.",
+    "story": "A large village at a major road junction on the southern coastal plain. It fell during Operation An-Far. It was captured by the Givati Brigade on July 9-11, 1948, as part of 'clearing operations' to secure the rear guard of the front line. The inhabitants were expelled upon its capture.",
     "military_operation": "An-Far",
     "destroyed_by": "Givati Brigade",
     "israeli_settlement": "Bnei Re'em, Hatzav, Yinnon, Ahawa"
@@ -357,11 +330,10 @@
     "lat": 32.7456,
     "lon": 35.2786,
     "district": "Nazareth",
-    "story": "The largest village in the Nazareth sub-district, on the site of the ancient Roman city of Sepphoris. It had a rich history of resistance and culture.",
-    "depopulation_narrative": "Occupied on July 15-16, 1948, during Operation Dekel. Accounts state the village 'put up strong resistance,' leading to a heavy aerial bombardment with 'barrel bombs' that caused casualties and prompted flight. The remaining villagers were expelled in several stages, with the final expulsion of those who infiltrated back occurring in January 1949.",
+    "story": "The largest village in the Nazareth sub-district, on the site of the ancient Roman city of Sepphoris. It was occupied on July 15-16, 1948, during Operation Dekel. Accounts state the village 'put up strong resistance,' leading to a heavy aerial bombardment with 'barrel bombs' that caused casualties and prompted flight. The remaining villagers were expelled, and those who tried to return were expelled again in January 1949.",
     "military_operation": "Dekel",
     "destroyed_by": "Sheva' (7th) & Carmeli Brigades",
-    "israeli_settlement": "Tzippori, HaSolelim, Allon HaGalil, Hoshaya"
+    "israeli_settlement": "Tzippori, HaSolelim, Allon HaGalil, Hoshaya, Hanton"
   },
   {
     "id": 29,
@@ -370,8 +342,7 @@
     "lat": 32.7236,
     "lon": 35.2511,
     "district": "Nazareth",
-    "story": "A large mixed Muslim and Christian village on the Nazareth-Haifa highway. It was the second-largest olive producer in the district, with two mechanical presses.",
-    "depopulation_narrative": "Occupied by the Golani Brigade on July 14-15, 1948, during Operation Dekel. The attack on the village served as a diversion for the main assault on Nazareth. Al-Mujaydil was completely emptied of its inhabitants and subsequently razed to the ground.",
+    "story": "A large mixed Muslim and Christian village on the Nazareth-Haifa highway. It was occupied by the Golani Brigade on July 14-15, 1948, during Operation Dekel. The attack on the village served as a diversion for the main assault on Nazareth. Al-Mujaydil was completely emptied of its inhabitants and subsequently razed to the ground.",
     "military_operation": "Dekel",
     "destroyed_by": "Golani Brigade",
     "israeli_settlement": "Migdal HaEmek, Yif'at (on lands)"
@@ -383,8 +354,7 @@
     "lat": 32.7247,
     "lon": 35.2422,
     "district": "Nazareth",
-    "story": "A predominantly Christian village west of Nazareth, known to Crusaders as 'Maula.' It contained two churches, a mosque, and a Roman-era mausoleum.",
-    "depopulation_narrative": "Occupied on July 15, 1948, during Operation Dekel, one day before the capture of Nazareth. The village was completely emptied of its residents and its houses were leveled. The site was later planted over with a pine forest by the Jewish National Fund (JNF).",
+    "story": "A predominantly Christian village west of Nazareth. It was occupied on July 15, 1948, during Operation Dekel, one day before the capture of Nazareth. The village was completely emptied of its residents and its houses were leveled. The site was later planted over with a pine forest by the Jewish National Fund (JNF).",
     "military_operation": "Dekel",
     "destroyed_by": "Golani Brigade",
     "israeli_settlement": "Timrat, Kfar HaHoresh (on lands)"
