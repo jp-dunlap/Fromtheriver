@@ -30,7 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
         maxZoom: 20
     }).addTo(map);
 
-    // --- 3. DATA FETCHING & PROCESSING ---
+    // --- 3. INFO PANEL TOGGLE LOGIC (IMPLEMENTED) ---
+    // This section handles the functionality for the collapsible info panel.
+    const infoBoxToggle = document.getElementById('info-box-toggle');
+    const infoBoxContent = document.getElementById('info-box-content');
+
+    if (infoBoxToggle && infoBoxContent) {
+        infoBoxToggle.addEventListener('click', () => {
+            // Check the current state from the 'aria-expanded' attribute.
+            const isExpanded = infoBoxToggle.getAttribute('aria-expanded') === 'true';
+            
+            // Toggle the ARIA attribute for accessibility.
+            infoBoxToggle.setAttribute('aria-expanded', String(!isExpanded));
+            
+            // Toggle the visibility class on the content panel.
+            infoBoxContent.classList.toggle('is-hidden');
+        });
+    } else {
+        // Log an error if the required elements aren't found, for easier debugging.
+        console.error("Praxis Analysis: Info box toggle elements are missing. Interactivity cannot be initialized.");
+    }
+
+    // --- 4. DATA FETCHING & PROCESSING ---
     // We asynchronously fetch the `villages.json` file.
     // This file contains the array of depopulated Palestinian villages and their stories.
     fetch('villages.json')
@@ -57,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>`;
         });
 
-    // --- 4. MARKER & POPUP PLOTTING FUNCTION ---
+    // --- 5. MARKER & POPUP PLOTTING FUNCTION ---
     /**
      * Iterates through the village data and plots a marker for each one on the map.
      * @param {Array<Object>} villages - An array of village objects from villages.json.
