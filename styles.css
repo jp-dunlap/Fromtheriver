@@ -11,7 +11,7 @@
     --border-color: #4A5568;
     --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
     --font-serif: 'Inter', sans-serif;
-    --font-sans: 'Inter', sans-serif;
+    --font-serif: 'Inter', sans-serif;
     --overlay-color: rgba(0, 0, 0, 0.5); /* Dark overlay for background image */
 }
 
