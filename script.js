@@ -1,5 +1,5 @@
 /* --- Fromtheriver.org | script.js --- */
-/* Logic for "The Unfolding Map" concept - V5 (Unified Accordion & Multi-Modal Logic) */
+/* Logic for "The Unfolding Map" concept - V4 (Consolidated with Accordion & Modal Logic) */
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Element Selection ---
@@ -7,13 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const svgPath = document.getElementById('river-path');
     const header = document.getElementById('header');
     const footer = document.getElementById('footer');
-    const accordionTriggers = document.querySelectorAll('.accordion-trigger');
-    
-    // --- Modal Selections (NEW & GENERALIZED) ---
-    const modalTriggers = document.querySelectorAll('.modal-trigger');
-    const modals = document.querySelectorAll('.modal');
-    const closeButtons = document.querySelectorAll('.close-modal-btn');
-    const modalOverlays = document.querySelectorAll('.modal-overlay');
+    const toolkitModal = document.getElementById('toolkit-modal');
+    const openModalBtn = document.getElementById('open-toolkit-modal');
+    const closeModalBtn = document.getElementById('close-toolkit-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const accordionTriggers = document.querySelectorAll('.accordion-trigger'); // NEW: Accordion triggers
 
     // Fail gracefully if essential visual elements are missing
     if (!svgPath || !header || !footer || contentNodes.length === 0) {
@@ -21,55 +19,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- 2. MODAL LOGIC (GENERALIZED) ---
-    const openModal = (modal) => {
-        if (modal) {
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.add('is-visible'), 10);
-        }
-    };
+    // --- 2. MODAL LOGIC ---
+    if (toolkitModal && openModalBtn && closeModalBtn && modalOverlay) {
+        const openModal = () => {
+            toolkitModal.classList.remove('hidden');
+            setTimeout(() => toolkitModal.classList.add('is-visible'), 10);
+        };
 
-    const closeModal = (modal) => {
-        if (modal) {
-            modal.classList.remove('is-visible');
-            modal.addEventListener('transitionend', () => {
-                modal.classList.add('hidden');
-            }, { once: true });
-        }
-    };
+        const closeModal = () => {
+            toolkitModal.classList.remove('is-visible');
+            // Wait for the transition to finish before hiding it completely
+            setTimeout(() => toolkitModal.classList.add('hidden'), 300);
+        };
 
-    // Attach open listeners to all modal triggers
-    document.getElementById('open-toolkit-modal')?.addEventListener('click', () => openModal(document.getElementById('toolkit-modal')));
-    document.getElementById('open-nakba-modal')?.addEventListener('click', () => openModal(document.getElementById('nakba-modal')));
-    document.getElementById('open-zionism-modal')?.addEventListener('click', () => openModal(document.getElementById('zionism-modal')));
-    document.getElementById('open-sumud-modal')?.addEventListener('click', () => openModal(document.getElementById('sumud-modal')));
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
 
-    // Attach close listeners to all close buttons and overlays
-    closeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const modal = button.closest('.modal');
-            closeModal(modal);
-        });
-    });
-
-    modalOverlays.forEach(overlay => {
-        overlay.addEventListener('click', () => {
-            const modal = overlay.closest('.modal');
-            closeModal(modal);
-        });
-    });
-
-    // Close any open modal with the Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const visibleModal = document.querySelector('.modal.is-visible');
-            if (visibleModal) {
-                closeModal(visibleModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && toolkitModal.classList.contains('is-visible')) {
+                closeModal();
             }
+        });
+    } else {
+        // Log error only if the button exists but modal doesn't, to avoid noise on pages without it.
+        if(openModalBtn) {
+            console.error("Praxis Analysis: Modal elements for the toolkit are missing. Operation cannot proceed.");
         }
-    });
+    }
 
-    // --- 3. ACCORDION LOGIC ---
+    // --- 3. ACCORDION LOGIC (NEW) ---
     accordionTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
             const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
@@ -80,13 +59,19 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (panel) {
                 if (isExpanded) {
+                    // Start closing
                     panel.classList.remove('open');
+                    // When transition ends, add hidden for accessibility
                     panel.addEventListener('transitionend', () => {
                         panel.classList.add('hidden');
                     }, { once: true });
                 } else {
+                    // Start opening
                     panel.classList.remove('hidden');
-                    setTimeout(() => panel.classList.add('open'), 10);
+                    // Use a timeout to allow the 'display' property to apply before starting transition
+                    setTimeout(() => {
+                        panel.classList.add('open');
+                    }, 10);
                 }
             }
         });
@@ -94,11 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- 4. Intersection Observer for Content Node Fade-in Animation ---
-    const nodeObserver = new IntersectionObserver((entries, observer) => {
+    const nodeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
+                nodeObserver.unobserve(entry.target);
             }
         });
     }, {
@@ -113,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pathLength = 0;
 
     function calculateAndDrawPath() {
+        // Recalculation might be unnecessary if the window dimensions haven't changed meaningfully
         const isMobile = window.innerWidth < 768;
         const pathStartX = window.innerWidth / 2;
         let pathData = `M ${pathStartX} ${header.offsetHeight}`;
@@ -145,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pathLength <= 0) return;
 
         const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        // Prevent division by zero if content is smaller than viewport
         if (scrollableHeight <= 0) {
              svgPath.style.strokeDashoffset = 0;
              return;
@@ -174,5 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 7. Initial Execution ---
+    // A small timeout ensures all fonts and images have likely loaded and the
+    // layout is stable before we do our initial path calculation.
     setTimeout(calculateAndDrawPath, 150);
 });
