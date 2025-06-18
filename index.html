@@ -9,9 +9,10 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="w-full">
 
@@ -46,7 +47,9 @@
         </header>
         
         <!-- Main Content Wrapper -->
-        <section class="content-node node-container flex node-left mb-24 md:mb-32">
+        <main>
+            <!-- Node 1: The Roots (Left) -->
+            <section class="content-node node-container flex node-left mb-24 md:mb-32">
                 <div class="node-card w-full md:w-1/2">
                     <div class="node-image-container">
                         <img src="images/ancient-olive-tree.jpg" alt="An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness.">
@@ -65,7 +68,7 @@
                         </p>
                     </div>
 
-                    <div class="space-y-6 border-l-2 border-gray-600 pl-4">
+                    <div class="space-y-6 border-l-2 border-gray-600 pl-4 mb-8">
                         <blockquote class="text-gray-300 italic">
                             <p>"The surest way to eradicate a people's right to their land is to deny their historical connection to it."</p>
                             <cite class="text-gray-500 not-italic block mt-2">— Rashid Khalidi, 'The Hundred Years' War on Palestine'</cite>
@@ -80,21 +83,27 @@
                         </blockquote>
                     </div>
                     
-                    <div class="mt-8">
-                        <h3 class="font-serif text-2xl text-white mb-4">Further Analysis</h3>
-                        <ul class="space-y-3">
-                            <li><a href="https://101.visualizingpalestine.org/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestine 101: A Visual History</a></li>
-                            <li><a href="https://www.aljazeera.com/features/2017/5/23/the-nakba-did-not-start-or-end-in-1948" class="resource-link" target="_blank" rel="noopener noreferrer">The Nakba of 1948: An Ongoing Catastrophe</a></li>
-                            <li><a href="https://decolonizepalestine.com/zionism/" class="resource-link" target="_blank" rel="noopener noreferrer">Defining Zionism as a Settler-Colonial Project</a></li>
-                            <li><a href="https://www.un.org/unispal/history/" class="resource-link" target="_blank" rel="noopener noreferrer">Key UN Resolutions and International Law</a></li>
-                        </ul>
+                    <div class="mt-8 border-t border-gray-700 pt-6">
+                        <div class="accordion-item">
+                            <button id="accordion-button-1" aria-expanded="false" aria-controls="accordion-panel-1" class="accordion-trigger font-serif text-2xl text-white w-full flex justify-between items-center text-left">
+                                <span>Further Analysis</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-1" class="accordion-panel hidden">
+                                <ul class="space-y-3 mt-4">
+                                    <li><a href="https://101.visualizingpalestine.org/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestine 101: A Visual History</a></li>
+                                    <li><a href="https://www.aljazeera.com/features/2017/5/23/the-nakba-did-not-start-or-end-in-1948" class="resource-link" target="_blank" rel="noopener noreferrer">The Nakba of 1948: An Ongoing Catastrophe</a></li>
+                                    <li><a href="https://decolonizepalestine.com/zionism/" class="resource-link" target="_blank" rel="noopener noreferrer">Defining Zionism as a Settler-Colonial Project</a></li>
+                                    <li><a href="https://www.un.org/unispal/history/" class="resource-link" target="_blank" rel="noopener noreferrer">Key UN Resolutions and International Law</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
-            </section>
 
             <!-- Node 2: Resistance (Right) -->
-           <section class="content-node node-container flex node-right mb-24 md:mb-32">
+            <section class="content-node node-container flex node-right mb-24 md:mb-32">
                 <div class="node-card w-full md:w-1/2">
                     <div class="node-image-container">
                         <img src="images/resistance.jpg" alt="A protestor holds a Palestinian flag and a megaphone, vocally symbolizing active resistance.">
@@ -104,33 +113,47 @@
                         Resistance is the natural and righteous response to occupation and oppression. For Palestinians, it is a continuous, diverse, and deeply-rooted struggle for self-determination and return. It is not a monolith, but a dynamic combination of strategies, from the steadfastness of a farmer on his land to the global call for boycott. To understand the resistance is to understand the Palestinian will to exist.
                     </p>
 
-                    <div class="mb-8">
-                        <h3 class="font-serif text-2xl text-white mb-4">Voices of Defiance</h3>
-                        <div class="space-y-3 text-gray-400">
-                           <p><strong>Ghassan Kanafani:</strong> A leading novelist, journalist, and spokesman for the Popular Front for the Liberation of Palestine (PFLP). His literary works were inseparable from his political struggle, giving voice to the experience of exile and the revolutionary imperative. He was assassinated by Mossad in 1972.</p>
-                           <p><strong>Leila Khaled:</strong> A militant member of the PFLP who became an international icon of armed resistance following her role in two aircraft hijackings in 1969 and 1970. Her image became a powerful symbol of Palestinian defiance and female revolutionary action.</p>
-                           <p><strong>Izz ad-Din al-Qassam:</strong> A Syrian-born cleric and revolutionary leader whose armed struggle against British and Zionist forces in the 1930s inspired a generation. His martyrdom in 1935 was a key catalyst for the 1936–1939 Arab revolt in Palestine, and his legacy endures in the language of Palestinian resistance.</p>
+                    <div class="mb-8 border-t border-gray-700 pt-6">
+                         <div class="accordion-item">
+                            <button id="accordion-button-2" aria-expanded="false" aria-controls="accordion-panel-2" class="accordion-trigger font-serif text-2xl text-white w-full flex justify-between items-center text-left">
+                                <span>Voices of Defiance</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-2" class="accordion-panel hidden">
+                               <div class="space-y-3 text-gray-400 mt-4">
+                                   <p><strong>Ghassan Kanafani:</strong> A leading novelist, journalist, and spokesman for the Popular Front for the Liberation of Palestine (PFLP). His literary works were inseparable from his political struggle, giving voice to the experience of exile and the revolutionary imperative. He was assassinated by Mossad in 1972.</p>
+                                   <p><strong>Leila Khaled:</strong> A militant member of the PFLP who became an international icon of armed resistance following her role in two aircraft hijackings in 1969 and 1970. Her image became a powerful symbol of Palestinian defiance and female revolutionary action.</p>
+                                   <p><strong>Izz ad-Din al-Qassam:</strong> A Syrian-born cleric and revolutionary leader whose armed struggle against British and Zionist forces in the 1930s inspired a generation. His martyrdom in 1935 was a key catalyst for the 1936–1939 Arab revolt in Palestine, and his legacy endures in the language of Palestinian resistance.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <h3 class="font-serif text-2xl text-white mb-4">Arenas of Struggle</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <h4 class="text-xl text-gray-200">Popular Uprisings & Sumud</h4>
-                                <p class="text-gray-400 mb-2">From mass demonstrations to general strikes, the Intifadas (uprisings) represent the power of collective civil action. This is paired with *Sumud* (steadfastness)—the daily act of remaining on one's land and refusing to be erased.</p>
-                                <a href="https://remix.aljazeera.com/aje/PalestineRemix/timeline_main.html" class="resource-link" target="_blank" rel="noopener noreferrer">Chronology of Intifadas</a>
-                                <a href="https://www.palquest.org/en/highlight/22198/sumud-steadfastness" class="resource-link ml-4" target="_blank" rel="noopener noreferrer">Sumud: The Art of Steadfastness</a>
-                            </div>
-                            <div>
-                                <h4 class="text-xl text-gray-200">Cultural & Literary Resistance</h4>
-                                <p class="text-gray-400 mb-2">Art, poetry, music, and film are powerful tools for preserving national identity and challenging colonial narratives. Figures like Mahmoud Darwish used their words to articulate the soul of the resistance, making culture an undeniable front in the struggle.</p>
-                                <a href="https://www.poetryfoundation.org/poets/mahmoud-darwish" class="resource-link" target="_blank" rel="noopener noreferrer">The Poetry of Mahmoud Darwish</a>
-                            </div>
-                             <div>
-                                <h4 class="text-xl text-gray-200">Global Solidarity & BDS</h4>
-                                <p class="text-gray-400 mb-2">The Boycott, Divestment, Sanctions (BDS) movement is a Palestinian-led global campaign. It applies non-violent economic and cultural pressure on Israel to comply with international law and end its oppression of Palestinians.</p>
-                                <a href="https://bdsmovement.net/" class="resource-link" target="_blank" rel="noopener noreferrer">The Global BDS Movement</a>
+                    <div class="border-t border-gray-700 pt-6">
+                        <div class="accordion-item">
+                             <button id="accordion-button-3" aria-expanded="false" aria-controls="accordion-panel-3" class="accordion-trigger font-serif text-2xl text-white w-full flex justify-between items-center text-left">
+                                <span>Arenas of Struggle</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                             <div id="accordion-panel-3" class="accordion-panel hidden">
+                                <div class="space-y-4 mt-4">
+                                    <div>
+                                        <h4 class="text-xl text-gray-200">Popular Uprisings & Sumud</h4>
+                                        <p class="text-gray-400 mb-2">From mass demonstrations to general strikes, the Intifadas (uprisings) represent the power of collective civil action. This is paired with *Sumud* (steadfastness)—the daily act of remaining on one's land and refusing to be erased.</p>
+                                        <a href="https://remix.aljazeera.com/aje/PalestineRemix/timeline_main.html" class="resource-link" target="_blank" rel="noopener noreferrer">Chronology of Intifadas</a>
+                                        <a href="https://www.palquest.org/en/highlight/22198/sumud-steadfastness" class="resource-link ml-4" target="_blank" rel="noopener noreferrer">Sumud: The Art of Steadfastness</a>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl text-gray-200">Cultural & Literary Resistance</h4>
+                                        <p class="text-gray-400 mb-2">Art, poetry, music, and film are powerful tools for preserving national identity and challenging colonial narratives. Figures like Mahmoud Darwish used their words to articulate the soul of the resistance, making culture an undeniable front in the struggle.</p>
+                                        <a href="https://www.poetryfoundation.org/poets/mahmoud-darwish" class="resource-link" target="_blank" rel="noopener noreferrer">The Poetry of Mahmoud Darwish</a>
+                                    </div>
+                                     <div>
+                                        <h4 class="text-xl text-gray-200">Global Solidarity & BDS</h4>
+                                        <p class="text-gray-400 mb-2">The Boycott, Divestment, Sanctions (BDS) movement is a Palestinian-led global campaign. It applies non-violent economic and cultural pressure on Israel to comply with international law and end its oppression of Palestinians.</p>
+                                        <a href="https://bdsmovement.net/" class="resource-link" target="_blank" rel="noopener noreferrer">The Global BDS Movement</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -138,7 +161,7 @@
             </section>
             
             <!-- Node 3: The Culture (Left) -->
-          <section class="content-node node-container flex node-left mb-24 md:mb-32">
+            <section class="content-node node-container flex node-left mb-24 md:mb-32">
                 <div class="node-card w-full md:w-1/2">
                     <div class="node-image-container">
                         <img src="images/palestinian-culture.jpg" alt="A woman embroiders a piece of fabric with traditional Palestinian Tatreez, a core symbol of cultural identity.">
@@ -149,29 +172,44 @@
                         When a colonizing power seeks to erase a people, the preservation of culture becomes an act of war. Every shared meal, every embroidered stitch, every song and dance is a front in the battle for existence. This is not passive tradition; it is *Sumud*—a steadfast refusal to disappear. Palestinian culture is the living, breathing evidence of a nation that colonial logic has failed to expunge. It is the practice of memory, identity, and defiance.
                     </p>
 
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="text-xl text-gray-200">Cuisine as Identity</h4>
-                            <p class="text-gray-400 mb-2">The kitchen is a site of resistance. Dishes like *Maqluba* (the "upside-down" pot of rice, meat, and vegetables) are more than food; they are communal rituals that tell a story of land and family. Sharing these meals asserts a national identity that Israel actively attempts to appropriate and rebrand as its own.</p>
-                            <a href="https://sustainablefoodtrust.org/news-views/a-taste-of-palestine-cultivating-resistance/" class="resource-link" target="_blank" rel="noopener noreferrer">A Taste of Palestine</a>
+                    <div class="space-y-4 border-t border-gray-700 pt-6">
+                        <div class="accordion-item">
+                            <button id="accordion-button-4" aria-expanded="false" aria-controls="accordion-panel-4" class="accordion-trigger font-serif text-xl text-white w-full flex justify-between items-center text-left">
+                                <span>Cuisine as Identity</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-4" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-2">The kitchen is a site of resistance. Dishes like *Maqluba* (the "upside-down" pot of rice, meat, and vegetables) are more than food; they are communal rituals that tell a story of land and family. Sharing these meals asserts a national identity that Israel actively attempts to appropriate and rebrand as its own.</p>
+                                <a href="https://sustainablefoodtrust.org/news-views/a-taste-of-palestine-cultivating-resistance/" class="resource-link" target="_blank" rel="noopener noreferrer">A Taste of Palestine</a>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="text-xl text-gray-200">Tatreez: The Fabric of a Nation</h4>
-                            <p class="text-gray-400 mb-2">Palestinian embroidery, or *Tatreez*, is a language in thread. The intricate geometric patterns are not merely decorative; they are a visual dialect signifying regional identity, marital status, and ancestral heritage. A dress from Ramallah tells a different story from one from Gaza. This art form literally stitches the map of a fragmented homeland onto the bodies of its people, defying erasure.</p>
-                            <a href="https://www.palestineinamerica.com/blog/untangledtatreez" class="resource-link" target="_blank" rel="noopener noreferrer">Untangling Tatreez</a>
+                        <div class="accordion-item">
+                            <button id="accordion-button-5" aria-expanded="false" aria-controls="accordion-panel-5" class="accordion-trigger font-serif text-xl text-white w-full flex justify-between items-center text-left">
+                                <span>Tatreez: The Fabric of a Nation</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-5" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-2">Palestinian embroidery, or *Tatreez*, is a language in thread. The intricate geometric patterns are not merely decorative; they are a visual dialect signifying regional identity, marital status, and ancestral heritage. A dress from Ramallah tells a different story from one from Gaza. This art form literally stitches the map of a fragmented homeland onto the bodies of its people, defying erasure.</p>
+                                <a href="https://www.palestineinamerica.com/blog/untangledtatreez" class="resource-link" target="_blank" rel="noopener noreferrer">Untangling Tatreez</a>
+                            </div>
                         </div>
-                         <div>
-                            <h4 class="text-xl text-gray-200">Cinema, Music & Dabke</h4>
-                            <p class="text-gray-400 mb-2">From the politically charged films that document the struggle to the powerful rhythms of the *Dabke* dance, these art forms carry the spirit of the movement. The *Dabke's* stomping feet symbolize a connection to the land, while Palestinian cinema gives the people control over their own narrative, challenging the dehumanizing portrayals in Western media.</p>
-                            <a href="https://arabfilminstitute.org/palestinian-voices/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestinian Cinema</a>
-                            <a href="https://shado-mag.com/articles/do/dabke-resistance-through-movement/" class="resource-link ml-4" target="_blank" rel="noopener noreferrer">The Rhythms of Dabke</a>
+                         <div class="accordion-item">
+                            <button id="accordion-button-6" aria-expanded="false" aria-controls="accordion-panel-6" class="accordion-trigger font-serif text-xl text-white w-full flex justify-between items-center text-left">
+                                <span>Cinema, Music & Dabke</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-6" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-2">From the politically charged films that document the struggle to the powerful rhythms of the *Dabke* dance, these art forms carry the spirit of the movement. The *Dabke's* stomping feet symbolize a connection to the land, while Palestinian cinema gives the people control over their own narrative, challenging the dehumanizing portrayals in Western media.</p>
+                                <a href="https://arabfilminstitute.org/palestinian-voices/" class="resource-link" target="_blank" rel="noopener noreferrer">Palestinian Cinema</a>
+                                <a href="https://shado-mag.com/articles/do/dabke-resistance-through-movement/" class="resource-link ml-4" target="_blank" rel="noopener noreferrer">The Rhythms of Dabke</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Node 4: The Action (Right) -->
-           <section class="content-node node-container flex node-right mb-24 md:mb-32">
+            <section class="content-node node-container flex node-right mb-24 md:mb-32">
                 <div class="node-card w-full md:w-1/2">
                     <div class="node-image-container">
                         <img src="images/collective-action.jpg" alt="A crowd of people marching in a street protest, embodying the power of collective action and solidarity.">
@@ -179,36 +217,58 @@
                     <h2 class="font-serif text-4xl text-white mb-4">The Action</h2>
                     <p class="text-gray-400 mb-8">Solidarity is a verb. It is the engine of liberation. Below are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold systems of power accountable. Choose a front; engage in the struggle.</p>
                     
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="text-xl text-gray-200">Donate: Vetted Aid & Solidarity Funds</h4>
-                            <p class="text-gray-400 mb-2">Amidst blockade and siege, direct financial support provides critical humanitarian relief and resources for steadfastness. This is a direct counter-measure to the strategy of immiseration.</p>
-                            <a href="https://www.protectpalestine.org/" class="resource-link" target="_blank" rel="noopener noreferrer">Support Now</a>
+                    <div class="space-y-4 border-t border-gray-700 pt-6">
+                        <div class="accordion-item">
+                            <button id="accordion-button-7" aria-expanded="false" aria-controls="accordion-panel-7" class="accordion-trigger font-serif text-xl text-white w-full flex justify-between items-center text-left">
+                                <span>Donate: Vetted Aid & Solidarity Funds</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-7" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-2">Amidst blockade and siege, direct financial support provides critical humanitarian relief and resources for steadfastness. This is a direct counter-measure to the strategy of immiseration.</p>
+                                <a href="https://www.protectpalestine.org/" class="resource-link" target="_blank" rel="noopener noreferrer">Support Now</a>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="text-xl text-gray-200">Support Palestinian Businesses</h4>
-                            <p class="text-gray-400 mb-2">Economic solidarity is a powerful tool. Buying from Palestinian artisans and fair-trade initiatives directly supports families and resists the economic strangulation of the occupation.</p>
-                             <a href="https://www.palestineportal.org/action-advocacy/support-palestine-fair-trade/" class="resource-link" target="_blank" rel="noopener noreferrer">Buy Palestinian</a>
+                        <div class="accordion-item">
+                           <button id="accordion-button-8" aria-expanded="false" aria-controls="accordion-panel-8" class="accordion-trigger font-serif text-xl text-white w-full flex justify-between items-center text-left">
+                                <span>Support Palestinian Businesses</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-8" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-2">Economic solidarity is a powerful tool. Buying from Palestinian artisans and fair-trade initiatives directly supports families and resists the economic strangulation of the occupation.</p>
+                                 <a href="https://www.palestineportal.org/action-advocacy/support-palestine-fair-trade/" class="resource-link" target="_blank" rel="noopener noreferrer">Buy Palestinian</a>
+                            </div>
                         </div>
-                        <div>
-                         <h4 class="text-xl text-gray-200">Educate & Advocate</h4>
-                            <p class="text-gray-400 mb-2">The battle is also for hearts and minds. Use these toolkits to effectively challenge disinformation within your own circles and articulate the case for justice to public representatives.</p>
-                            <button id="open-toolkit-modal" class="resource-link">Access Toolkits</button>
+                        <div class="accordion-item">
+                             <button id="accordion-button-9" aria-expanded="false" aria-controls="accordion-panel-9" class="accordion-trigger font-serif text-xl text-white w-full flex justify-between items-center text-left">
+                                <span>Educate & Advocate</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                             <div id="accordion-panel-9" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-2">The battle is also for hearts and minds. Use these toolkits to effectively challenge disinformation within your own circles and articulate the case for justice to public representatives.</p>
+                                <button id="open-toolkit-modal" class="resource-link">Access Toolkits</button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-gray-700">
-                        <h3 class="font-serif text-2xl text-white mb-4">Find Your Frontline: Build Local Power</h3>
-                        <p class="text-gray-400 mb-4">National organizations are vital, but true power is built in our communities. Search for Palestine solidarity committees, anti-war coalitions, or mutual aid groups in your city, town, or campus. If one doesn't exist, build one. Connect with established networks to start a local chapter.</p>
-                        <div class="space-y-3">
-                            <a href="https://www.jewishvoiceforpeace.org/local/" class="resource-link" target="_blank" rel="noopener noreferrer">Find a JVP Chapter</a>
-                            <a href="https://www.nationalsjp.org/" class="resource-link ml-4" target="_blank" rel="noopener noreferrer">Connect with SJP</a>
+                        <div class="accordion-item">
+                            <button id="accordion-button-10" aria-expanded="false" aria-controls="accordion-panel-10" class="accordion-trigger font-serif text-2xl text-white w-full flex justify-between items-center text-left">
+                                <span>Find Your Frontline: Build Local Power</span>
+                                <svg class="accordion-icon w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="accordion-panel-10" class="accordion-panel hidden">
+                                <p class="text-gray-400 my-4">National organizations are vital, but true power is built in our communities. Search for Palestine solidarity committees, anti-war coalitions, or mutual aid groups in your city, town, or campus. If one doesn't exist, build one. Connect with established networks to start a local chapter.</p>
+                                <div class="space-y-3">
+                                    <a href="https://www.jewishvoiceforpeace.org/local/" class="resource-link" target="_blank" rel="noopener noreferrer">Find a JVP Chapter</a>
+                                    <a href="https://www.nationalsjp.org/" class="resource-link ml-4" target="_blank" rel="noopener noreferrer">Connect with SJP</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </section>
-        </div>
+        </main>
         
         <!-- Footer Section -->
         <footer id="footer" class="text-center py-10 border-t border-gray-800 relative z-10">
@@ -218,8 +278,8 @@
 
     </div>
 
-  <script src="script.js"></script>
- <div id="toolkit-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <!-- Modal for Toolkits -->
+    <div id="toolkit-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
         <div id="modal-overlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
         <div class="relative node-card w-full max-w-lg p-8 m-4">
             <button id="close-toolkit-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
@@ -235,5 +295,7 @@
             </ul>
         </div>
     </div>
+    
+    <script src="script.js"></script>
 </body>
 </html>
