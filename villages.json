@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "name": "Deir Yassin",
+    "name_arabic": "دير ياسين",
+    "lat": 31.797,
+    "lon": 35.176,
+    "district": "Jerusalem",
+    "story": "A peaceful village west of Jerusalem. On April 9, 1948, Zionist militias from the Irgun and Lehi terrorist groups stormed the village and perpetrated a horrific massacre, slaughtering over 100 of its residents, including women and children. The massacre was a deliberate act of psychological warfare, designed to terrorize Palestinians across the country into flight. The story of Deir Yassin became a symbol of the Nakba's brutality.",
+    "destroyed_by": "Irgun & Lehi militias",
+    "israeli_settlement": "Givat Shaul Bet, Har Nof"
+  },
+  {
+    "id": 2,
+    "name": "Al-Tantura",
+    "name_arabic": "الطنطورة",
+    "lat": 32.613,
+    "lon": 34.921,
+    "district": "Haifa",
+    "story": "A coastal fishing village south of Haifa. After its surrender on the night of May 22-23, 1948, the Haganah's Alexandroni Brigade carried out a methodical massacre. Palestinian men were separated, lined up, and executed in cold blood. Witness testimonies and forensic evidence point to the murder of over 200 people, buried in a mass grave which is now a parking lot for an Israeli beach resort.",
+    "destroyed_by": "Haganah (Alexandroni Brigade)",
+    "israeli_settlement": "Nahsholim, Dor"
+  },
+  {
+    "id": 3,
+    "name": "Lifta",
+    "name_arabic": "لفتا",
+    "lat": 31.800,
+    "lon": 35.195,
+    "district": "Jerusalem",
+    "story": "Located at the entrance to Jerusalem, Lifta was one of the first villages to be systematically emptied by Zionist forces. Beginning in December 1947, attacks by the Haganah and Lehi created an atmosphere of terror, forcing its 2,500 residents to flee. Its stone houses remain, an eerie and beautiful open-air museum of the Nakba, though now threatened by Israeli development plans.",
+    "destroyed_by": "Haganah & Lehi militias",
+    "israeli_settlement": "Mey Naftoah, Givat Shaul"
+  },
+  {
+    "id": 4,
+    "name": "Saffuriyya",
+    "name_arabic": "صفورية",
+    "lat": 32.748,
+    "lon": 35.289,
+    "district": "Nazareth (Galilee)",
+    "story": "A large, ancient village in the Galilee, with a population of over 5,000. It was captured by the Israeli army on July 15, 1948, during Operation Dekel. Despite a telegram from the villagers offering surrender, the army bombed the village, causing panic and flight. The few who remained were expelled in the following months. Its land now hosts an Israeli moshav and a national park.",
+    "destroyed_by": "Israeli Army (7th Brigade)",
+    "israeli_settlement": "Tzippori"
+  },
+  {
+    "id": 5,
+    "name": "Al-Lajjun",
+    "name_arabic": "اللجّون",
+    "lat": 32.593,
+    "lon": 35.184,
+    "district": "Jinin",
+    "story": "An ancient village located near the archeological site of Megiddo. Al-Lajjun was captured on May 30, 1948, by the Golani Brigade. Most of its residents fled during the attack; those who remained were forced into a nearby town and the village was systematically demolished with explosives over the next few days. The powerful Israeli Kibbutz Megiddo was established on its ruins.",
+    "destroyed_by": "Haganah (Golani Brigade)",
+    "israeli_settlement": "Kibbutz Megiddo"
+  },
+  {
+    "id": 6,
+    "name": "Ein Karem",
+    "name_arabic": "عين كارم",
+    "lat": 31.767,
+    "lon": 35.163,
+    "district": "Jerusalem",
+    "story": "A large village of around 3,200 people, known as the traditional birthplace of John the Baptist. It was depopulated in July 1948 after being shelled by Israeli forces and following the fall of surrounding villages and the massacre at Deir Yassin. Its beautiful stone houses were taken over and it was incorporated into the Jerusalem municipality. Today, it's a bohemian tourist neighborhood, its Palestinian past almost entirely erased from official narratives.",
+    "destroyed_by": "Haganah",
+    "israeli_settlement": "Part of Jerusalem municipality"
+  },
+  {
+    "id": 7,
+    "name": "Al-Bassa",
+    "name_arabic": "البصة",
+    "lat": 33.073,
+    "lon": 35.143,
+    "district": "Akka (Acre)",
+    "story": "A mixed Muslim and Christian village in northern Galilee. Al-Bassa was captured on May 14, 1948, during Operation Ben-Ami. Its residents were rounded up, and some were summarily executed. The majority were forcibly expelled to Lebanon. The village was completely leveled, but its church and mosque remain as silent witnesses.",
+    "destroyed_by": "Haganah (Carmeli Brigade)",
+    "israeli_settlement": "Betzet, Shlomi"
+  },
+  {
+    "id": 8,
+    "name": "Salama",
+    "name_arabic": "سلمة",
+    "lat": 32.054,
+    "lon": 34.814,
+    "district": "Jaffa",
+    "story": "A large village on the outskirts of Jaffa with a population of nearly 8,000. It was subjected to Haganah attacks from December 1947. After a major assault in late April 1948, its defenders were overwhelmed and the population was forced to flee. Today, its land has been absorbed by the urban sprawl of Tel Aviv.",
+    "destroyed_by": "Haganah (Alexandroni & Kiryati Brigades)",
+    "israeli_settlement": "Kfar Shalem (suburb of Tel Aviv)"
+  },
+  {
+    "id": 9,
+    "name": "Qula",
+    "name_arabic": "قولة",
+    "lat": 32.083,
+    "lon": 34.966,
+    "district": "Al-Ramla",
+    "story": "A village with a history stretching back to the Crusaders, captured by the Israeli army in July 1948 during Operation Danny. After a brief recapture by the Arab Legion, Israeli forces took it permanently. The villagers were expelled, and the village was systematically destroyed. A forest was planted over its ruins to conceal the crime.",
+    "destroyed_by": "Israeli Army (Alexandroni Brigade)",
+    "israeli_settlement": "Giv'at Ko'ah"
+  },
+  {
+    "id": 10,
+    "name": "Ijzim",
+    "name_arabic": "إجزم",
+    "lat": 32.639,
+    "lon": 35.006,
+    "district": "Haifa",
+    "story": "Part of the 'Little Triangle' south of Haifa, Ijzim resisted for months. It was finally captured in a major assault by the Israeli army on July 24, 1948. The IDF committed a massacre, killing dozens of civilians. Most residents were expelled, with some being trucked to the border and others forced into a ghetto before being expelled years later.",
+    "destroyed_by": "Israeli Army",
+    "israeli_settlement": "Kerem Maharal"
+  },
+  {
+    "id": 11,
+    "name": "Ayn Ghazal",
+    "name_arabic": "عين غزال",
+    "lat": 32.622,
+    "lon": 35.009,
+    "district": "Haifa",
+    "story": "A village in the Carmel foothills that fell with Ijzim in July 1948. Its capture involved atrocities, including the killing of civilians who had surrendered. The village was 'cleansed' and its population expelled. The homes were later demolished by the IDF to prevent any return.",
+    "destroyed_by": "Israeli Army",
+    "israeli_settlement": "Ofer"
+  },
+  {
+    "id": 12,
+    "name": "Al-Damun",
+    "name_arabic": "الدامون",
+    "lat": 32.868,
+    "lon": 35.178,
+    "district": "Akka (Acre)",
+    "story": "A village in the Western Galilee captured during the second phase of Operation Dekel on July 15-16, 1948. Its population of over 1,500 was expelled, and the village was entirely destroyed. Today, nothing remains but rubble, cacti, and fig trees, hidden in a forest planted by the Jewish National Fund (JNF).",
+    "destroyed_by": "Israeli Army (7th Brigade)",
+    "israeli_settlement": "Land used by Yas'ur"
+  }
+]
