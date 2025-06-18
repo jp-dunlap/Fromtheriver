@@ -12,18 +12,38 @@
     --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
     --font-serif: 'Inter', sans-serif;
     --font-sans: 'Inter', sans-serif;
+    --overlay-color: rgba(0, 0, 0, 0.5); /* Dark overlay for background image */
 }
 
 body {
     background-color: var(--bg-color);
-    /* Subtle texture resembling vellum or handmade paper */
-    background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    /* ENHANCED BACKGROUND IMAGERY: palestinian-landscape.jpg integrated */
+    background-image: url('images/palestinian-landscape.jpg'); /* The chosen image now integrated */
+    background-size: cover; /* Ensures the image covers the entire viewport */
+    background-position: center center; /* Centers the image */
+    background-attachment: fixed; /* Creates the parallax scrolling effect */
+    background-repeat: no-repeat; /* Prevents image repetition */
+    
     color: var(--text-primary);
     font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative; /* Needed for the ::before pseudo-element */
 }
+
+/* Pseudo-element for the subtle darkening overlay over the background image */
+body::before {
+    content: '';
+    position: fixed; /* Fixed position to cover the entire viewport even on scroll */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-color); /* Semi-transparent dark overlay */
+    z-index: -1; /* Place it behind the content but above the background image */
+}
+
 
 /* --- Typography System --- */
 h1, h2, h3, .font-serif {
@@ -64,7 +84,6 @@ h1, h2, h3, .font-serif {
 
 /* --- Header & Footer --- */
 #header {
-    /* Existing background-color remains for safety, but we add transparency and blur */
     background-color: var(--card-bg-color); /* Apply semi-transparent background */
     backdrop-filter: blur(10px); /* Apply blur effect */
     -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
