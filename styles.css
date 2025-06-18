@@ -17,47 +17,64 @@
 
 body {
     background-color: var(--bg-color);
-    /* ENHANCED BACKGROUND IMAGERY: palestinian-landscape.jpg integrated */
-    background-image: url('images/palestinian-landscape.jpg'); /* The chosen image now integrated */
-    background-size: cover; /* Ensures the image covers the entire viewport */
-    background-position: center center; /* Centers the image */
-    background-attachment: fixed; /* Creates the parallax scrolling effect */
-    background-repeat: no-repeat; /* Prevents image repetition */
+    background-image: url('images/palestinian-landscape.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     
     color: var(--text-primary);
     font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    position: relative; /* Needed for the ::before pseudo-element */
+    position: relative;
 }
 
-/* Pseudo-element for the subtle darkening overlay over the background image */
 body::before {
     content: '';
-    position: fixed; /* Fixed position to cover the entire viewport even on scroll */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--overlay-color); /* Semi-transparent dark overlay */
-    z-index: -1; /* Place it behind the content but above the background image */
+    background-color: var(--overlay-color);
+    z-index: -1;
 }
 
 
 /* --- Typography System --- */
 h1, h2, h3, .font-serif {
     font-family: var(--font-serif);
-    /* Letterpress/engraved effect */
     text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
 
 .text-gray-400 { color: var(--text-secondary); }
-.text-gray-500 { color: #6b7280; }
-.text-gray-600 { color: #4b5563; }
-.text-white { color: #ffffff; }
 
-/* --- Link Styling --- */
+/* --- Link & Modal Trigger Styling --- */
+.modal-trigger {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    text-align: left;
+}
+/* Style the modal trigger to look like a resource link */
+.modal-trigger {
+    color: var(--link-color);
+    font-weight: 500;
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 5px;
+    background-image: linear-gradient(var(--accent-color), var(--accent-color));
+    background-size: 0% 1px;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out, transform 0.3s ease;
+}
+
 .resource-link {
     display: inline-block;
     color: var(--link-color);
@@ -72,26 +89,22 @@ h1, h2, h3, .font-serif {
     transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out, transform 0.3s ease;
 }
 
-.resource-link:hover {
+
+.resource-link:hover,
+.modal-trigger:hover {
     color: var(--text-primary);
     background-size: 100% 1px;
     transform: translateY(-2px);
 }
 
 /* --- Header & Footer --- */
-#header {
-    background-color: var(--card-bg-color); /* Apply semi-transparent background */
-    backdrop-filter: blur(10px); /* Apply blur effect */
-    -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); /* Add a subtle shadow for depth */
+#header, #footer {
+    background-color: var(--card-bg-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
 }
-
-#footer {
-    background-color: var(--card-bg-color); /* Apply semi-transparent background */
-    backdrop-filter: blur(10px); /* Apply blur effect */
-    -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4); /* Add a subtle shadow for depth */
-}
+#footer { box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4); }
 
 /* --- SVG "River" Path Styling --- */
 #svg-path-container {
@@ -107,18 +120,16 @@ h1, h2, h3, .font-serif {
 }
 
 #river-path {
-    stroke-dasharray: 1; /* Set via JS */
-    stroke-dashoffset: 1; /* Set via JS */
-    transition: stroke-dashoffset 0.1s linear; /* Fast transition for smooth drawing */
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.1s linear;
     stroke: var(--border-color);
     stroke-width: 1.5;
     stroke-linecap: round;
 }
 
 /* --- Content Node Styling --- */
-.node-container {
-    margin-bottom: 6rem; /* Consistent spacing */
-}
+.node-container { margin-bottom: 6rem; }
 .node-left { justify-content: flex-start; }
 .node-right { justify-content: flex-end; }
 
@@ -149,11 +160,11 @@ h1, h2, h3, .font-serif {
 }
 
 .node-card:hover {
-    border-color: rgba(154, 230, 180, 0.7); /* accent-color at 70% opacity */
+    border-color: rgba(154, 230, 180, 0.7);
     box-shadow: 
         inset 0 1px 2px rgba(255, 255, 255, 0.05),
         0 10px 30px rgba(0, 0, 0, 0.6),
-        0 0 20px rgba(154, 230, 180, 0.2); /* The subtle glow effect */
+        0 0 20px rgba(154, 230, 180, 0.2);
 }
 
 /* --- Image Styling --- */
@@ -161,7 +172,7 @@ h1, h2, h3, .font-serif {
     position: relative;
     border-radius: 6px;
     margin-bottom: 1.5rem;
-    overflow: hidden; /* This is crucial for the image zoom effect */
+    overflow: hidden;
     box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 }
 
@@ -176,7 +187,7 @@ h1, h2, h3, .font-serif {
     transform: scale(1.05);
 }
 
-/* --- ACCORDION STYLES (NEW) --- */
+/* --- ACCORDION STYLES --- */
 .accordion-trigger {
     background-color: transparent;
     border: none;
@@ -199,32 +210,25 @@ h1, h2, h3, .font-serif {
     max-height: 0;
     opacity: 0;
 }
-
-/* Class to control the open state */
 .accordion-panel.open {
     max-height: 1000px; /* Large value to accommodate content */
     opacity: 1;
 }
 
-/* --- Modal Styling --- */
-#toolkit-modal {
+/* --- MODAL STYLING (GENERALIZED) --- */
+.modal {
     display: flex;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease-out;
-    position: fixed; /* Ensures it's relative to viewport */
+    position: fixed;
 }
-#toolkit-modal.is-visible {
+.modal.is-visible {
     opacity: 1;
     pointer-events: auto;
 }
 
 /* --- Utility & Animations --- */
-.flex { display: flex; }
-.relative { position: relative; }
-.text-center { text-align: center; }
-.space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
-
 .animate-bounce {
     animation: bounce 1s infinite;
 }
