@@ -8,6 +8,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.getElementById('header');
     const footer = document.getElementById('footer');
 
+    // --- 1a. MODAL ELEMENT SELECTION (NEW) ---
+    const toolkitModal = document.getElementById('toolkit-modal');
+    const openModalBtn = document.getElementById('open-toolkit-modal');
+    const closeModalBtn = document.getElementById('close-toolkit-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+
+    // --- MODAL LOGIC (NEW) ---
+    if (toolkitModal && openModalBtn && closeModalBtn && modalOverlay) {
+        const openModal = () => {
+            toolkitModal.classList.remove('hidden');
+            // A tiny delay allows the display property to apply before starting the opacity transition
+            setTimeout(() => toolkitModal.classList.add('is-visible'), 10);
+        };
+
+        const closeModal = () => {
+            toolkitModal.classList.remove('is-visible');
+            // Wait for the transition to finish before hiding it completely
+            setTimeout(() => toolkitModal.classList.add('hidden'), 300);
+        };
+
+        openModalBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+
+        // Allow closing with the Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && toolkitModal.classList.contains('is-visible')) {
+                closeModal();
+            }
+        });
+    } else {
+        console.error("Praxis Analysis: Modal elements for the toolkit are missing. Operation cannot proceed.");
+    }
+
     // Fail gracefully if essential elements are missing
     if (!svgPath || !header || !footer || contentNodes.length === 0) {
         console.error("Praxis Analysis: Essential elements for the interactive map are missing. Operation cannot proceed.");
