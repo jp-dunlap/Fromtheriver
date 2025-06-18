@@ -6,31 +6,24 @@
     <title>Atlas of Erasure | A Record of the Nakba</title>
     <meta name="description" content="An interactive map documenting the over 500 Palestinian villages and towns ethnically cleansed and destroyed by Zionist militias and the Israeli state during the 1948 Nakba.">
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts: Lora & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Leaflet.js CSS for Interactive Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
-    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Custom styles for this page to ensure map visibility and interactivity -->
     <style>
-        /* Ensures the map container fills the viewport height */
         #map-atlas {
             height: 100vh;
             width: 100%;
-            background-color: #1A202C; /* Dark background as a fallback */
+            background-color: #1A202C;
         }
-        /* Styling for Leaflet popups to match the site's 'node-card' aesthetic */
         .leaflet-popup-content-wrapper {
-            background-color: rgba(26, 32, 44, 0.8); /* Semi-transparent dark slate */
+            background-color: rgba(26, 32, 44, 0.8);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             color: var(--text-primary);
@@ -38,29 +31,39 @@
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-        .leaflet-popup-content {
-            margin: 1.25rem;
-            font-family: var(--font-sans);
-            line-height: 1.6;
+        .leaflet-popup-content { margin: 1.25rem; font-family: var(--font-sans); line-height: 1.6; }
+        .leaflet-popup-tip { background: rgba(26, 32, 44, 0.8); }
+        .leaflet-control-zoom a { color: var(--accent-color) !important; background-color: var(--card-bg-color) !important; border-bottom: 1px solid var(--border-color) !important; }
+
+        /* NEW: Styles for the collapsible info panel */
+        #info-box-content {
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateX(0);
+            opacity: 1;
         }
-        .leaflet-popup-tip {
-            background: rgba(26, 32, 44, 0.8);
+        #info-box-content.is-hidden {
+            transform: translateX(-110%);
+            opacity: 0;
+            pointer-events: none;
         }
-        .leaflet-control-zoom a {
-            color: var(--accent-color) !important;
-            background-color: var(--card-bg-color) !important;
-            border-bottom: 1px solid var(--border-color) !important;
-        }
+        #info-box-toggle .icon-open { display: none; }
+        #info-box-toggle .icon-close { display: block; }
+        #info-box-toggle[aria-expanded="false"] .icon-open { display: block; }
+        #info-box-toggle[aria-expanded="false"] .icon-close { display: none; }
     </style>
 </head>
 <body class="bg-bg-color text-text-primary overflow-hidden">
 
-    <!-- The main container for the map itself. It occupies the full screen. -->
     <div id="map-atlas"></div>
 
-    <!-- Overlay UI: Title, description, and controls -->
-    <div class="absolute top-0 left-0 p-4 md:p-6 max-w-md z-[1000] pointer-events-none">
-        <div class="p-6 rounded-lg pointer-events-auto" style="background-color: rgba(26, 32, 44, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(74, 85, 104, 0.5);">
+    <div class="absolute top-0 left-0 p-4 md:p-6 max-w-md z-[1000]">
+        <button id="info-box-toggle" aria-expanded="true" aria-controls="info-box-content" class="mb-2 p-2 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors" style="background-color: rgba(26, 32, 44, 0.7);">
+            <span class="sr-only">Toggle info panel</span>
+            <svg class="icon-close h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <svg class="icon-open h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+        </button>
+        
+        <div id="info-box-content" class="p-6 rounded-lg pointer-events-auto" style="background-color: rgba(26, 32, 44, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(74, 85, 104, 0.5);">
             <h1 class="font-serif text-3xl md:text-4xl text-white leading-tight">The Atlas of Erasure</h1>
             <p class="mt-2 text-gray-400">
                 This map is a visual record of the Nakba—the systematic ethnic cleansing of over 500 Palestinian villages and cities by Zionist militias in 1948. Each point is a wound on the land and a testament to a life that was stolen. Click a marker to bear witness.
@@ -69,11 +72,142 @@
         </div>
     </div>
     
-    <!-- Leaflet.js Script for Interactive Map -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-    <!-- Custom JavaScript for fetching data and populating the map -->
     <script src="atlas.js"></script>
 
 </body>
 </html>
+```
+
+### 2. Updated `atlas.js`
+
+I have appended new logic to the end of the `atlas.js` file. This code finds the new button and content panel and attaches the necessary event listener to control visibility.
+
+
+```javascript
+/* --- Fromtheriver.org | atlas.js --- */
+/* Logic for The Nakba: An Interactive Atlas of Erasure */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 1. MAP INITIALIZATION ---
+    // Initialize the Leaflet map. The view is centered on historic Palestine.
+    // The zoom level is set to 8, which provides a good overview of the entire region.
+    const map = L.map('map-atlas', {
+        center: [31.5, 35.2], // Centered on historic Palestine
+        zoom: 8,
+        minZoom: 7, // Prevents zooming out too far
+        maxZoom: 16, // Allows for detailed exploration
+        zoomControl: false // We use the bottom-right zoom control
+    });
+    
+    // Add a zoom control to the bottom right for better ergonomics on mobile
+    L.control.zoom({
+        position: 'bottomright'
+    }).addTo(map);
+
+    // --- 2. TILE LAYER CONFIGURATION ---
+    // The tile layer provides the visual map background.
+    // We use CartoDB's "DarkMatter" tiles, which provide a dark, minimalist aesthetic.
+    // This choice is deliberate: it ensures our data points (the villages) are the primary focus,
+    // and it matches the overall design of fromtheriver.org.
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // --- 3. DATA FETCHING & PROCESSING ---
+    // We asynchronously fetch the `villages.json` file.
+    // This file contains the array of depopulated Palestinian villages and their stories.
+    fetch('villages.json')
+        .then(response => {
+            // Check if the network response is successful
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(villages => {
+            // Once the data is successfully fetched and parsed, we call the function to plot the markers.
+            plotVillageMarkers(villages);
+        })
+        .catch(error => {
+            // If there's an error during the fetch operation, we log it to the console.
+            // This is crucial for debugging and ensuring the application is robust.
+            console.error("Praxis Analysis: Failed to fetch or process village data.", error);
+            // Optionally, display an error message to the user on the map itself.
+            const mapContainer = document.getElementById('map-atlas');
+            mapContainer.innerHTML = `<div class="flex items-center justify-center h-full text-center text-red-400 p-8">
+                <h2 class="text-2xl font-serif">Error: Could not load the Atlas data.</h2>
+                <p>The historical record could not be retrieved. Please check the console for details or try refreshing the page.</p>
+            </div>`;
+        });
+
+    // --- 4. MARKER & POPUP PLOTTING FUNCTION ---
+    /**
+     * Iterates through the village data and plots a marker for each one on the map.
+     * @param {Array<Object>} villages - An array of village objects from villages.json.
+     */
+    function plotVillageMarkers(villages) {
+        // We create a custom icon for our markers. A simple red dot is visually effective
+        // and serves as a symbolic representation of a wound on the map.
+        const villageIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#E53E3E; width:10px; height:10px; border-radius:50%; border: 1px solid #FFF;'></div>",
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+        });
+
+        villages.forEach(village => {
+            // For each village, create a marker at its latitude and longitude.
+            const marker = L.marker([village.lat, village.lon], { icon: villageIcon }).addTo(map);
+
+            // Create the HTML content for the popup. This content is styled with Tailwind CSS classes
+            // to match the aesthetic of the `node-card` elements on the main page.
+            // This provides a consistent and immersive user experience.
+            const popupContent = `
+                <div class="space-y-2">
+                    <h3 class="font-serif text-2xl text-white">${village.name}</h3>
+                    <h4 class="font-sans text-lg text-gray-400 -mt-2">${village.name_arabic}</h4>
+                    <p class="text-gray-300">${village.story}</p>
+                    <div class="pt-2 border-t border-gray-600">
+                        <p class="text-sm text-gray-500">
+                            <strong class="text-gray-400">District:</strong> ${village.district}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <strong class="text-gray-400">Destroyed by:</strong> ${village.destroyed_by}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <strong class="text-gray-400">Built on its ruins:</strong> ${village.israeli_settlement || 'N/A'}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            // Bind the popup to the marker. The popup will appear when the marker is clicked.
+            marker.bindPopup(popupContent);
+        });
+    }
+
+    // --- 5. NEW: COLLAPSIBLE INFO BOX LOGIC ---
+    const toggleButton = document.getElementById('info-box-toggle');
+    const infoContent = document.getElementById('info-box-content');
+
+    if (toggleButton && infoContent) {
+        toggleButton.addEventListener('click', () => {
+            const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+
+            // Toggle the ARIA attribute for accessibility
+            toggleButton.setAttribute('aria-expanded', !isExpanded);
+            
+            // Toggle the CSS class to trigger the hide/show transition
+            infoContent.classList.toggle('is-hidden');
+        });
+    } else {
+        console.error("Praxis Analysis: UI elements for the collapsible info box are missing.");
+    }
+});
+```
+
+With these changes, the info panel is now fully controllable by the user. This enhancement ensures the Atlas remains effective and accessible on all platforms, prioritizing the visibility of the evidence we are presenti
