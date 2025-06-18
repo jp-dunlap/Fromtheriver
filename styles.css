@@ -64,7 +64,18 @@ h1, h2, h3, .font-serif {
 
 /* --- Header & Footer --- */
 #header {
-    background-color: var(--bg-color); 
+    /* Existing background-color remains for safety, but we add transparency and blur */
+    background-color: var(--card-bg-color); /* Apply semi-transparent background */
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); /* Add a subtle shadow for depth */
+}
+
+#footer {
+    background-color: var(--card-bg-color); /* Apply semi-transparent background */
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4); /* Add a subtle shadow for depth */
 }
 
 /* --- SVG "River" Path Styling --- */
