@@ -97,6 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // For each village, create a marker at its latitude and longitude.
             const marker = L.marker([village.lat, village.lon], { icon: villageIcon }).addTo(map);
 
+            // MODIFICATION: Conditionally create the settlement info string.
+            // This prevents "Built on its ruins: N/A" or "undefined" from appearing.
+            const settlementInfo = village.israeli_settlement
+                ? `<p class="text-sm text-gray-500">
+                       <strong class="text-gray-400">Built on its ruins:</strong> ${village.israeli_settlement}
+                   </p>`
+                : '';
+
             // Create the HTML content for the popup. This content is styled with Tailwind CSS classes
             // to match the aesthetic of the `node-card` elements on the main page.
             // This provides a consistent and immersive user experience.
@@ -112,9 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="text-sm text-gray-500">
                             <strong class="text-gray-400">Destroyed by:</strong> ${village.destroyed_by}
                         </p>
-                        <p class="text-sm text-gray-500">
-                            <strong class="text-gray-400">Built on its ruins:</strong> ${village.israeli_settlement || 'N/A'}
-                        </p>
+                        ${settlementInfo}
                     </div>
                 </div>
             `;
