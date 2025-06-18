@@ -10,8 +10,8 @@
     --link-color: #A3B8B0; /* NEW: Subtle mint-grey for default link state */
     --border-color: #4A5568;
     --card-bg-color: rgba(26, 32, 44, 0.5); /* Semi-transparent dark slate */
-    --font-serif: 'Inter', sans-serif;
-    --font-serif: 'Inter', sans-serif;
+    --font-serif: 'Lora', serif;
+    --font-sans: 'Inter', sans-serif;
     --overlay-color: rgba(0, 0, 0, 0.5); /* Dark overlay for background image */
 }
 
@@ -58,26 +58,22 @@ h1, h2, h3, .font-serif {
 .text-white { color: #ffffff; }
 
 /* --- Link Styling --- */
-/* REVISED: This rule now uses the new --link-color variable for a subtle appearance. */
 .resource-link {
     display: inline-block;
-    color: var(--link-color); /* CHANGED: Using the new subtle color. */
-    font-weight: 500; /* ADDED: Slightly bolder text for further differentiation. */
+    color: var(--link-color);
+    font-weight: 500;
     text-decoration: none;
     position: relative;
     padding-bottom: 5px;
-    /* "Ink Bleed" effect setup */
     background-image: linear-gradient(var(--accent-color), var(--accent-color));
     background-size: 0% 1px;
     background-position: left bottom;
     background-repeat: no-repeat;
-    /* Consolidated transition for all hover effects */
     transition: background-size 0.4s ease-in-out, color 0.4s ease-in-out, transform 0.3s ease;
 }
 
-/* The hover state is now more impactful, shifting from mint-grey to bright white. */
 .resource-link:hover {
-    color: var(--text-primary); /* Links will now turn bright white on hover. */
+    color: var(--text-primary);
     background-size: 100% 1px;
     transform: translateY(-2px);
 }
@@ -126,7 +122,6 @@ h1, h2, h3, .font-serif {
 .node-left { justify-content: flex-start; }
 .node-right { justify-content: flex-end; }
 
-/* Main animation for nodes appearing */
 .content-node {
     opacity: 0;
     transform: translateY(30px);
@@ -141,7 +136,6 @@ h1, h2, h3, .font-serif {
     transform: translateY(0);
 }
 
-/* Card styling to look like layered paper with a subtle glow on hover */
 .node-card {
     background-color: var(--card-bg-color);
     backdrop-filter: blur(10px);
@@ -169,7 +163,6 @@ h1, h2, h3, .font-serif {
     margin-bottom: 1.5rem;
     overflow: hidden; /* This is crucial for the image zoom effect */
     box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-    background-color: transparent !important; /* Ensures no background color is applied */
 }
 
 .node-image-container img {
@@ -177,13 +170,53 @@ h1, h2, h3, .font-serif {
     height: auto;
     display: block;
     transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-    mix-blend-mode: normal !important; /* Resets any blend mode */
-    filter: none !important; /* Removes grayscale or any other filter */
-    opacity: 1 !important; /* Ensures full opacity */
 }
 
 .node-card:hover .node-image-container img {
     transform: scale(1.05);
+}
+
+/* --- ACCORDION STYLES (NEW) --- */
+.accordion-trigger {
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.accordion-trigger:hover span {
+    color: var(--accent-color);
+}
+.accordion-icon {
+    transition: transform 0.3s ease-in-out;
+}
+.accordion-trigger[aria-expanded="true"] .accordion-icon {
+    transform: rotate(180deg);
+}
+.accordion-panel {
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+}
+
+/* Class to control the open state */
+.accordion-panel.open {
+    max-height: 1000px; /* Large value to accommodate content */
+    opacity: 1;
+}
+
+/* --- Modal Styling --- */
+#toolkit-modal {
+    display: flex;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
+    position: fixed; /* Ensures it's relative to viewport */
+}
+#toolkit-modal.is-visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* --- Utility & Animations --- */
@@ -192,11 +225,9 @@ h1, h2, h3, .font-serif {
 .text-center { text-align: center; }
 .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
 
-/* For the bouncing arrow */
 .animate-bounce {
     animation: bounce 1s infinite;
 }
-
 @keyframes bounce {
   0%, 100% {
     transform: translateY(-25%);
@@ -213,15 +244,3 @@ h1, h2, h3, .font-serif {
 ::-webkit-scrollbar-track { background: #1A202C; }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #718096; }
-/* --- Modal Styling --- */
-#toolkit-modal {
-    display: flex; /* Use flex for centering, but hide via JS */
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease-out;
-}
-
-#toolkit-modal.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-}
