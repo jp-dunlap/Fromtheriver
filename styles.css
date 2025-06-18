@@ -213,3 +213,15 @@ h1, h2, h3, .font-serif {
 ::-webkit-scrollbar-track { background: #1A202C; }
 ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #718096; }
+/* --- Modal Styling --- */
+#toolkit-modal {
+    display: flex; /* Use flex for centering, but hide via JS */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
+}
+
+#toolkit-modal.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
