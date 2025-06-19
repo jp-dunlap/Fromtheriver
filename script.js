@@ -1,5 +1,5 @@
 /* --- Fromtheriver.org | script.js --- */
-/* Logic for "The Unfolding Map" concept - V5 (Integrated Donate Modal) */
+/* Logic for "The Unfolding Map" concept - V6 (Integrated Village Name Ticker) */
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Element Selection ---
@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Accordion Triggers
     const accordionTriggers = document.querySelectorAll('.accordion-trigger');
+    
+    // Village Ticker Element
+    const villageTicker = document.getElementById('village-ticker');
+
 
     // Fail gracefully if essential visual elements are missing
     if (!svgPath || !header || !footer || contentNodes.length === 0) {
@@ -30,10 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 2. MODAL LOGIC (Generalized Function) ---
-    // This function handles the opening and closing of any modal.
     const setupModal = (modal, openBtn, closeBtn, overlay) => {
         if (!modal || !openBtn || !closeBtn || !overlay) {
-            // Log error only if the button exists but modal doesn't, to avoid noise on pages without it.
             if(openBtn) {
                 console.error(`Praxis Analysis: Modal elements for '${modal.id}' are incomplete. Interactivity cannot be initialized.`);
             }
@@ -42,13 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const openModal = () => {
             modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.add('is-visible'), 10); // For fade-in transition
+            setTimeout(() => modal.classList.add('is-visible'), 10);
         };
 
         const closeModal = () => {
             modal.classList.remove('is-visible');
-            // Wait for the transition to finish before hiding it completely.
-            // Using a transitionend event listener ensures the timing is perfect.
             modal.addEventListener('transitionend', () => {
                 modal.classList.add('hidden');
             }, { once: true });
@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
-    // Initialize both modals with the generalized function
     setupModal(toolkitModal, openToolkitModalBtn, closeToolkitModalBtn, toolkitModalOverlay);
     setupModal(donateModal, openDonateModalBtn, closeDonateModalBtn, donateModalOverlay);
 
@@ -81,17 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (panel) {
                 if (isExpanded) {
-                    // Start closing the panel
                     panel.classList.remove('open');
-                    // When the transition ends, add the 'hidden' class for accessibility and layout.
                     panel.addEventListener('transitionend', () => {
                         panel.classList.add('hidden');
                     }, { once: true });
                 } else {
-                    // Start opening the panel
                     panel.classList.remove('hidden');
-                    // Use a timeout to allow the 'display' property to apply before starting the transition.
-                    // This prevents the transition from failing to run.
                     setTimeout(() => {
                         panel.classList.add('open');
                     }, 10);
@@ -100,8 +94,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- 4. DYNAMIC VILLAGE TICKER ---
+    /**
+     * Fetches village data and starts a rotating display of village names.
+     * This creates a "living memorial" effect on the main page.
+     */
+    const initializeVillageTicker = () => {
+        if (!villageTicker) {
+            console.warn("Praxis Analysis: Village ticker element not found. Feature will not run.");
+            return;
+        }
+        
+        // Add transition styles directly via JS
+        villageTicker.style.transition = 'opacity 0.5s ease-in-out';
 
-    // --- 4. Intersection Observer for Content Node Fade-in Animation ---
+        fetch('villages.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(villages => {
+                if (villages && villages.length > 0) {
+                    let currentIndex = 0;
+                    
+                    // Set the initial text
+                    villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
+
+                    setInterval(() => {
+                        // Fade out
+                        villageTicker.style.opacity = '0';
+
+                        // After fade out, change text and fade in
+                        setTimeout(() => {
+                            currentIndex = (currentIndex + 1) % villages.length; // Loop through the array
+                            villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
+                            villageTicker.style.opacity = '1';
+                        }, 500); // This timeout should match the CSS transition duration
+                    }, 3000); // Change village name every 3 seconds
+                }
+            })
+            .catch(error => {
+                console.error("Praxis Analysis: Could not load village data for ticker.", error);
+                villageTicker.textContent = "Could not load the historical record.";
+            });
+    };
+    
+    // --- 5. Intersection Observer for Content Node Fade-in Animation ---
     const nodeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -111,17 +151,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, {
         root: null,
-        threshold: 0.2, // Trigger when 20% of the element is visible
-        rootMargin: '0px 0px -50px 0px' // Adjust the bounding box to trigger a bit earlier
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
     });
 
     contentNodes.forEach(node => nodeObserver.observe(node));
 
-    // --- 5. SVG Path Drawing & Animation Logic ---
+    // --- 6. SVG Path Drawing & Animation Logic ---
     let pathLength = 0;
 
     function calculateAndDrawPath() {
-        // Recalculates the SVG path based on the positions of the content nodes.
+        if (!svgPath) return; // Fail gracefully if path is missing
         const isMobile = window.innerWidth < 768;
         const pathStartX = window.innerWidth / 2;
         let pathData = `M ${pathStartX} ${header.offsetHeight}`;
@@ -129,11 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         contentNodes.forEach((node, index) => {
             const rect = node.getBoundingClientRect();
-            // In mobile view, the path stays centered. On desktop, it zig-zags.
             const nodeConnectX = isMobile ? pathStartX : (index % 2 === 0 ? rect.left + rect.width : rect.left);
             const nodeCenterY = rect.top + window.scrollY + rect.height / 2;
 
-            // Use Bezier curves for a more organic, flowing "river" effect.
             const controlPointY1 = lastY + (nodeCenterY - lastY) * 0.5;
             const controlPointY2 = nodeCenterY - (nodeCenterY - lastY) * 0.5;
 
@@ -141,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
             lastY = nodeCenterY;
         });
 
-        // Extend the path to the top of the footer.
         const footerTop = footer.getBoundingClientRect().top + window.scrollY;
         pathData += ` L ${pathStartX} ${footerTop}`;
 
@@ -150,32 +187,24 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPath.style.strokeDasharray = pathLength;
         svgPath.style.strokeDashoffset = pathLength;
 
-        // Initial call to set the path drawing based on the initial scroll position.
         updatePathAnimation();
     }
 
     function updatePathAnimation() {
         if (pathLength <= 0) return;
-
         const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-        // Prevent division by zero if content is smaller than the viewport.
         if (scrollableHeight <= 0) {
              svgPath.style.strokeDashoffset = 0;
              return;
         }
-        // Calculate the percentage of the page scrolled.
         const scrollPercentage = Math.min(1, Math.max(0, window.scrollY / scrollableHeight));
-        
-        // The path "draws" itself as the user scrolls down.
-        // Multiplying by 1.2 ensures the path is fully drawn before the user hits the absolute bottom.
         const drawLength = pathLength * scrollPercentage * 1.2; 
         svgPath.style.strokeDashoffset = Math.max(0, pathLength - drawLength);
     }
 
-    // --- 6. Event Listeners & Optimization ---
+    // --- 7. Event Listeners & Optimization ---
     let ticking = false;
     document.addEventListener('scroll', () => {
-        // Use requestAnimationFrame to optimize scroll event handling and prevent performance issues.
         if (!ticking) {
             window.requestAnimationFrame(() => {
                 updatePathAnimation();
@@ -183,17 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             ticking = true;
         }
-    }, { passive: true }); // Use a passive listener for better scroll performance.
+    }, { passive: true });
 
     let resizeTimeout;
     window.addEventListener('resize', () => {
-        // Use a debounce timeout to avoid excessive recalculations during window resizing.
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(calculateAndDrawPath, 250);
     });
 
-    // --- 7. Initial Execution ---
-    // A small timeout ensures all fonts and images have likely loaded and the
-    // layout is stable before we do our initial path calculation. This prevents layout shift issues.
+    // --- 8. Initial Execution ---
     setTimeout(calculateAndDrawPath, 150);
+    initializeVillageTicker(); // Initialize the new feature
 });
