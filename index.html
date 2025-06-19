@@ -227,7 +227,8 @@
                             </button>
                             <div id="accordion-panel-7" class="accordion-panel hidden">
                                 <p class="text-gray-400 my-2">Amidst blockade and siege, direct financial support provides critical humanitarian relief and resources for steadfastness. This is a direct counter-measure to the strategy of immiseration.</p>
-                                <a href="https://www.protectpalestine.org/" class="resource-link" target="_blank" rel="noopener noreferrer">Support Now</a>
+                                <!-- MODIFICATION: Button to trigger new Donate Modal -->
+                                <button id="open-donate-modal" class="resource-link">Access Solidarity Funds</button>
                             </div>
                         </div>
                         <div class="accordion-item">
@@ -298,6 +299,69 @@
         </div>
     </div>
     
+    <!-- NEW MODAL for Donate/Solidarity Funds -->
+    <div id="donate-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div id="donate-modal-overlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+        <div class="relative node-card w-full max-w-2xl p-8 m-4">
+            <button id="close-donate-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h3 class="font-serif text-3xl text-white mb-2">Material Solidarity</h3>
+            <p class="text-gray-400 mb-8">Direct aid is a revolutionary act. It counters the siege and provides resources for Sumud (steadfastness). Choose a front.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <!-- Direct & Grassroots Aid -->
+                <div>
+                    <h4 class="font-serif text-xl text-white mb-3 border-b border-gray-700 pb-2">Direct & Grassroots</h4>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="https://docs.google.com/spreadsheets/d/1vtMLLOzuc6GpkFySyVtKQOY2j-Vvg0UsChMCFst_WLA/htmlview" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">Direct Family Support</a>
+                            <p class="text-sm text-gray-500 mt-1">Vetted list of individual families in Gaza seeking aid. The most direct form of solidarity.</p>
+                        </li>
+                        <li>
+                            <a href="https://linktr.ee/fundsforgaza" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">Grassroots Campaigns</a>
+                            <p class="text-sm text-gray-500 mt-1">Aggregated fundraisers for specific needs on the ground, curated by activists.</p>
+                        </li>
+                        <li>
+                            <a href="https://www.bonfire.com/arkansas-fundraiser-for-palestine/" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">Local Mutual Aid</a>
+                            <p class="text-sm text-gray-500 mt-1">Example of community-level organizing (Arkansas) directly supporting relief efforts.</p>
+                        </li>
+                        <li>
+                           <a href="https://www.instagram.com/p/C03zzwUvClA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">Resource Hub</a>
+                            <p class="text-sm text-gray-500 mt-1">An activist-run hub linking to urgent campaigns, e-sims for Gaza, and other resources.</p>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Medical & Institutional Aid -->
+                <div>
+                    <h4 class="font-serif text-xl text-white mb-3 border-b border-gray-700 pb-2">Medical & Institutional</h4>
+                     <ul class="space-y-4">
+                        <li>
+                            <a href="https://www.pcrf.net/" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">PCRF</a>
+                            <p class="text-sm text-gray-500 mt-1">Palestine Children's Relief Fund. Provides critical medical care to sick and injured children.</p>
+                        </li>
+                        <li>
+                            <a href="https://www.map.org.uk/" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">MAP</a>
+                            <p class="text-sm text-gray-500 mt-1">Medical Aid for Palestinians. Delivers health and dignity to Palestinians under occupation and as refugees.</p>
+                        </li>
+                        <li>
+                           <a href="https://www.doctorswithoutborders.org/" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">Doctors Without Borders</a>
+                            <p class="text-sm text-gray-500 mt-1">Global medical teams providing emergency care in Gaza and the West Bank.</p>
+                        </li>
+                         <li>
+                            <a href="https://donate.unrwa.org/-landing-page/en_EN" class="resource-link text-lg" target="_blank" rel="noopener noreferrer">UNRWA</a>
+                            <p class="text-sm text-gray-500 mt-1">The UN agency for Palestine refugees, providing food, shelter, and essential services.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
     <script src="script.js"></script>
 </body>
 </html>
