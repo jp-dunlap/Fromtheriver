@@ -1,5 +1,5 @@
 /* --- Fromtheriver.org | script.js --- */
-/* Logic for "The Unfolding Map" concept - V6 (Integrated Village Name Ticker) */
+/* Logic for "The Unfolding Map" concept - V7 (Integrated Tooltips) */
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Element Selection ---
@@ -95,17 +95,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 4. DYNAMIC VILLAGE TICKER ---
-    /**
-     * Fetches village data and starts a rotating display of village names.
-     * This creates a "living memorial" effect on the main page.
-     */
     const initializeVillageTicker = () => {
         if (!villageTicker) {
             console.warn("Praxis Analysis: Village ticker element not found. Feature will not run.");
             return;
         }
         
-        // Add transition styles directly via JS
         villageTicker.style.transition = 'opacity 0.5s ease-in-out';
 
         fetch('villages.json')
@@ -118,21 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(villages => {
                 if (villages && villages.length > 0) {
                     let currentIndex = 0;
-                    
-                    // Set the initial text
                     villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
 
                     setInterval(() => {
-                        // Fade out
                         villageTicker.style.opacity = '0';
-
-                        // After fade out, change text and fade in
                         setTimeout(() => {
-                            currentIndex = (currentIndex + 1) % villages.length; // Loop through the array
+                            currentIndex = (currentIndex + 1) % villages.length;
                             villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
                             villageTicker.style.opacity = '1';
-                        }, 500); // This timeout should match the CSS transition duration
-                    }, 3000); // Change village name every 3 seconds
+                        }, 500);
+                    }, 3000);
                 }
             })
             .catch(error => {
@@ -140,8 +130,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 villageTicker.textContent = "Could not load the historical record.";
             });
     };
+
+    // --- 5. INTERACTIVE TOOLTIP LOGIC (NEW) ---
+    const initializeTooltips = () => {
+        const triggers = document.querySelectorAll('.tooltip-trigger');
+        if (triggers.length === 0) return;
+
+        const definitions = {
+            'balfour': {
+                title: 'Balfour Declaration (1917)',
+                text: "A public statement issued by the British government during WWI announcing support for the establishment of a 'national home for the Jewish people' in Palestine, a land where the indigenous Arab population was the overwhelming majority. It disregarded the political rights of the existing population."
+            },
+            'settler-colonialism': {
+                title: 'Settler Colonialism',
+                text: "A distinct type of colonialism that functions through the replacement of indigenous populations with an invasive settler society that, over time, develops a unique identity and sovereignty. Unlike other forms of colonialism, it seeks to eliminate the native population, not just exploit them."
+            },
+            'zionism': {
+                title: 'Zionism',
+                text: "A late 19th-century European political movement that sought to establish a Jewish-majority state in the land of Palestine. Its implementation required the systematic dispossession and ethnic cleansing of the indigenous Palestinian people."
+            },
+            'nakba': {
+                title: 'The Nakba (1948)',
+                text: "Arabic for 'The Catastrophe.' Refers to the 1948 ethnic cleansing of Palestine, where over 750,000 Palestinians were forcibly expelled from their homes and land by Zionist militias and the new Israeli army. Over 500 villages and cities were depopulated and largely destroyed."
+            },
+            'sumud': {
+                title: 'Sumud (صمود)',
+                text: "An Arabic term meaning 'steadfastness' or 'resilience.' In the Palestinian context, it refers to the daily act of resistance and perseverance—remaining on the land, preserving culture, and refusing to be erased in the face of occupation and oppression."
+            }
+        };
+
+        const tooltipBox = document.createElement('div');
+        tooltipBox.id = 'tooltip-box';
+        document.body.appendChild(tooltipBox);
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', (event) => {
+                const term = trigger.dataset.term;
+                const content = definitions[term];
+                if (content) {
+                    tooltipBox.innerHTML = `<h4>${content.title}</h4><p>${content.text}</p>`;
+                    tooltipBox.classList.add('is-visible');
+                }
+            });
+
+            trigger.addEventListener('mouseleave', () => {
+                tooltipBox.classList.remove('is-visible');
+            });
+            
+            trigger.addEventListener('mousemove', (event) => {
+                // Position the tooltip near the cursor, with an offset
+                tooltipBox.style.left = `${event.pageX + 15}px`;
+                tooltipBox.style.top = `${event.pageY + 15}px`;
+            });
+        });
+    };
     
-    // --- 5. Intersection Observer for Content Node Fade-in Animation ---
+    // --- 6. Intersection Observer for Content Node Fade-in Animation ---
     const nodeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -157,11 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     contentNodes.forEach(node => nodeObserver.observe(node));
 
-    // --- 6. SVG Path Drawing & Animation Logic ---
+    // --- 7. SVG Path Drawing & Animation Logic ---
     let pathLength = 0;
 
     function calculateAndDrawPath() {
-        if (!svgPath) return; // Fail gracefully if path is missing
+        if (!svgPath) return;
         const isMobile = window.innerWidth < 768;
         const pathStartX = window.innerWidth / 2;
         let pathData = `M ${pathStartX} ${header.offsetHeight}`;
@@ -202,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPath.style.strokeDashoffset = Math.max(0, pathLength - drawLength);
     }
 
-    // --- 7. Event Listeners & Optimization ---
+    // --- 8. Event Listeners & Optimization ---
     let ticking = false;
     document.addEventListener('scroll', () => {
         if (!ticking) {
@@ -220,7 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resizeTimeout = setTimeout(calculateAndDrawPath, 250);
     });
 
-    // --- 8. Initial Execution ---
+    // --- 9. Initial Execution ---
     setTimeout(calculateAndDrawPath, 150);
-    initializeVillageTicker(); // Initialize the new feature
+    initializeVillageTicker();
+    initializeTooltips(); // Initialize the new tooltip feature
 });
