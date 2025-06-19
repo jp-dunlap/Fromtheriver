@@ -1,5 +1,5 @@
 /* --- Fromtheriver.org | script.js --- */
-/* Logic for "The Unfolding Map" concept - V4 (Consolidated with Accordion & Modal Logic) */
+/* Logic for "The Unfolding Map" concept - V5 (Integrated Donate Modal) */
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM Element Selection ---
@@ -7,11 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const svgPath = document.getElementById('river-path');
     const header = document.getElementById('header');
     const footer = document.getElementById('footer');
+    
+    // Toolkit Modal Elements
     const toolkitModal = document.getElementById('toolkit-modal');
-    const openModalBtn = document.getElementById('open-toolkit-modal');
-    const closeModalBtn = document.getElementById('close-toolkit-modal');
-    const modalOverlay = document.getElementById('modal-overlay');
-    const accordionTriggers = document.querySelectorAll('.accordion-trigger'); // NEW: Accordion triggers
+    const openToolkitModalBtn = document.getElementById('open-toolkit-modal');
+    const closeToolkitModalBtn = document.getElementById('close-toolkit-modal');
+    const toolkitModalOverlay = document.getElementById('modal-overlay');
+
+    // NEW: Donate Modal Elements
+    const donateModal = document.getElementById('donate-modal');
+    const openDonateModalBtn = document.getElementById('open-donate-modal');
+    const closeDonateModalBtn = document.getElementById('close-donate-modal');
+    const donateModalOverlay = document.getElementById('donate-modal-overlay');
+
+    // Accordion Triggers
+    const accordionTriggers = document.querySelectorAll('.accordion-trigger');
 
     // Fail gracefully if essential visual elements are missing
     if (!svgPath || !header || !footer || contentNodes.length === 0) {
@@ -19,36 +29,47 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- 2. MODAL LOGIC ---
-    if (toolkitModal && openModalBtn && closeModalBtn && modalOverlay) {
+    // --- 2. MODAL LOGIC (Generalized Function) ---
+    // This function handles the opening and closing of any modal.
+    const setupModal = (modal, openBtn, closeBtn, overlay) => {
+        if (!modal || !openBtn || !closeBtn || !overlay) {
+            // Log error only if the button exists but modal doesn't, to avoid noise on pages without it.
+            if(openBtn) {
+                console.error(`Praxis Analysis: Modal elements for '${modal.id}' are incomplete. Interactivity cannot be initialized.`);
+            }
+            return;
+        }
+
         const openModal = () => {
-            toolkitModal.classList.remove('hidden');
-            setTimeout(() => toolkitModal.classList.add('is-visible'), 10);
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('is-visible'), 10); // For fade-in transition
         };
 
         const closeModal = () => {
-            toolkitModal.classList.remove('is-visible');
+            modal.classList.remove('is-visible');
             // Wait for the transition to finish before hiding it completely
-            setTimeout(() => toolkitModal.classList.add('hidden'), 300);
+            modal.addEventListener('transitionend', () => {
+                modal.classList.add('hidden');
+            }, { once: true });
         };
 
-        openModalBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        modalOverlay.addEventListener('click', closeModal);
+        openBtn.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && toolkitModal.classList.contains('is-visible')) {
+            if (e.key === 'Escape' && modal.classList.contains('is-visible')) {
                 closeModal();
             }
         });
-    } else {
-        // Log error only if the button exists but modal doesn't, to avoid noise on pages without it.
-        if(openModalBtn) {
-            console.error("Praxis Analysis: Modal elements for the toolkit are missing. Operation cannot proceed.");
-        }
-    }
+    };
+    
+    // Initialize both modals
+    setupModal(toolkitModal, openToolkitModalBtn, closeToolkitModalBtn, toolkitModalOverlay);
+    setupModal(donateModal, openDonateModalBtn, closeDonateModalBtn, donateModalOverlay);
 
-    // --- 3. ACCORDION LOGIC (NEW) ---
+
+    // --- 3. ACCORDION LOGIC ---
     accordionTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
             const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
