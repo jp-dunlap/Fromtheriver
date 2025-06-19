@@ -20,18 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }).addTo(map);
 
     // --- 2. TILE LAYER CONFIGURATION ---
-    // The tile layer provides the visual map background.
-    // We use CartoDB's "DarkMatter" tiles, which provide a dark, minimalist aesthetic.
-    // This choice is deliberate: it ensures our data points (the villages) are the primary focus,
-    // and it matches the overall design of fromtheriver.org.
-=// CORRECTED AND VERIFIED - USES A NEUTRAL, DARK MAP LAYER
-// DIAGNOSTIC STEP - Restore map functionality with default tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+    // This tile layer from CARTO provides a dark, minimalist map background
+    // without political labels, ensuring the focus remains on the village data.
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
 
-    // --- 3. INFO PANEL TOGGLE LOGIC (IMPLEMENTED) ---
+    // --- 3. INFO PANEL TOGGLE LOGIC ---
     // This section handles the functionality for the collapsible info panel.
     const infoBoxToggle = document.getElementById('info-box-toggle');
     const infoBoxContent = document.getElementById('info-box-content');
@@ -98,17 +95,22 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             // For each village, create a marker at its latitude and longitude.
             const marker = L.marker([village.lat, village.lon], { icon: villageIcon }).addTo(map);
 
-            // MODIFICATION: Conditionally create the settlement info string.
-            // This prevents "Built on its ruins: N/A" or "undefined" from appearing.
+            // Conditionally create the settlement info string to prevent empty labels.
             const settlementInfo = village.israeli_settlement
                 ? `<p class="text-sm text-gray-500">
                        <strong class="text-gray-400">Built on its ruins:</strong> ${village.israeli_settlement}
                    </p>`
                 : '';
+            
+            // Conditionally create the military operation info string.
+            const operationInfo = village.military_operation
+                ? `<p class="text-sm text-gray-500">
+                       <strong class="text-gray-400">Military Operation:</strong> ${village.military_operation}
+                   </p>`
+                : '';
 
             // Create the HTML content for the popup. This content is styled with Tailwind CSS classes
             // to match the aesthetic of the `node-card` elements on the main page.
-            // This provides a consistent and immersive user experience.
             const popupContent = `
                 <div class="space-y-2">
                     <h3 class="font-serif text-2xl text-white">${village.name}</h3>
@@ -121,6 +123,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         <p class="text-sm text-gray-500">
                             <strong class="text-gray-400">Destroyed by:</strong> ${village.destroyed_by}
                         </p>
+                        ${operationInfo}
                         ${settlementInfo}
                     </div>
                 </div>
