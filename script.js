@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeToolkitModalBtn = document.getElementById('close-toolkit-modal');
     const toolkitModalOverlay = document.getElementById('modal-overlay');
 
-    // NEW: Donate Modal Elements
+    // Donate Modal Elements
     const donateModal = document.getElementById('donate-modal');
     const openDonateModalBtn = document.getElementById('open-donate-modal');
     const closeDonateModalBtn = document.getElementById('close-donate-modal');
@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const closeModal = () => {
             modal.classList.remove('is-visible');
-            // Wait for the transition to finish before hiding it completely
+            // Wait for the transition to finish before hiding it completely.
+            // Using a transitionend event listener ensures the timing is perfect.
             modal.addEventListener('transitionend', () => {
                 modal.classList.add('hidden');
             }, { once: true });
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
-    // Initialize both modals
+    // Initialize both modals with the generalized function
     setupModal(toolkitModal, openToolkitModalBtn, closeToolkitModalBtn, toolkitModalOverlay);
     setupModal(donateModal, openDonateModalBtn, closeDonateModalBtn, donateModalOverlay);
 
@@ -80,16 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (panel) {
                 if (isExpanded) {
-                    // Start closing
+                    // Start closing the panel
                     panel.classList.remove('open');
-                    // When transition ends, add hidden for accessibility
+                    // When the transition ends, add the 'hidden' class for accessibility and layout.
                     panel.addEventListener('transitionend', () => {
                         panel.classList.add('hidden');
                     }, { once: true });
                 } else {
-                    // Start opening
+                    // Start opening the panel
                     panel.classList.remove('hidden');
-                    // Use a timeout to allow the 'display' property to apply before starting transition
+                    // Use a timeout to allow the 'display' property to apply before starting the transition.
+                    // This prevents the transition from failing to run.
                     setTimeout(() => {
                         panel.classList.add('open');
                     }, 10);
@@ -109,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, {
         root: null,
-        threshold: 0.2,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.2, // Trigger when 20% of the element is visible
+        rootMargin: '0px 0px -50px 0px' // Adjust the bounding box to trigger a bit earlier
     });
 
     contentNodes.forEach(node => nodeObserver.observe(node));
@@ -119,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pathLength = 0;
 
     function calculateAndDrawPath() {
-        // Recalculation might be unnecessary if the window dimensions haven't changed meaningfully
+        // Recalculates the SVG path based on the positions of the content nodes.
         const isMobile = window.innerWidth < 768;
         const pathStartX = window.innerWidth / 2;
         let pathData = `M ${pathStartX} ${header.offsetHeight}`;
@@ -127,9 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         contentNodes.forEach((node, index) => {
             const rect = node.getBoundingClientRect();
+            // In mobile view, the path stays centered. On desktop, it zig-zags.
             const nodeConnectX = isMobile ? pathStartX : (index % 2 === 0 ? rect.left + rect.width : rect.left);
             const nodeCenterY = rect.top + window.scrollY + rect.height / 2;
 
+            // Use Bezier curves for a more organic, flowing "river" effect.
             const controlPointY1 = lastY + (nodeCenterY - lastY) * 0.5;
             const controlPointY2 = nodeCenterY - (nodeCenterY - lastY) * 0.5;
 
@@ -137,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastY = nodeCenterY;
         });
 
+        // Extend the path to the top of the footer.
         const footerTop = footer.getBoundingClientRect().top + window.scrollY;
         pathData += ` L ${pathStartX} ${footerTop}`;
 
@@ -145,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPath.style.strokeDasharray = pathLength;
         svgPath.style.strokeDashoffset = pathLength;
 
+        // Initial call to set the path drawing based on the initial scroll position.
         updatePathAnimation();
     }
 
@@ -152,13 +158,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pathLength <= 0) return;
 
         const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-        // Prevent division by zero if content is smaller than viewport
+        // Prevent division by zero if content is smaller than the viewport.
         if (scrollableHeight <= 0) {
              svgPath.style.strokeDashoffset = 0;
              return;
         }
+        // Calculate the percentage of the page scrolled.
         const scrollPercentage = Math.min(1, Math.max(0, window.scrollY / scrollableHeight));
         
+        // The path "draws" itself as the user scrolls down.
+        // Multiplying by 1.2 ensures the path is fully drawn before the user hits the absolute bottom.
         const drawLength = pathLength * scrollPercentage * 1.2; 
         svgPath.style.strokeDashoffset = Math.max(0, pathLength - drawLength);
     }
@@ -166,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 6. Event Listeners & Optimization ---
     let ticking = false;
     document.addEventListener('scroll', () => {
+        // Use requestAnimationFrame to optimize scroll event handling and prevent performance issues.
         if (!ticking) {
             window.requestAnimationFrame(() => {
                 updatePathAnimation();
@@ -173,16 +183,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             ticking = true;
         }
-    }, { passive: true });
+    }, { passive: true }); // Use a passive listener for better scroll performance.
 
     let resizeTimeout;
     window.addEventListener('resize', () => {
+        // Use a debounce timeout to avoid excessive recalculations during window resizing.
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(calculateAndDrawPath, 250);
     });
 
     // --- 7. Initial Execution ---
     // A small timeout ensures all fonts and images have likely loaded and the
-    // layout is stable before we do our initial path calculation.
+    // layout is stable before we do our initial path calculation. This prevents layout shift issues.
     setTimeout(calculateAndDrawPath, 150);
 });
