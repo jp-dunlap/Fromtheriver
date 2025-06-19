@@ -176,7 +176,7 @@ h1, h2, h3, .font-serif {
     transform: scale(1.05);
 }
 
-/* --- ACCORDION STYLES (NEW) --- */
+/* --- ACCORDION STYLES --- */
 .accordion-trigger {
     background-color: transparent;
     border: none;
@@ -200,24 +200,71 @@ h1, h2, h3, .font-serif {
     opacity: 0;
 }
 
-/* Class to control the open state */
 .accordion-panel.open {
     max-height: 1000px; /* Large value to accommodate content */
     opacity: 1;
 }
 
 /* --- Modal Styling --- */
-#toolkit-modal {
+#toolkit-modal, #donate-modal {
     display: flex;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease-out;
-    position: fixed; /* Ensures it's relative to viewport */
+    position: fixed;
 }
-#toolkit-modal.is-visible {
+#toolkit-modal.is-visible, #donate-modal.is-visible {
     opacity: 1;
     pointer-events: auto;
 }
+
+/* --- TOOLTIP STYLES (NEW) --- */
+.tooltip-trigger {
+    border-bottom: 1px dotted var(--accent-color);
+    cursor: help;
+    position: relative;
+}
+
+#tooltip-box {
+    position: absolute;
+    display: none; /* Hidden by default */
+    width: 300px;
+    max-width: 90vw;
+    padding: 1rem;
+    z-index: 100;
+    
+    /* Re-using the node-card style for consistency */
+    background-color: rgba(26, 32, 44, 0.9); /* More opaque for readability */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(154, 230, 180, 0.7);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    
+    /* Animation */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Prevents the tooltip from blocking mouse events */
+}
+
+#tooltip-box.is-visible {
+    display: block;
+    opacity: 1;
+}
+
+#tooltip-box h4 {
+    font-family: var(--font-serif);
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+#tooltip-box p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
 
 /* --- Utility & Animations --- */
 .flex { display: flex; }
