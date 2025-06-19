@@ -25,10 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // This choice is deliberate: it ensures our data points (the villages) are the primary focus,
     // and it matches the overall design of fromtheriver.org.
 =// CORRECTED AND VERIFIED - USES A NEUTRAL, DARK MAP LAYER
-L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
-    minZoom: 7,
-    maxZoom: 16
+// DIAGNOSTIC STEP - Restore map functionality with default tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
     // --- 3. INFO PANEL TOGGLE LOGIC (IMPLEMENTED) ---
