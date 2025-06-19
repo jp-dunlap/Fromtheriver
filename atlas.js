@@ -24,11 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // We use CartoDB's "DarkMatter" tiles, which provide a dark, minimalist aesthetic.
     // This choice is deliberate: it ensures our data points (the villages) are the primary focus,
     // and it matches the overall design of fromtheriver.org.
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
-    }).addTo(map);
+// CORRECTED - USES HISTORIC PALESTINE MAP LAYER
+L.tileLayer('https://tiles.palopenmaps.org/basemaps/palop_sentinel_no_labels/{z}/{x}/{y}.png', {
+    attribution: 'Map tiles by <a href="https://palopenmaps.org">Palestine Open Maps</a>',
+    minZoom: 7, // Prevents zooming out too far
+    maxZoom: 16, // Allows for detailed exploration
+}).addTo(map);
 
     // --- 3. INFO PANEL TOGGLE LOGIC (IMPLEMENTED) ---
     // This section handles the functionality for the collapsible info panel.
