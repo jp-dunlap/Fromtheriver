@@ -13,6 +13,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- PRAXIS: Add specific styles for the new village links and codex modal -->
+    <style>
+        .village-link {
+            border-bottom: 1px dashed #9AE6B4; /* Dashed accent color for distinction */
+            cursor: pointer;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+        .village-link:hover {
+            background-color: rgba(154, 230, 180, 0.1);
+            color: #EAEAEA;
+        }
+        /* Styles for the codex modal visibility */
+        #codex-modal {
+            display: flex;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
+            position: fixed;
+        }
+        #codex-modal.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body class="w-full">
 
@@ -63,8 +88,9 @@
                         <p>
                             <span class="tooltip-trigger" data-term="zionism">Zionism</span>, at its core, is a 19th-century European settler-colonial project. Its foundational premise required the transformation of Palestine into a Jewish state, which could not be achieved without the displacement of the native population. Early Zionist leaders were explicit about this, viewing their work as a "colonization adventure." The lead-up to 1948 saw the systematic execution of this vision, culminating in the <span class="tooltip-trigger" data-term="nakba">Nakba</span> ("The Catastrophe").
                         </p>
+                        <!-- PRAXIS: This paragraph has been modified to include interactive codex links -->
                         <p>
-                            The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities, expelling at least 750,000 people and making them refugees. This was not a byproduct of war; it was the realization of a plan. The Roots of this conflict are found in this violent, ongoing process of ethnic cleansing and land theft.
+                            The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities. This was not a byproduct of war; it was the realization of a plan. From the haunting, still-standing homes of <span class="village-link" data-village="Lifta">Lifta</span> at Jerusalem's edge, to the premeditated massacres at <span class="village-link" data-village="Deir Yassin">Deir Yassin</span> and <span class="village-link" data-village="al-Tantura">al-Tantura</span>, to the forced death march from <span class="village-link" data-village="Lydda">Lydda</span>, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure.
                         </p>
                     </div>
 
@@ -75,7 +101,7 @@
                         </blockquote>
                         <blockquote class="text-gray-300 italic">
                             <p>"Zionism is a colonizing venture and, therefore, it stands or falls on the question of armed forces."</p>
-                            <cite class="text-gray-500 not-italic block mt-2">— Ze'ev Jabotinsky, 'The Iron Wall', 1923 (as quoted by Rashid Khalidi)</cite>
+                            <cite class="text-gray-500 not-italic block mt-2">— Ze'ev Jabotinsky, 'The Iron Wall', 1923</cite>
                         </blockquote>
                         <blockquote class="text-gray-300 italic">
                             <p>"There is no getting away from the fact that, as an idea, a memory, and as an often buried or invisible reality, Palestine and its people have simply not disappeared."</p>
