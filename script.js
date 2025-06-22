@@ -1,8 +1,11 @@
 /* --- Fromtheriver.org | script.js --- */
-/* Logic for "The Unfolding Map" concept - V7 (Integrated Tooltips) */
+/* Logic for "The Unfolding Map" concept - V8 (Integrated Codex Protocol) */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. DOM Element Selection ---
+    // --- 1. GLOBAL & STATE VARIABLES ---
+    let allVillagesData = []; // PRAXIS: Stores the entire village dataset for Codex functionality.
+
+    // --- 2. DOM ELEMENT SELECTION ---
     const contentNodes = document.querySelectorAll('.content-node');
     const svgPath = document.getElementById('river-path');
     const header = document.getElementById('header');
@@ -33,11 +36,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- 2. MODAL LOGIC (Generalized Function) ---
+    // --- 3. DATA FETCHING & INITIALIZATION ---
+    // PRAXIS: Fetch the village data once and store it for all features (Ticker and Codex).
+    fetch('villages.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(villages => {
+            allVillagesData = villages; // Store data globally
+            
+            // Initialize all features that depend on this data
+            setTimeout(calculateAndDrawPath, 150);
+            initializeVillageTicker(allVillagesData);
+            initializeTooltips();
+            initializeCodex(allVillagesData); // PRAXIS: Activate the new Codex protocol.
+        })
+        .catch(error => {
+            console.error("Praxis Analysis: Could not load village data for ticker and codex.", error);
+            if(villageTicker) villageTicker.textContent = "Could not load the historical record.";
+        });
+
+
+    // --- 4. MODAL LOGIC (Generalized Function) ---
     const setupModal = (modal, openBtn, closeBtn, overlay) => {
         if (!modal || !openBtn || !closeBtn || !overlay) {
             if(openBtn) {
-                console.error(`Praxis Analysis: Modal elements for '${modal.id}' are incomplete. Interactivity cannot be initialized.`);
+                console.warn(`Praxis Analysis: Modal elements for '${openBtn.id}' are incomplete. Interactivity will not be initialized.`);
             }
             return;
         }
@@ -69,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupModal(donateModal, openDonateModalBtn, closeDonateModalBtn, donateModalOverlay);
 
 
-    // --- 3. ACCORDION LOGIC ---
+    // --- 5. ACCORDION LOGIC ---
     accordionTriggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
             const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
@@ -94,44 +121,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 4. DYNAMIC VILLAGE TICKER ---
-    const initializeVillageTicker = () => {
+    // --- 6. DYNAMIC VILLAGE TICKER ---
+    const initializeVillageTicker = (villages) => {
         if (!villageTicker) {
             console.warn("Praxis Analysis: Village ticker element not found. Feature will not run.");
             return;
         }
         
         villageTicker.style.transition = 'opacity 0.5s ease-in-out';
+        
+        if (villages && villages.length > 0) {
+            let currentIndex = 0;
+            villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
 
-        fetch('villages.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(villages => {
-                if (villages && villages.length > 0) {
-                    let currentIndex = 0;
+            setInterval(() => {
+                villageTicker.style.opacity = '0';
+                setTimeout(() => {
+                    currentIndex = (currentIndex + 1) % villages.length;
                     villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
-
-                    setInterval(() => {
-                        villageTicker.style.opacity = '0';
-                        setTimeout(() => {
-                            currentIndex = (currentIndex + 1) % villages.length;
-                            villageTicker.textContent = `Remembering ${villages[currentIndex].name}...`;
-                            villageTicker.style.opacity = '1';
-                        }, 500);
-                    }, 3000);
-                }
-            })
-            .catch(error => {
-                console.error("Praxis Analysis: Could not load village data for ticker.", error);
-                villageTicker.textContent = "Could not load the historical record.";
-            });
+                    villageTicker.style.opacity = '1';
+                }, 500);
+            }, 3000);
+        } else {
+             villageTicker.textContent = "Historical record is empty.";
+        }
     };
 
-    // --- 5. INTERACTIVE TOOLTIP LOGIC (NEW) ---
+    // --- 7. INTERACTIVE TOOLTIP LOGIC ---
     const initializeTooltips = () => {
         const triggers = document.querySelectorAll('.tooltip-trigger');
         if (triggers.length === 0) return;
@@ -178,14 +194,99 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             trigger.addEventListener('mousemove', (event) => {
-                // Position the tooltip near the cursor, with an offset
                 tooltipBox.style.left = `${event.pageX + 15}px`;
                 tooltipBox.style.top = `${event.pageY + 15}px`;
             });
         });
     };
+
+    // --- 8. PRAXIS PROTOCOL: CODEX MODAL ---
+    // This entire section is new, dedicated to fusing the Atlas with the Narrative.
+    const initializeCodex = (villages) => {
+        // First, dynamically create the modal structure and append it to the body.
+        // This ensures the script is self-contained and doesn't rely on pre-existing HTML.
+        const codexModal = document.createElement('div');
+        codexModal.id = 'codex-modal';
+        codexModal.className = 'fixed inset-0 z-50 hidden items-center justify-center';
+        codexModal.innerHTML = `
+            <div id="codex-modal-overlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+            <div class="relative node-card w-full max-w-3xl p-8 m-4 max-h-[80vh] overflow-y-auto">
+                <button id="close-codex-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="codex-modal-content"></div>
+            </div>
+        `;
+        document.body.appendChild(codexModal);
+
+        // Now select the newly created elements
+        const closeCodexModalBtn = document.getElementById('close-codex-modal');
+        const codexModalOverlay = document.getElementById('codex-modal-overlay');
+        const codexModalContent = document.getElementById('codex-modal-content');
+        const villageLinks = document.querySelectorAll('.village-link');
+
+        const openModal = () => {
+            codexModal.classList.remove('hidden');
+            setTimeout(() => codexModal.classList.add('is-visible'), 10);
+        };
+
+        const closeModal = () => {
+            codexModal.classList.remove('is-visible');
+            codexModal.addEventListener('transitionend', () => {
+                codexModal.classList.add('hidden');
+            }, { once: true });
+        };
+        
+        // Add event listeners for closing the modal
+        closeCodexModalBtn.addEventListener('click', closeModal);
+        codexModalOverlay.addEventListener('click', closeModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && codexModal.classList.contains('is-visible')) {
+                closeModal();
+            }
+        });
+
+        // Add event listeners to all village links in the text
+        villageLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const villageName = link.dataset.village;
+                const villageData = villages.find(v => v.name.toLowerCase() === villageName.toLowerCase());
+
+                if (villageData) {
+                    // Populate the modal with the specific village's data
+                    const settlementInfo = villageData.israeli_settlement ? `<p class="text-sm text-gray-500"><strong class="text-gray-400">Built on its ruins:</strong> ${villageData.israeli_settlement}</p>` : '';
+                    const operationInfo = villageData.military_operation ? `<p class="text-sm text-gray-500"><strong class="text-gray-400">Military Operation:</strong> ${villageData.military_operation}</p>` : '';
+
+                    codexModalContent.innerHTML = `
+                        <div class="space-y-3">
+                            <h3 class="font-serif text-4xl text-white">${villageData.name}</h3>
+                            <h4 class="font-sans text-xl text-gray-400 -mt-2">${villageData.name_arabic}</h4>
+                            <div class="pt-4 border-t border-gray-600">
+                                <p class="text-gray-300 leading-relaxed">${villageData.story}</p>
+                            </div>
+                            <div class="pt-4 mt-4 border-t border-gray-600 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                                <p class="text-sm text-gray-500"><strong class="text-gray-400">District:</strong> ${villageData.district}</p>
+                                <p class="text-sm text-gray-500"><strong class="text-gray-400">Destroyed by:</strong> ${villageData.destroyed_by}</p>
+                                ${operationInfo}
+                                ${settlementInfo}
+                            </div>
+                             <div class="pt-4 mt-4 border-t border-gray-700">
+                                <a href="atlas.html?village=${encodeURIComponent(villageData.name)}" class="resource-link">View on Atlas of Erasure →</a>
+                            </div>
+                        </div>
+                    `;
+                    openModal();
+                } else {
+                    console.warn(`Praxis Analysis: No codex entry found for village: ${villageName}`);
+                }
+            });
+        });
+    };
     
-    // --- 6. Intersection Observer for Content Node Fade-in Animation ---
+    // --- 9. Intersection Observer for Content Node Fade-in Animation ---
     const nodeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -201,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     contentNodes.forEach(node => nodeObserver.observe(node));
 
-    // --- 7. SVG Path Drawing & Animation Logic ---
+    // --- 10. SVG Path Drawing & Animation Logic ---
     let pathLength = 0;
 
     function calculateAndDrawPath() {
@@ -246,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         svgPath.style.strokeDashoffset = Math.max(0, pathLength - drawLength);
     }
 
-    // --- 8. Event Listeners & Optimization ---
+    // --- 11. Event Listeners & Optimization ---
     let ticking = false;
     document.addEventListener('scroll', () => {
         if (!ticking) {
@@ -263,9 +364,4 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(calculateAndDrawPath, 250);
     });
-
-    // --- 9. Initial Execution ---
-    setTimeout(calculateAndDrawPath, 150);
-    initializeVillageTicker();
-    initializeTooltips(); // Initialize the new tooltip feature
 });
