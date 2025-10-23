@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-feeds.mjs && vite build",
+    "build": "node scripts/generate-og-images.mjs && node scripts/generate-feeds.mjs && vite build",
     "preview": "vite preview",
     "preview:ci": "vite preview --host 127.0.0.1 --port 4173",
     "generate:feeds": "node scripts/generate-feeds.mjs",
+    "generate:og-images": "node scripts/generate-og-images.mjs",
     "lint": "eslint .",
     "test:unit": "jest --passWithNoTests=false",
     "test:visual": "playwright test",
