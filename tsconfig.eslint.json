@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "jest", "cypress", "vite/client"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"]
+}

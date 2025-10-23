@@ -7,22 +7,32 @@ type ImmutableLike<T = unknown> = {
 
 export interface PreviewProps {
   entry: {
-    getIn: (path: (string | number)[]) => any;
+    getIn: (path: (string | number)[]) => unknown;
   };
   widgetFor: (field: string) => ReactNode;
 }
 
-const toPlain = <T,>(value: T | (T & ImmutableLike<T>) | undefined | null): T | undefined => {
-  if (!value) {
+const isImmutableLike = <T,>(value: unknown): value is ImmutableLike<T> => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return 'toJS' in value || 'toArray' in value;
+};
+
+const toPlain = <T,>(value: unknown): T | undefined => {
+  if (value === undefined || value === null) {
     return undefined;
   }
 
-  if (typeof (value as ImmutableLike<T>).toJS === 'function') {
-    return (value as ImmutableLike<T>).toJS?.();
-  }
+  if (isImmutableLike<T>(value)) {
+    if (typeof value.toJS === 'function') {
+      return value.toJS();
+    }
 
-  if (typeof (value as ImmutableLike<T>).toArray === 'function') {
-    return (value as ImmutableLike<T>).toArray?.() as unknown as T;
+    if (typeof value.toArray === 'function') {
+      return value.toArray() as unknown as T;
+    }
   }
 
   return value as T;

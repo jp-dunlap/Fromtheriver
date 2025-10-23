@@ -59,7 +59,6 @@ const PrototypeGallery: React.FC = () => {
   useEffect(() => {
     const audioElement = new Audio(ambientTone);
     audioElement.loop = true;
-    audioElement.volume = volume;
     audioRef.current = audioElement;
 
     return () => {
@@ -172,10 +171,10 @@ const PrototypeGallery: React.FC = () => {
               sceneTitle="Roots Narration"
               audioAvailable
               audioState={audioState}
-              onPlay={(_sceneId) => {
+              onPlay={() => {
                 void handlePlay();
               }}
-              onPause={(_sceneId) => {
+              onPause={() => {
                 handlePause();
               }}
               onToggleAutoPlay={toggleAutoPlay}
