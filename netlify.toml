@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+
+[functions."refresh-external-archive"]
+  schedule = "0 */6 * * *"
