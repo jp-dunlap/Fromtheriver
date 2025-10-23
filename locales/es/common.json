@@ -1,0 +1,72 @@
+{
+  "common": {
+    "skipLink": "Saltar al contenido principal",
+    "nav": {
+      "label": "Principal",
+      "sections": {
+        "roots": "Las Raíces",
+        "resistance": "La Resistencia",
+        "culture": "La Cultura",
+        "action": "La Acción"
+      }
+    },
+    "language": {
+      "label": "Idioma",
+      "english": "Inglés",
+      "spanish": "Español",
+      "arabic": "العربية"
+    },
+    "status": {
+      "dataRefresh": "Última actualización de datos: {{date}} · {{count}} aldeas registradas.",
+      "dataEmpty": "El registro histórico está vacío.",
+      "dataError": "Los datos del archivo no están disponibles en el modo de galería de prototipo.",
+      "externalError": "No se pudieron actualizar las señales de solidaridad.",
+      "externalLoading": "Actualizando novedades"
+    },
+    "ticker": {
+      "empty": "El registro histórico está vacío.",
+      "remembering": "Recordando a {{name}}…"
+    },
+    "overlay": {
+      "ariaLabel": "Panel de escena para {{title}}",
+      "openCodex": "Abrir entrada del códice",
+      "relatedVillages": "Aldeas relacionadas"
+    },
+    "modals": {
+      "toolkit": {
+        "title": "Herramientas ideológicas",
+        "description": "Recursos clave para desmontar mitos y propaganda comunes."
+      },
+      "donate": {
+        "title": "Solidaridad material",
+        "description": "La ayuda directa es un acto revolucionario. Contrarresta el asedio y sostiene el Sumud (perseverancia). Elige un frente.",
+        "direct": "Directo y comunitario",
+        "institutional": "Médico e institucional"
+      },
+      "codex": {
+        "fallbackTitle": "Códice",
+        "keyFacts": "Datos clave",
+        "district": "Distrito",
+        "coordinates": "Coordenadas",
+        "perpetrators": "Perpetradores",
+        "operation": "Operación militar",
+        "builtOnRuins": "Construido sobre sus ruinas",
+        "aftermath": "Consecuencias",
+        "survivorTestimonies": "Testimonios de sobrevivientes",
+        "media": "Medios y lecturas complementarias",
+        "viewAtlas": "Ver en Atlas of Erasure →"
+      }
+    },
+    "buttons": {
+      "archiveExplorer": "Explorador del archivo",
+      "archiveExplorerHint": "Presiona ⌘K / Ctrl+K",
+      "retry": "Reintentar"
+    }
+  },
+  "app": {
+    "title": "Desde el Río",
+    "description": "Un archivo vivo de la historia, la cultura y la lucha continua por la liberación del pueblo palestino. Es un viaje de comprensión.",
+    "tickerLabel": "Marcador de recuerdo de aldeas",
+    "externalUpdatesLabel": "Señales de solidaridad"
+  }
+}

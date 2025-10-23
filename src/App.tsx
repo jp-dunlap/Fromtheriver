@@ -17,6 +17,8 @@ import { villages as villagesData, villagesDataset } from './data/villages';
 import ArchiveExplorerModal from './components/ArchiveExplorerModal';
 import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
 import type { ExternalArchivePayload } from './data/external';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -45,14 +47,43 @@ const App: React.FC = () => {
   const [villages, setVillages] = useState<Village[]>(() =>
     isPrototypeMode ? [] : villagesData
   );
-  const [villagesError, setVillagesError] = useState<string | null>(null);
+  const [villagesErrorCode, setVillagesErrorCode] = useState<'prototype' | 'empty' | null>(null);
   const [selectedVillage, setSelectedVillage] = useState<Village | null>(null);
   const [isToolkitOpen, setToolkitOpen] = useState(false);
   const [isDonateOpen, setDonateOpen] = useState(false);
   const [isArchiveExplorerOpen, setArchiveExplorerOpen] = useState(false);
   const [externalUpdates, setExternalUpdates] = useState<ExternalArchivePayload | null>(null);
-  const [externalUpdatesError, setExternalUpdatesError] = useState<string | null>(null);
+  const [externalUpdatesErrorCode, setExternalUpdatesErrorCode] = useState<'load' | null>(null);
   const [isExternalUpdatesLoading, setExternalUpdatesLoading] = useState(false);
+  const { t, i18n } = useTranslation(['common', 'app']);
+  const activeLocale = i18n.resolvedLanguage ?? i18n.language;
+  const generatedDate = useMemo(
+    () =>
+      new Date(villagesDataset.metadata.generated_at).toLocaleDateString(
+        activeLocale
+      ),
+    [activeLocale]
+  );
+  const formattedVillageCount = useMemo(
+    () => villages.length.toLocaleString(activeLocale),
+    [villages.length, activeLocale]
+  );
+  const villagesStatusMessage = useMemo(() => {
+    if (villagesErrorCode === 'prototype') {
+      return t('common:status.dataError');
+    }
+    if (villagesErrorCode === 'empty') {
+      return t('common:status.dataEmpty');
+    }
+    return t('common:status.dataRefresh', {
+      date: generatedDate,
+      count: formattedVillageCount,
+    });
+  }, [villagesErrorCode, t, generatedDate, formattedVillageCount]);
+  const villagesStatusIsError = villagesErrorCode !== null;
+  const externalUpdatesErrorMessage = externalUpdatesErrorCode
+    ? t('common:status.externalError')
+    : null;
 
   const loadExternalUpdates = useCallback(
     async (signal?: AbortSignal) => {
@@ -61,7 +92,7 @@ const App: React.FC = () => {
       }
 
       setExternalUpdatesLoading(true);
-      setExternalUpdatesError(null);
+      setExternalUpdatesErrorCode(null);
 
       try {
         const response = await fetch('/.netlify/functions/external-archive', {
@@ -76,13 +107,13 @@ const App: React.FC = () => {
           return;
         }
         setExternalUpdates(payload);
-        setExternalUpdatesError(null);
+        setExternalUpdatesErrorCode(null);
       } catch (error) {
         if (signal?.aborted) {
           return;
         }
         console.error('Failed to load external archive updates', error);
-        setExternalUpdatesError('Could not refresh solidarity signals.');
+        setExternalUpdatesErrorCode('load');
       } finally {
         if (!signal?.aborted) {
           setExternalUpdatesLoading(false);
@@ -95,18 +126,18 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isPrototypeMode) {
       setVillages([]);
-      setVillagesError('Archive data is unavailable in prototype gallery mode.');
+      setVillagesErrorCode('prototype');
       return;
     }
 
     setVillages(villagesData);
-    setVillagesError(villagesData.length === 0 ? 'Historical record is empty.' : null);
+    setVillagesErrorCode(villagesData.length === 0 ? 'empty' : null);
   }, [isPrototypeMode]);
 
   useEffect(() => {
     if (isPrototypeMode) {
       setExternalUpdates(null);
-      setExternalUpdatesError(null);
+      setExternalUpdatesErrorCode(null);
       setExternalUpdatesLoading(false);
       return;
     }
@@ -193,7 +224,7 @@ const App: React.FC = () => {
     () => [
       {
         id: 'roots',
-        title: 'The Roots',
+        title: t('common:nav.sections.roots'),
         description:
           'Follow the colonial timeline from the British Mandate through the Nakba and meet villages whose erasure anchors this archive.',
         ref: rootsRef,
@@ -203,7 +234,7 @@ const App: React.FC = () => {
       },
       {
         id: 'resistance',
-        title: 'The Resistance',
+        title: t('common:nav.sections.resistance'),
         description:
           'Witness the breadth of Palestinian defiance, from organized uprisings to the cultural figures who embodied liberation.',
         ref: resistanceRef,
@@ -213,7 +244,7 @@ const App: React.FC = () => {
       },
       {
         id: 'culture',
-        title: 'The Culture',
+        title: t('common:nav.sections.culture'),
         description:
           'Celebrate the living practices—tatreez, cuisine, film, and dance—that protect memory and identity against erasure.',
         ref: cultureRef,
@@ -223,7 +254,7 @@ const App: React.FC = () => {
       },
       {
         id: 'action',
-        title: 'The Action',
+        title: t('common:nav.sections.action'),
         description:
           'Translate narrative into solidarity through organizing, fundraising, and amplifying Palestinian-led calls to action.',
         ref: actionRef,
@@ -232,7 +263,7 @@ const App: React.FC = () => {
         focusVillages: ['Lydda', 'al-Ramla'],
       },
     ],
-    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources]
+    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources, t]
   );
 
   const sceneConfigs = useMemo<UseRiverScenesConfig[]>(
@@ -374,6 +405,9 @@ const App: React.FC = () => {
 
   return (
     <TooltipProvider>
+      <a href="#main-content" className="skip-link">
+        {t('common:skipLink')}
+      </a>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="fixed top-6 right-6 z-40 flex flex-col items-end gap-1">
           <button
@@ -381,10 +415,29 @@ const App: React.FC = () => {
             className="bg-white/10 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
             onClick={() => setArchiveExplorerOpen(true)}
           >
-            Archive Explorer
+            {t('common:buttons.archiveExplorer')}
           </button>
-          <span className="text-xs text-muted hidden md:block">Press ⌘K / Ctrl+K</span>
+          <span className="text-xs text-muted hidden md:block">
+            {t('common:buttons.archiveExplorerHint')}
+          </span>
         </div>
+
+        <nav className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-6" aria-label={t('common:nav.label')}>
+          <ul className="flex items-center gap-4 text-sm text-text-secondary flex-wrap">
+            {sceneMeta.map((scene) => (
+              <li key={scene.id}>
+                <a
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-slate-900/60 text-text-secondary hover:text-text-primary hover:border-accent focus:outline-none focus:ring-2 focus:ring-accent"
+                  href={`#scene-${scene.id}`}
+                >
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
+                  {scene.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <LanguageSwitcher />
+        </nav>
 
         <RiverPath
           headerRef={headerRef}
@@ -423,20 +476,57 @@ const App: React.FC = () => {
           className="min-h-screen flex flex-col justify-center items-center text-center py-20 relative z-10"
         >
           <h1 className="font-serif text-6xl md:text-8xl text-white leading-tight tracking-tight">
-            From The River
+            {t('app:title')}
           </h1>
           <p className="mt-6 text-xl md:text-2xl text-text-secondary max-w-3xl">
-            A living archive of Palestinian history, culture, and the ongoing struggle for liberation. This is a journey of understanding.
+            {t('app:description')}
           </p>
-          {villagesError ? (
-            <p className="mt-4 text-sm text-red-200 bg-red-900/40 border border-red-800 rounded-lg px-4 py-2 max-w-md">
-              {villagesError}
-            </p>
+          {villagesStatusIsError ? (
+            <div
+              className="mt-4 text-sm text-red-200 bg-red-900/40 border border-red-800 rounded-lg px-4 py-2 max-w-md flex items-start gap-2"
+              role="alert"
+            >
+              <svg
+                aria-hidden="true"
+                className="w-5 h-5 mt-0.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M12 9v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path
+                  d="M10.073 3.51 1.824 18a2 2 0 0 0 1.754 3h16.844a2 2 0 0 0 1.754-3L13.176 3.51a2 2 0 0 0-3.103 0Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+              <span>{villagesStatusMessage}</span>
+            </div>
           ) : (
             <p className="mt-4 text-xs text-muted">
-              Last data refresh: {new Date(villagesDataset.metadata.generated_at).toLocaleDateString()} · {villages.length} villages indexed.
+              <span className="inline-flex items-center gap-2">
+                <svg
+                  aria-hidden="true"
+                  className="w-4 h-4 text-accent"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M7 10h5v5H7z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                  <path
+                    d="M7 3v3M17 3v3M5 7h14M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span>{villagesStatusMessage}</span>
+              </span>
             </p>
           )}
+          <VillageTicker villages={villages} />
           <div className="mt-12 text-muted animate-bounce" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -444,8 +534,8 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <main className="relative z-10">
-          <ContentNode ref={rootsRef} alignment="left">
+        <main id="main-content" className="relative z-10">
+          <ContentNode ref={rootsRef} alignment="left" id="scene-roots">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
@@ -453,7 +543,7 @@ const App: React.FC = () => {
                   alt="An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness."
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Roots</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.roots')}</h2>
 
               <div className="space-y-4 text-text-secondary mb-8">
                 <p>
@@ -487,8 +577,8 @@ const App: React.FC = () => {
                       </a>
                     </li>
                     <li>
-                      {villagesError ? (
-                        <p className="text-sm text-muted mt-2 h-6">{villagesError}</p>
+                      {villagesStatusIsError ? (
+                        <p className="text-sm text-muted mt-2 h-6">{villagesStatusMessage}</p>
                       ) : (
                         <VillageTicker villages={villages} />
                       )}
@@ -539,7 +629,7 @@ const App: React.FC = () => {
             </div>
           </ContentNode>
 
-          <ContentNode ref={resistanceRef} alignment="right">
+          <ContentNode ref={resistanceRef} alignment="right" id="scene-resistance">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
@@ -547,7 +637,7 @@ const App: React.FC = () => {
                   alt="A protestor holds a Palestinian flag and a megaphone, vocally symbolizing active resistance."
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Resistance</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.resistance')}</h2>
               <p className="text-text-secondary mb-8">
                 Resistance is the natural and righteous response to occupation and oppression. For Palestinians, it is a continuous, diverse, and deeply-rooted struggle for self-determination and return. It is not a monolith, but a dynamic combination of strategies, from the steadfastness of a farmer on his land to the global call for boycott. To understand the resistance is to understand the Palestinian will to exist.
               </p>
@@ -628,7 +718,7 @@ const App: React.FC = () => {
             </div>
           </ContentNode>
 
-          <ContentNode ref={cultureRef} alignment="left">
+          <ContentNode ref={cultureRef} alignment="left" id="scene-culture">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
@@ -636,7 +726,7 @@ const App: React.FC = () => {
                   alt="A woman embroiders fabric with traditional Palestinian Tatreez, a core symbol of cultural identity."
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Culture</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.culture')}</h2>
               <p className="text-text-secondary mb-8">
                 When a colonizing power seeks to erase a people, the preservation of culture becomes an act of war. Every shared meal, every embroidered stitch, every song and dance is a front in the battle for existence. This is not passive tradition; it is{' '}
                 <TooltipTrigger term="sumud">Sumud</TooltipTrigger>—a steadfast refusal to disappear. Palestinian culture is the living, breathing evidence of a nation that colonial logic has failed to expunge. It is the practice of memory, identity, and defiance.
@@ -694,7 +784,7 @@ const App: React.FC = () => {
             </div>
           </ContentNode>
 
-          <ContentNode ref={actionRef} alignment="right">
+          <ContentNode ref={actionRef} alignment="right" id="scene-action">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
@@ -702,7 +792,7 @@ const App: React.FC = () => {
                   alt="A crowd of people marching in a street protest, embodying the power of collective action and solidarity."
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Action</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.action')}</h2>
               <p className="text-text-secondary mb-8">
                 Solidarity is a verb. It is the engine of liberation. Below are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold systems of power accountable. Choose a front; engage in the struggle.
               </p>
@@ -771,7 +861,7 @@ const App: React.FC = () => {
               </div>
               <ExternalUpdatesPanel
                 payload={externalUpdates}
-                error={externalUpdatesError}
+                error={externalUpdatesErrorMessage}
                 isLoading={isExternalUpdatesLoading}
                 onRetry={() => {
                   void loadExternalUpdates();
@@ -799,10 +889,12 @@ const App: React.FC = () => {
 
         <CodexModal village={selectedVillage} onClose={closeCodex} />
 
-        <Modal isOpen={isToolkitOpen} onClose={() => setToolkitOpen(false)} title="Ideological Toolkit">
-          <p className="text-text-secondary mb-6">
-            Key resources for deconstructing common myths and propaganda.
-          </p>
+        <Modal
+          isOpen={isToolkitOpen}
+          onClose={() => setToolkitOpen(false)}
+          title={t('common:modals.toolkit.title')}
+        >
+          <p className="text-text-secondary mb-6">{t('common:modals.toolkit.description')}</p>
           <ul className="space-y-4">
             <li>
               <a
@@ -827,14 +919,16 @@ const App: React.FC = () => {
           </ul>
         </Modal>
 
-        <Modal isOpen={isDonateOpen} onClose={() => setDonateOpen(false)} title="Material Solidarity">
-          <p className="text-text-secondary mb-8">
-            Direct aid is a revolutionary act. It counters the siege and provides resources for Sumud (steadfastness). Choose a front.
-          </p>
+        <Modal
+          isOpen={isDonateOpen}
+          onClose={() => setDonateOpen(false)}
+          title={t('common:modals.donate.title')}
+        >
+          <p className="text-text-secondary mb-8">{t('common:modals.donate.description')}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
             <div>
               <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                Direct & Grassroots
+                {t('common:modals.donate.direct')}
               </h4>
               <ul className="space-y-4">
                 <li>
@@ -893,7 +987,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                Medical & Institutional
+                {t('common:modals.donate.institutional')}
               </h4>
               <ul className="space-y-4">
                 <li>

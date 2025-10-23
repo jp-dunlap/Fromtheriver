@@ -25,6 +25,25 @@ body::after {
   z-index: -1;
 }
 
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 0.5rem;
+  transform: translate(-50%, -200%);
+  background-color: hsla(var(--color-surface) / 0.95);
+  color: hsl(var(--color-text-primary));
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: 2px solid hsl(var(--color-accent));
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+
+.skip-link:focus {
+  transform: translate(-50%, 0);
+  outline: none;
+}
+
 .resource-link {
   @apply inline-block font-medium text-muted relative pb-1 transition-all duration-300 ease-out;
   color: hsl(var(--color-text-secondary));

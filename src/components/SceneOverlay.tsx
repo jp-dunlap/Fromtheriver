@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Village } from '../data/types';
 
 interface SceneOverlayProps {
@@ -17,6 +18,8 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
   onSelectVillage,
   isVisible,
 }) => {
+  const { t } = useTranslation(['common']);
+
   if (!isVisible || villages.length === 0) {
     return null;
   }
@@ -27,7 +30,7 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
     <aside
       className="fixed right-4 md:right-8 top-24 z-30 max-w-sm w-[90vw] md:w-80 bg-slate-950/80 backdrop-blur-md border border-border/60 rounded-xl shadow-2xl p-5 text-sm text-text-secondary"
       aria-live="polite"
-      aria-label={`Scene overlay for ${sceneTitle}`}
+      aria-label={t('overlay.ariaLabel', { title: sceneTitle })}
     >
       <h3 className="font-serif text-xl text-white mb-2">{sceneTitle}</h3>
       <p className="mb-4 text-text-secondary/80 leading-relaxed">{description}</p>
@@ -48,13 +51,13 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
             className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-white border border-border/60 rounded-full px-3 py-1 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
             onClick={() => onSelectVillage(primaryVillage)}
           >
-            Open Codex Entry
+            {t('overlay.openCodex')}
           </button>
         </article>
 
         {villages.length > 1 && (
           <div>
-            <p className="text-xs uppercase tracking-wider text-muted mb-2">Related villages</p>
+            <p className="text-xs uppercase tracking-wider text-muted mb-2">{t('overlay.relatedVillages')}</p>
             <ul className="space-y-2">
               {villages.slice(1).map((village) => (
                 <li key={village.id}>

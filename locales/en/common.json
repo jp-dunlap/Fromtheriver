@@ -1,0 +1,72 @@
+{
+  "common": {
+    "skipLink": "Skip to main content",
+    "nav": {
+      "label": "Primary",
+      "sections": {
+        "roots": "The Roots",
+        "resistance": "The Resistance",
+        "culture": "The Culture",
+        "action": "The Action"
+      }
+    },
+    "language": {
+      "label": "Language",
+      "english": "English",
+      "spanish": "Español",
+      "arabic": "العربية"
+    },
+    "status": {
+      "dataRefresh": "Last data refresh: {{date}} · {{count}} villages indexed.",
+      "dataEmpty": "Historical record is empty.",
+      "dataError": "Archive data is unavailable in prototype gallery mode.",
+      "externalError": "Could not refresh solidarity signals.",
+      "externalLoading": "Refreshing updates"
+    },
+    "ticker": {
+      "empty": "Historical record is empty.",
+      "remembering": "Remembering {{name}}..."
+    },
+    "overlay": {
+      "ariaLabel": "Scene overlay for {{title}}",
+      "openCodex": "Open Codex Entry",
+      "relatedVillages": "Related villages"
+    },
+    "modals": {
+      "toolkit": {
+        "title": "Ideological Toolkit",
+        "description": "Key resources for deconstructing common myths and propaganda."
+      },
+      "donate": {
+        "title": "Material Solidarity",
+        "description": "Direct aid is a revolutionary act. It counters the siege and provides resources for Sumud (steadfastness). Choose a front.",
+        "direct": "Direct & Grassroots",
+        "institutional": "Medical & Institutional"
+      },
+      "codex": {
+        "fallbackTitle": "Codex",
+        "keyFacts": "Key Facts",
+        "district": "District",
+        "coordinates": "Coordinates",
+        "perpetrators": "Perpetrators",
+        "operation": "Military Operation",
+        "builtOnRuins": "Built on its ruins",
+        "aftermath": "Aftermath",
+        "survivorTestimonies": "Survivor Testimonies",
+        "media": "Media & Further Study",
+        "viewAtlas": "View on Atlas of Erasure →"
+      }
+    },
+    "buttons": {
+      "archiveExplorer": "Archive Explorer",
+      "archiveExplorerHint": "Press ⌘K / Ctrl+K",
+      "retry": "Retry now"
+    }
+  },
+  "app": {
+    "title": "From The River",
+    "description": "A living archive of Palestinian history, culture, and the ongoing struggle for liberation. This is a journey of understanding.",
+    "tickerLabel": "Village remembrance ticker",
+    "externalUpdatesLabel": "Solidarity Signals"
+  }
+}

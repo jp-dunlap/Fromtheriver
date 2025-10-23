@@ -1,13 +1,13 @@
 :root {
   --color-background: 210 33% 6%;
-  --color-surface: 217 36% 14%;
+  --color-surface: 217 36% 16%;
   --color-overlay: 220 33% 6%;
-  --color-border: 218 23% 35%;
-  --color-muted: 215 16% 47%;
-  --color-accent: 141 51% 69%;
-  --color-accent-strong: 141 61% 44%;
+  --color-border: 218 32% 45%;
+  --color-muted: 214 23% 72%;
+  --color-accent: 150 60% 58%;
+  --color-accent-strong: 150 72% 45%;
   --color-text-primary: 210 40% 96%;
-  --color-text-secondary: 216 15% 70%;
+  --color-text-secondary: 210 24% 84%;
   --font-serif: 'Lora', serif;
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
