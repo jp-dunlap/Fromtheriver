@@ -1,0 +1,207 @@
+{
+  "app": {
+    "skipToMain": "Skip to main content",
+    "title": "From The River",
+    "tagline": "A living archive of Palestinian history, culture, and the ongoing struggle for liberation. This is a journey of understanding.",
+    "nav": {
+      "roots": "Roots",
+      "resistance": "Resistance",
+      "culture": "Culture",
+      "action": "Action"
+    },
+    "navLabel": "Primary navigation",
+    "language": {
+      "label": "Language",
+      "names": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية"
+      }
+    },
+    "footer": {
+      "solidarity": "From The River To The Sea, Palestine Will Be Free.",
+      "credit": "fromtheriver.org - A project of solidarity."
+    }
+  },
+  "ticker": {
+    "empty": "Historical record is empty.",
+    "prefix": "Remembering",
+    "suffix": "..."
+  },
+  "errors": {
+    "villages": "Could not load the historical record."
+  },
+  "audio": {
+    "narration": "Narration",
+    "play": "Play",
+    "pause": "Pause",
+    "volume": "Volume",
+    "enableAuto": "Enable Auto Narration",
+    "disableAuto": "Disable Auto Narration"
+  },
+  "overlay": {
+    "label": "Scene overlay for {{title}}",
+    "primaryMeta": "{{district}} District · {{arabicName}}",
+    "openCodex": "Open Codex Entry",
+    "related": "Related villages"
+  },
+  "villages": {
+    "open": "Open details for {{name}}"
+  },
+  "modals": {
+    "close": "Close modal",
+    "codex": {
+      "title": "Codex",
+      "district": "District",
+      "destroyedBy": "Destroyed by",
+      "militaryOperation": "Military Operation",
+      "builtOn": "Built on its ruins",
+      "viewAtlas": "View on Atlas of Erasure →"
+    },
+    "toolkit": {
+      "title": "Ideological Toolkit",
+      "intro": "Key resources for deconstructing common myths and propaganda.",
+      "links": {
+        "paliAnswers": "PaliAnswers: Indexed Responses",
+        "decolonize": "Decolonize Palestine: Debunking Myths"
+      }
+    },
+    "donate": {
+      "title": "Material Solidarity",
+      "intro": "Direct aid is a revolutionary act. It counters the siege and provides resources for Sumud (steadfastness). Choose a front.",
+      "groups": {
+        "direct": "Direct & Grassroots",
+        "institutional": "Medical & Institutional"
+      },
+      "entries": {
+        "oliveBranch": {
+          "name": "Operation Olive Branch",
+          "description": "Volunteer-powered grassroots effort helping Palestinian families. Prioritizes transparency."
+        },
+        "fundsForGaza": {
+          "name": "Funds For Gaza",
+          "description": "List of targeted fundraisers for Gaza, curated by the @letstalkpalestine activist collective."
+        },
+        "eSims": {
+          "name": "e-SIMs for Gaza",
+          "description": "Activist guide on how to donate a Nomad e-SIM and keep Palestinians in Gaza connected."
+        },
+        "mutualAid": {
+          "name": "Local Mutual Aid",
+          "description": "Example of community-level organizing (Arkansas) directly supporting relief efforts."
+        },
+        "pcrf": {
+          "name": "PCRF",
+          "description": "Palestine Children's Relief Fund. Provides critical medical care to sick and injured children."
+        },
+        "map": {
+          "name": "MAP",
+          "description": "Medical Aid for Palestinians. Delivers health and dignity to Palestinians under occupation and as refugees."
+        },
+        "msf": {
+          "name": "Doctors Without Borders",
+          "description": "Global medical teams providing emergency care in Gaza and the West Bank."
+        },
+        "unrwa": {
+          "name": "UNRWA",
+          "description": "The UN agency for Palestine refugees, providing food, shelter, and essential services."
+        }
+      }
+    }
+  },
+  "scenes": {
+    "roots": {
+      "title": "The Roots",
+      "imageAlt": "An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness.",
+      "overlayDescription": "Follow the colonial timeline from the British Mandate through the Nakba and meet villages whose erasure anchors this archive.",
+      "paragraphs": {
+        "0": "To understand Palestine is to understand a history systematically targeted for erasure. The story does not begin in 1948, but in the soil and soul of a people whose dispossession was planned decades earlier. The British Mandate (1922-1948), established after the fall of the Ottoman Empire, was tasked with guiding Palestine to self-rule. Instead, it implemented the 1917 <balfour>Balfour Declaration</balfour>, promising a “national home for the Jewish people” in a land that was already 94% Palestinian Arab. This inherent contradiction set the stage for conflict, privileging the ambitions of a <settler>settler movement</settler> over the rights of the indigenous majority.",
+        "1": "<zionism>Zionism</zionism>, at its core, is a 19th-century European settler-colonial project. Its foundational premise required the transformation of Palestine into a Jewish state, which could not be achieved without the displacement of the native population. Early Zionist leaders were explicit about this, viewing their work as a “colonization adventure.” The lead-up to 1948 saw the systematic execution of this vision, culminating in the <nakba>Nakba</nakba> (“The Catastrophe”).",
+        "2": "The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities. This was not a byproduct of war; it was the realization of a plan. From the haunting, still-standing homes of <lifta>Lifta</lifta> at Jerusalem's edge, to the premeditated massacres at <deirYassin>Deir Yassin</deirYassin> and <alTantura>al-Tantura</alTantura>, to the forced death march from <lydda>Lydda</lydda>, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure."
+      },
+      "quote": {
+        "text": "“The surest way to eradicate a people's right to their land is to deny their historical connection to it.”",
+        "attribution": "— Rashid Khalidi, 'The Hundred Years' War on Palestine'"
+      },
+      "analysis": {
+        "title": "Further Analysis",
+        "atlas": "Explore the Atlas of Erasure →",
+        "palestine101": "Palestine 101: A Visual History",
+        "nakba": "The Nakba of 1948: An Ongoing Catastrophe",
+        "zionism": "Defining Zionism as a Settler-Colonial Project",
+        "un": "Key UN Resolutions and International Law"
+      }
+    },
+    "resistance": {
+      "title": "The Resistance",
+      "imageAlt": "Archival image of Palestinian women leading a march with raised fists during the First Intifada.",
+      "overlayDescription": "Witness the breadth of Palestinian defiance, from organized uprisings to the cultural figures who embodied liberation.",
+      "paragraphs": {
+        "0": "Palestinian resistance is not a singular moment; it is a continuum of organized defiance. From the 1936-1939 Arab Revolt to the First and Second Intifadas, the struggle has taken mass, disciplined forms that combined labor strikes, boycotts, and armed struggle. Women, students, and workers all organized underground networks that sustained the movement despite severe repression.",
+        "1": "The liberation movement has always been both political and cultural. Figures like Ghassan Kanafani and Leila Khaled became symbols of resistance, articulating a revolutionary vision that refused to cede the Palestinian narrative to colonial powers. Whether through the Popular Front for the Liberation of Palestine, grassroots unions, or neighborhood committees, the resistance affirmed that liberation would be won through collective action.",
+        "2": "International solidarity has been a critical pillar. From the anti-apartheid struggle in South Africa to Black liberation movements in the United States, comrades across the world have recognized the shared tactics of repression—and the shared tools of resistance. The call for Boycott, Divestment, and Sanctions (BDS) continues this lineage, pressuring institutions to withdraw complicity from Israeli apartheid."
+      }
+    },
+    "culture": {
+      "title": "The Culture",
+      "imageAlt": "Women dancing dabke in embroidered thobes at a community celebration, illuminated by warm evening light.",
+      "overlayDescription": "Celebrate the living practices—tatreez, cuisine, film, and dance—that protect memory and identity against erasure.",
+      "intro": "Palestinian culture is a living archive. Tatreez embroidery, communal cooking, film, poetry, and Dabke dancing carry the memory of place and people. Culture is not ornamental—it is the material of resistance, sustaining identity in the face of dispossession.",
+      "paragraphs": {
+        "0": "In refugee camps from Lebanon to Gaza, food, dance, and poetry have been the heartbeat of <sumud>Sumud</sumud>—a steadfast refusal to disappear. Palestinian culture is the living, breathing evidence of a nation that colonial logic has failed to expunge. It is the practice of memory, identity, and defiance.",
+        "1": "The kitchen is a site of resistance. Dishes like <maqluba><em>Maqluba</em></maqluba> (the “upside-down” pot of rice, meat, and vegetables) are more than food; they are communal rituals that tell a story of land and family. Sharing these meals asserts a national identity that Israel actively attempts to appropriate and rebrand as its own.",
+        "2": "Palestinian embroidery, or <tatreez><em>Tatreez</em></tatreez>, is a language in thread. The intricate geometric patterns are not merely decorative; they are a visual dialect signifying regional identity, marital status, and ancestral heritage. A dress from Ramallah tells a different story from one from Gaza. This art form literally stitches the map of a fragmented homeland onto the bodies of its people, defying erasure.",
+        "3": "From the politically charged films that document the struggle to the powerful rhythms of the <dabke><em>Dabke</em></dabke> dance, these art forms carry the spirit of the movement. The <dabke><em>Dabke's</em></dabke> stomping feet symbolize a connection to the land, while Palestinian cinema gives the people control over their own narrative, challenging the dehumanizing portrayals in Western media."
+      },
+      "accordion": {
+        "cuisine": {
+          "title": "Cuisine as Identity",
+          "link": "A Taste of Palestine"
+        },
+        "tatreez": {
+          "title": "Tatreez: The Fabric of a Nation",
+          "link": "Untangling Tatreez"
+        },
+        "arts": {
+          "title": "Cinema, Music & Dabke",
+          "film": "Palestinian Cinema",
+          "dance": "The Rhythms of Dabke"
+        }
+      }
+    },
+    "action": {
+      "title": "The Action",
+      "imageAlt": "A crowd of people marching in a street protest, embodying the power of collective action and solidarity.",
+      "overlayDescription": "Translate narrative into solidarity through organizing, fundraising, and amplifying Palestinian-led calls to action.",
+      "intro": "Solidarity is a verb. It is the engine of liberation. Below are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold systems of power accountable. Choose a front; engage in the struggle.",
+      "accordion": {
+        "donate": {
+          "title": "Donate: Vetted Aid & Solidarity Funds",
+          "description": "Amidst blockade and siege, direct financial support provides critical humanitarian relief and resources for steadfastness. This is a direct counter-measure to the strategy of immiseration.",
+          "button": "Access Solidarity Funds"
+        },
+        "business": {
+          "title": "Support Palestinian Businesses",
+          "description": "Economic solidarity is a powerful tool. Buying from Palestinian artisans and fair-trade initiatives directly supports families and resists the economic strangulation of the occupation.",
+          "link": "Buy Palestinian"
+        },
+        "educate": {
+          "title": "Educate & Advocate",
+          "description": "The battle is also for hearts and minds. Use these toolkits to effectively challenge disinformation within your own circles and articulate the case for justice to public representatives.",
+          "button": "Access Toolkits"
+        },
+        "organize": {
+          "title": "Find Your Frontline: Build Local Power",
+          "body": {
+            "0": "Power is built in local struggles. Join or organize teach-ins, pressure campaigns, and rapid-response networks that can mobilize in moments of crisis.",
+            "1": "Campus and community organizations have been at the forefront of shifting public consciousness. Coordinate with Palestinian-led groups to ensure efforts align with articulated needs."
+          },
+          "links": {
+            "jvp": "Find a JVP Chapter",
+            "sjp": "Connect with SJP"
+          }
+        }
+      }
+    }
+  }
+}

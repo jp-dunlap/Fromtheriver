@@ -1,0 +1,207 @@
+{
+  "app": {
+    "skipToMain": "Saltar al contenido principal",
+    "title": "Del Río",
+    "tagline": "Un archivo vivo de la historia, la cultura y la lucha palestina por la liberación. Es un viaje hacia la comprensión.",
+    "nav": {
+      "roots": "Raíces",
+      "resistance": "Resistencia",
+      "culture": "Cultura",
+      "action": "Acción"
+    },
+    "navLabel": "Navegación principal",
+    "language": {
+      "label": "Idioma",
+      "names": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية"
+      }
+    },
+    "footer": {
+      "solidarity": "Del río al mar, Palestina será libre.",
+      "credit": "fromtheriver.org - Un proyecto de solidaridad."
+    }
+  },
+  "ticker": {
+    "empty": "El registro histórico está vacío.",
+    "prefix": "Recordando",
+    "suffix": "..."
+  },
+  "errors": {
+    "villages": "No se pudo cargar el registro histórico."
+  },
+  "audio": {
+    "narration": "Narración",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "volume": "Volumen",
+    "enableAuto": "Activar narración automática",
+    "disableAuto": "Desactivar narración automática"
+  },
+  "overlay": {
+    "label": "Superposición de la escena {{title}}",
+    "primaryMeta": "Distrito de {{district}} · {{arabicName}}",
+    "openCodex": "Abrir entrada del códice",
+    "related": "Pueblos relacionados"
+  },
+  "villages": {
+    "open": "Abrir detalles de {{name}}"
+  },
+  "modals": {
+    "close": "Cerrar ventana",
+    "codex": {
+      "title": "Códice",
+      "district": "Distrito",
+      "destroyedBy": "Destruido por",
+      "militaryOperation": "Operación militar",
+      "builtOn": "Construido sobre sus ruinas",
+      "viewAtlas": "Ver en Atlas of Erasure →"
+    },
+    "toolkit": {
+      "title": "Caja de herramientas ideológica",
+      "intro": "Recursos clave para desmontar mitos y propaganda habituales.",
+      "links": {
+        "paliAnswers": "PaliAnswers: respuestas indexadas",
+        "decolonize": "Decolonize Palestine: desmintiendo mitos"
+      }
+    },
+    "donate": {
+      "title": "Solidaridad material",
+      "intro": "La ayuda directa es un acto revolucionario. Contrarresta el asedio y proporciona recursos para el sumud (firmeza). Elige un frente.",
+      "groups": {
+        "direct": "Directa y de base",
+        "institutional": "Médica e institucional"
+      },
+      "entries": {
+        "oliveBranch": {
+          "name": "Operation Olive Branch",
+          "description": "Esfuerzo de base impulsado por voluntariado que apoya a familias palestinas. Prioriza la transparencia."
+        },
+        "fundsForGaza": {
+          "name": "Funds For Gaza",
+          "description": "Lista de recaudaciones dirigidas para Gaza, curada por el colectivo activista @letstalkpalestine."
+        },
+        "eSims": {
+          "name": "e-SIMs para Gaza",
+          "description": "Guía activista para donar un e-SIM de Nomad y mantener conectadas a las personas en Gaza."
+        },
+        "mutualAid": {
+          "name": "Ayuda mutua local",
+          "description": "Ejemplo de organización comunitaria (Arkansas) que apoya directamente los esfuerzos de ayuda."
+        },
+        "pcrf": {
+          "name": "PCRF",
+          "description": "Fondo de Ayuda para la Infancia Palestina. Proporciona atención médica esencial a niñas y niños enfermos o heridos."
+        },
+        "map": {
+          "name": "MAP",
+          "description": "Medical Aid for Palestinians. Ofrece salud y dignidad a la población palestina bajo ocupación y en diáspora."
+        },
+        "msf": {
+          "name": "Médicos Sin Fronteras",
+          "description": "Equipos médicos globales que brindan atención de emergencia en Gaza y Cisjordania."
+        },
+        "unrwa": {
+          "name": "UNRWA",
+          "description": "La agencia de la ONU para personas refugiadas palestinas, que proporciona alimentos, refugio y servicios esenciales."
+        }
+      }
+    }
+  },
+  "scenes": {
+    "roots": {
+      "title": "Las raíces",
+      "imageAlt": "Un antiguo olivo nudoso da testimonio de raíces profundas y de la firmeza palestina.",
+      "overlayDescription": "Sigue la cronología colonial desde el Mandato Británico hasta la Nakba y conoce a los pueblos cuya eliminación sostiene este archivo.",
+      "paragraphs": {
+        "0": "Comprender Palestina implica reconocer una historia sistemáticamente atacada para borrarla. El relato no comienza en 1948, sino en la tierra y el espíritu de un pueblo cuya desposesión se planificó décadas antes. El Mandato Británico (1922-1948), establecido tras la caída del Imperio Otomano, debía guiar a Palestina hacia el autogobierno. En su lugar, aplicó la Declaración <balfour>Balfour</balfour> de 1917, que prometía un “hogar nacional para el pueblo judío” en una tierra que ya era un 94 % palestina árabe. Esta contradicción inherente sembró el conflicto, privilegiando las ambiciones de un movimiento <settler>colono</settler> sobre los derechos de la mayoría indígena.",
+        "1": "El <zionism>sionismo</zionism> es, en esencia, un proyecto colonial de asentamiento europeo del siglo XIX. Su premisa fundacional exigía transformar Palestina en un Estado judío, algo imposible sin desplazar a la población nativa. Las y los dirigentes sionistas eran explícitos al respecto, concibiendo su labor como una “aventura de colonización”. Los años previos a 1948 vieron la ejecución sistemática de esta visión, que culminó en la <nakba>Nakba</nakba> (“La Catástrofe”).",
+        "2": "El Plan de Partición de la ONU de 1947 asignó el 55 % de Palestina a un Estado judío, pese a que la población judía poseía solo alrededor del 7 % de la tierra y representaba un tercio de la población. Esto desencadenó la guerra de 1948, durante la cual las milicias sionistas y luego el ejército israelí despoblaron más de 500 pueblos y ciudades palestinas. No fue un subproducto de la guerra; fue la realización de un plan. Desde las sobrecogedoras casas aún en pie de <lifta>Lifta</lifta> a las afueras de Jerusalén, hasta las masacres premeditadas de <deirYassin>Deir Yassin</deirYassin> y <alTantura>al-Tantura</alTantura>, pasando por la marcha forzada de la muerte desde <lydda>Lydda</lydda>, una campaña sistemática de limpieza étnica expulsó a más de 750 000 palestinos y palestinas, los convirtió en personas refugiadas y allanó el camino para el nuevo Estado. Las raíces de este conflicto se encuentran en este proceso violento y continuo de borrado."
+      },
+      "quote": {
+        "text": "“La forma más segura de erradicar el derecho de un pueblo a su tierra es negar su conexión histórica con ella.”",
+        "attribution": "— Rashid Khalidi, 'The Hundred Years' War on Palestine'"
+      },
+      "analysis": {
+        "title": "Análisis adicional",
+        "atlas": "Explora el Atlas of Erasure →",
+        "palestine101": "Palestina 101: una historia visual",
+        "nakba": "La Nakba de 1948: una catástrofe en curso",
+        "zionism": "Definiendo el sionismo como un proyecto colonial de asentamiento",
+        "un": "Resoluciones clave de la ONU y derecho internacional"
+      }
+    },
+    "resistance": {
+      "title": "La resistencia",
+      "imageAlt": "Imagen de archivo de mujeres palestinas encabezando una marcha con puños en alto durante la Primera Intifada.",
+      "overlayDescription": "Sé testigo de la amplitud de la resistencia palestina, desde los levantamientos organizados hasta las figuras culturales que encarnaron la liberación.",
+      "paragraphs": {
+        "0": "La resistencia palestina no es un momento único; es un continuo de desafío organizado. Desde la Revuelta Árabe de 1936-1939 hasta la Primera y Segunda Intifada, la lucha adoptó formas masivas y disciplinadas que combinaron huelgas laborales, boicots y lucha armada. Mujeres, estudiantes y trabajadores articularon redes clandestinas que sostuvieron el movimiento pese a la represión severa.",
+        "1": "El movimiento de liberación siempre ha sido político y cultural a la vez. Figuras como Ghassan Kanafani y Leila Khaled se convirtieron en símbolos de resistencia, articulando una visión revolucionaria que se negó a ceder la narrativa palestina a las potencias coloniales. Ya fuera a través del Frente Popular para la Liberación de Palestina, de sindicatos de base o de comités vecinales, la resistencia afirmó que la liberación se conquistaría mediante la acción colectiva.",
+        "2": "La solidaridad internacional ha sido un pilar fundamental. Desde la lucha contra el apartheid en Sudáfrica hasta los movimientos de liberación negra en Estados Unidos, compañeras y compañeros de todo el mundo han reconocido las tácticas compartidas de represión y las herramientas compartidas de resistencia. El llamado al Boicot, Desinversión y Sanciones (BDS) continúa esta herencia, presionando a las instituciones para que retiren su complicidad con el apartheid israelí."
+      }
+    },
+    "culture": {
+      "title": "La cultura",
+      "imageAlt": "Mujeres bailan dabke con thobes bordados en una celebración comunitaria iluminada por la luz cálida del atardecer.",
+      "overlayDescription": "Celebra las prácticas vivas —tatreez, cocina, cine y danza— que protegen la memoria y la identidad frente al borrado.",
+      "intro": "La cultura palestina es un archivo vivo. El bordado tatreez, la cocina comunitaria, el cine, la poesía y el dabke conservan la memoria del lugar y del pueblo. La cultura no es ornamental: es materia de resistencia, sostiene la identidad frente a la desposesión.",
+      "paragraphs": {
+        "0": "En los campamentos de personas refugiadas, desde Líbano hasta Gaza, la comida, la danza y la poesía han sido el latido del <sumud>sumud</sumud>, una negativa firme a desaparecer. La cultura palestina es la evidencia viva y palpitante de una nación que la lógica colonial no ha logrado borrar. Es la práctica de la memoria, la identidad y la resistencia.",
+        "1": "La cocina es un espacio de resistencia. Platos como la <maqluba><em>maqluba</em></maqluba> (la olla “al revés” de arroz, carne y verduras) son más que alimentos; son rituales comunitarios que narran una historia de tierra y familia. Compartir estas comidas afirma una identidad nacional que Israel intenta apropiarse y rebautizar como propia.",
+        "2": "El bordado palestino, o <tatreez><em>tatreez</em></tatreez>, es un lenguaje tejido. Los patrones geométricos intrincados no son solo decorativos; constituyen un dialecto visual que señala identidad regional, estado civil y herencia ancestral. Un vestido de Ramala cuenta una historia distinta a uno de Gaza. Este arte literalmente cose el mapa de una patria fragmentada sobre los cuerpos de su pueblo, desafiando el borrado.",
+        "3": "Desde las películas políticamente cargadas que documentan la lucha hasta los ritmos poderosos de la danza <dabke><em>dabke</em></dabke>, estas expresiones artísticas llevan el espíritu del movimiento. Los pasos contundentes del <dabke><em>dabke</em></dabke> simbolizan la conexión con la tierra, mientras que el cine palestino devuelve a la gente el control de su propia narrativa y desafía las representaciones deshumanizantes en los medios occidentales."
+      },
+      "accordion": {
+        "cuisine": {
+          "title": "La cocina como identidad",
+          "link": "Un sabor de Palestina"
+        },
+        "tatreez": {
+          "title": "Tatreez: el tejido de una nación",
+          "link": "Desentrañando el tatreez"
+        },
+        "arts": {
+          "title": "Cine, música y dabke",
+          "film": "Cine palestino",
+          "dance": "Los ritmos del dabke"
+        }
+      }
+    },
+    "action": {
+      "title": "La acción",
+      "imageAlt": "Una multitud marcha en una protesta callejera, encarnando el poder de la acción colectiva y la solidaridad.",
+      "overlayDescription": "Transforma el relato en solidaridad mediante la organización, la recaudación y la amplificación de los llamados palestinos a la acción.",
+      "intro": "La solidaridad es un verbo. Es el motor de la liberación. A continuación se muestran formas tangibles y eficaces de apoyar la causa palestina, amplificar sus voces y exigir cuentas a los sistemas de poder. Elige un frente y participa en la lucha.",
+      "accordion": {
+        "donate": {
+          "title": "Donar: fondos de ayuda y solidaridad verificados",
+          "description": "En medio del bloqueo y el asedio, el apoyo económico directo proporciona ayuda humanitaria esencial y recursos para la firmeza. Es una contraestrategia directa frente a la política de empobrecimiento.",
+          "button": "Acceder a fondos de solidaridad"
+        },
+        "business": {
+          "title": "Apoyar a negocios palestinos",
+          "description": "La solidaridad económica es una herramienta poderosa. Comprar a artesanas y artesanos palestinos y a iniciativas de comercio justo apoya directamente a las familias y resiste la asfixia económica de la ocupación.",
+          "link": "Compra palestina"
+        },
+        "educate": {
+          "title": "Educar y abogar",
+          "description": "La batalla también se libra en el terreno de las ideas. Utiliza estas guías para desafiar eficazmente la desinformación en tus círculos y articular el caso por la justicia ante representantes públicos.",
+          "button": "Acceder a las herramientas"
+        },
+        "organize": {
+          "title": "Encuentra tu primera línea: construye poder local",
+          "body": {
+            "0": "El poder se construye en las luchas locales. Únete u organiza clases públicas, campañas de presión y redes de respuesta rápida capaces de movilizarse en momentos de crisis.",
+            "1": "Las organizaciones comunitarias y universitarias han estado a la vanguardia del cambio de conciencia pública. Coordina con colectivos liderados por personas palestinas para asegurar que los esfuerzos respondan a sus necesidades explícitas."
+          },
+          "links": {
+            "jvp": "Encuentra un capítulo de JVP",
+            "sjp": "Conecta con SJP"
+          }
+        }
+      }
+    }
+  }
+}

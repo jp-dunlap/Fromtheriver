@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 
 interface AccordionItemProps {
   title: string;
@@ -8,6 +8,8 @@ interface AccordionItemProps {
 
 const AccordionItem: React.FC<AccordionItemProps> = ({ title, level = 'xl', children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const panelId = useId();
+  const headingId = `${panelId}-heading`;
 
   return (
     <div className="accordion-item">
@@ -17,6 +19,8 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, level = 'xl', chil
           level === '2xl' ? 'text-2xl' : 'text-xl'
         }`}
         aria-expanded={isOpen}
+        aria-controls={panelId}
+        id={headingId}
         onClick={() => setIsOpen((value) => !value)}
       >
         <span>{title}</span>
@@ -24,7 +28,12 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ title, level = 'xl', chil
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      <div className={`accordion-panel ${isOpen ? 'open' : 'hidden'}`}>
+      <div
+        className={`accordion-panel ${isOpen ? 'open' : 'hidden'}`}
+        id={panelId}
+        role="region"
+        aria-labelledby={headingId}
+      >
         <div className="mt-4">{children}</div>
       </div>
     </div>

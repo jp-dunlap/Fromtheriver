@@ -25,9 +25,31 @@ body::after {
   z-index: -1;
 }
 
+.skip-link {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, -150%);
+  top: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  background-color: hsla(var(--color-surface) / 0.95);
+  color: hsl(var(--color-text-primary));
+  border: 2px solid hsl(var(--color-accent));
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+
+.skip-link:focus {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  outline: none;
+}
+
 .resource-link {
-  @apply inline-block font-medium text-muted relative pb-1 transition-all duration-300 ease-out;
-  color: hsl(var(--color-text-secondary));
+  @apply inline-block font-medium text-text-tertiary relative pb-1 transition-all duration-300 ease-out;
+  color: hsl(var(--color-text-secondary-strong));
   background-image: linear-gradient(hsl(var(--color-accent)), hsl(var(--color-accent)));
   background-size: 0% 1px;
   background-position: left bottom;
@@ -52,7 +74,8 @@ body::after {
 
 .node-card:hover {
   border-color: hsla(var(--color-accent) / 0.7);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05), var(--card-glow), 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(154, 230, 180, 0.2);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05), var(--card-glow), 0 10px 30px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(154, 230, 180, 0.2);
 }
 
 .node-image-container {

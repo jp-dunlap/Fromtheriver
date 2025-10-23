@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import RiverPath from './components/RiverPath';
 import ContentNode from './components/ContentNode';
 import AccordionItem from './components/AccordionItem';
@@ -13,6 +20,7 @@ import SceneAudioControls from './components/SceneAudioControls';
 import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
 import { generateAmbientToneDataUri } from './js/ambientTone';
 import PrototypeGallery from './prototypes/PrototypeGallery';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -34,8 +42,17 @@ const App: React.FC = () => {
   const cultureRef = useRef<HTMLElement | null>(null);
   const actionRef = useRef<HTMLElement | null>(null);
 
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage;
+
+  useEffect(() => {
+    const html = document.documentElement;
+    html.lang = language;
+    html.dir = i18n.dir(language);
+  }, [i18n, language]);
+
   const [villages, setVillages] = useState<Village[]>([]);
-  const [villagesError, setVillagesError] = useState<string | null>(null);
+  const [villagesErrorKey, setVillagesErrorKey] = useState<string | null>(null);
   const [selectedVillage, setSelectedVillage] = useState<Village | null>(null);
   const [isToolkitOpen, setToolkitOpen] = useState(false);
   const [isDonateOpen, setDonateOpen] = useState(false);
@@ -64,7 +81,7 @@ const App: React.FC = () => {
       })
       .catch((error) => {
         if (isMounted) {
-          setVillagesError('Could not load the historical record.');
+          setVillagesErrorKey('errors.villages');
           console.error('Failed to load village data', error);
         }
       });
@@ -132,9 +149,8 @@ const App: React.FC = () => {
     () => [
       {
         id: 'roots',
-        title: 'The Roots',
-        description:
-          'Follow the colonial timeline from the British Mandate through the Nakba and meet villages whose erasure anchors this archive.',
+        title: t('scenes.roots.title'),
+        description: t('scenes.roots.overlayDescription'),
         ref: rootsRef,
         audioSrc: toneSources.roots,
         order: 0,
@@ -142,9 +158,8 @@ const App: React.FC = () => {
       },
       {
         id: 'resistance',
-        title: 'The Resistance',
-        description:
-          'Witness the breadth of Palestinian defiance, from organized uprisings to the cultural figures who embodied liberation.',
+        title: t('scenes.resistance.title'),
+        description: t('scenes.resistance.overlayDescription'),
         ref: resistanceRef,
         audioSrc: toneSources.resistance,
         order: 1,
@@ -152,9 +167,8 @@ const App: React.FC = () => {
       },
       {
         id: 'culture',
-        title: 'The Culture',
-        description:
-          'Celebrate the living practices—tatreez, cuisine, film, and dance—that protect memory and identity against erasure.',
+        title: t('scenes.culture.title'),
+        description: t('scenes.culture.overlayDescription'),
         ref: cultureRef,
         audioSrc: toneSources.culture,
         order: 2,
@@ -162,16 +176,15 @@ const App: React.FC = () => {
       },
       {
         id: 'action',
-        title: 'The Action',
-        description:
-          'Translate narrative into solidarity through organizing, fundraising, and amplifying Palestinian-led calls to action.',
+        title: t('scenes.action.title'),
+        description: t('scenes.action.overlayDescription'),
         ref: actionRef,
         audioSrc: toneSources.action,
         order: 3,
         focusVillages: ['Lydda', 'al-Ramla'],
       },
     ],
-    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources]
+    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources, t]
   );
 
   const sceneConfigs = useMemo<UseRiverScenesConfig[]>(
@@ -279,13 +292,46 @@ const App: React.FC = () => {
     [setVolume]
   );
 
+  const navItems = useMemo(
+    () => [
+      { id: 'roots', label: t('app.nav.roots') },
+      { id: 'resistance', label: t('app.nav.resistance') },
+      { id: 'culture', label: t('app.nav.culture') },
+      { id: 'action', label: t('app.nav.action') },
+    ],
+    [t]
+  );
+
   if (isPrototypeMode) {
     return <PrototypeGallery />;
   }
 
   return (
     <TooltipProvider>
+      <a className="skip-link" href="#main-content">
+        {t('app.skipToMain')}
+      </a>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav
+          className="sticky top-4 z-40 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-slate-950/75 backdrop-blur-md border border-border/60 rounded-xl px-4 py-3 shadow-lg"
+          aria-label={t('app.navLabel')}
+        >
+          <ul className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
+            {navItems.map((item) => (
+              <li key={item.id}>
+                <a
+                  className="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1 text-white/80 hover:text-white hover:border-accent/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70"
+                  href={`#${item.id}`}
+                >
+                  <span aria-hidden="true">•</span>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <LanguageSwitcher />
+        </nav>
+
         <RiverPath
           headerRef={headerRef}
           footerRef={footerRef}
@@ -323,63 +369,101 @@ const App: React.FC = () => {
           className="min-h-screen flex flex-col justify-center items-center text-center py-20 relative z-10"
         >
           <h1 className="font-serif text-6xl md:text-8xl text-white leading-tight tracking-tight">
-            From The River
+            {t('app.title')}
           </h1>
           <p className="mt-6 text-xl md:text-2xl text-text-secondary max-w-3xl">
-            A living archive of Palestinian history, culture, and the ongoing struggle for liberation. This is a journey of understanding.
+            {t('app.tagline')}
           </p>
-          <div className="mt-12 text-muted animate-bounce" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mt-12 text-text-secondary flex flex-col items-center gap-2" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
+            <span className="text-sm uppercase tracking-[0.3em]">{t('app.nav.roots')}</span>
           </div>
         </header>
 
-        <main className="relative z-10">
-          <ContentNode ref={rootsRef} alignment="left">
+        <main id="main-content" tabIndex={-1} className="relative z-10">
+          <ContentNode ref={rootsRef} alignment="left" id="roots">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
                   src="/images/ancient-olive-tree.jpg"
-                  alt="An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness."
+                  alt={t('scenes.roots.imageAlt')}
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Roots</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">{t('scenes.roots.title')}</h2>
 
               <div className="space-y-4 text-text-secondary mb-8">
                 <p>
-                  To understand Palestine is to understand a history systematically targeted for erasure. The story does not begin in 1948, but in the soil and soul of a people whose dispossession was planned decades earlier. The British Mandate (1922-1948), established after the fall of the Ottoman Empire, was tasked with guiding Palestine to self-rule. Instead, it implemented the 1917{' '}
-                  <TooltipTrigger term="balfour">Balfour Declaration</TooltipTrigger>, promising a “national home for the Jewish people” in a land that was already 94% Palestinian Arab. This inherent contradiction set the stage for conflict, privileging the ambitions of a{' '}
-                  <TooltipTrigger term="settler-colonialism">settler movement</TooltipTrigger> over the rights of the indigenous majority.
+                  <Trans
+                    i18nKey="scenes.roots.paragraphs.0"
+                    components={{
+                      balfour: <TooltipTrigger term="balfour" />,
+                      settler: <TooltipTrigger term="settler-colonialism" />,
+                    }}
+                  />
                 </p>
                 <p>
-                  <TooltipTrigger term="zionism">Zionism</TooltipTrigger>, at its core, is a 19th-century European settler-colonial project. Its foundational premise required the transformation of Palestine into a Jewish state, which could not be achieved without the displacement of the native population. Early Zionist leaders were explicit about this, viewing their work as a “colonization adventure.” The lead-up to 1948 saw the systematic execution of this vision, culminating in the{' '}
-                  <TooltipTrigger term="nakba">Nakba</TooltipTrigger> (“The Catastrophe”).
+                  <Trans
+                    i18nKey="scenes.roots.paragraphs.1"
+                    components={{
+                      zionism: <TooltipTrigger term="zionism" />,
+                      nakba: <TooltipTrigger term="nakba" />,
+                    }}
+                  />
                 </p>
                 <p>
-                  The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities. This was not a byproduct of war; it was the realization of a plan. From the haunting, still-standing homes of{' '}
-                  <VillageLink name="Lifta" onSelect={handleVillageSelect} /> at Jerusalem's edge, to the premeditated massacres at{' '}
-                  <VillageLink name="Deir Yassin" onSelect={handleVillageSelect} /> and{' '}
-                  <VillageLink name="al-Tantura" onSelect={handleVillageSelect} />, to the forced death march from{' '}
-                  <VillageLink name="Lydda" onSelect={handleVillageSelect} />, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure.
+                  <Trans
+                    i18nKey="scenes.roots.paragraphs.2"
+                    components={{
+                      lifta: (
+                        <VillageLink name="Lifta" onSelect={handleVillageSelect} />
+                      ),
+                      deirYassin: (
+                        <VillageLink
+                          name="Deir Yassin"
+                          onSelect={handleVillageSelect}
+                        />
+                      ),
+                      alTantura: (
+                        <VillageLink
+                          name="al-Tantura"
+                          onSelect={handleVillageSelect}
+                        />
+                      ),
+                      lydda: (
+                        <VillageLink name="Lydda" onSelect={handleVillageSelect} />
+                      ),
+                    }}
+                  />
                 </p>
               </div>
 
               <div className="space-y-6 border-l-2 border-border pl-4 mb-8">
-                <blockquote className="text-gray-300 italic">
-                  <p>“The surest way to eradicate a people's right to their land is to deny their historical connection to it.”</p>
-                  <cite className="text-muted not-italic block mt-2">— Rashid Khalidi, 'The Hundred Years' War on Palestine'</cite>
+                <blockquote className="text-text-secondary-strong italic">
+                  <p>{t('scenes.roots.quote.text')}</p>
+                  <cite className="text-text-tertiary not-italic block mt-2">
+                    {t('scenes.roots.quote.attribution')}
+                  </cite>
                 </blockquote>
-                <AccordionItem title="Further Analysis" level="2xl">
+                <AccordionItem title={t('scenes.roots.analysis.title')} level="2xl">
                   <ul className="space-y-3">
                     <li>
                       <a href="/atlas.html" className="resource-link font-bold">
-                        Explore the Atlas of Erasure →
+                        {t('scenes.roots.analysis.atlas')}
                       </a>
                     </li>
                     <li>
-                      {villagesError ? (
-                        <p className="text-sm text-muted mt-2 h-6">{villagesError}</p>
+                      {villagesErrorKey ? (
+                        <p className="text-sm text-text-tertiary mt-2 h-6">
+                          {t(villagesErrorKey)}
+                        </p>
                       ) : (
                         <VillageTicker villages={villages} />
                       )}
@@ -391,7 +475,7 @@ const App: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Palestine 101: A Visual History
+                        {t('scenes.roots.analysis.palestine101')}
                       </a>
                     </li>
                     <li>
@@ -401,7 +485,7 @@ const App: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        The Nakba of 1948: An Ongoing Catastrophe
+                        {t('scenes.roots.analysis.nakba')}
                       </a>
                     </li>
                     <li>
@@ -411,7 +495,7 @@ const App: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Defining Zionism as a Settler-Colonial Project
+                        {t('scenes.roots.analysis.zionism')}
                       </a>
                     </li>
                     <li>
@@ -421,7 +505,7 @@ const App: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Key UN Resolutions and International Law
+                        {t('scenes.roots.analysis.un')}
                       </a>
                     </li>
                   </ul>
@@ -430,113 +514,81 @@ const App: React.FC = () => {
             </div>
           </ContentNode>
 
-          <ContentNode ref={resistanceRef} alignment="right">
+          <ContentNode ref={resistanceRef} alignment="right" id="resistance">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
-                  src="/images/resistance.jpg"
-                  alt="A protestor holds a Palestinian flag and a megaphone, vocally symbolizing active resistance."
+                  src="/images/intifada-women.jpg"
+                  alt={t('scenes.resistance.imageAlt')}
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Resistance</h2>
-              <p className="text-text-secondary mb-8">
-                Resistance is the natural and righteous response to occupation and oppression. For Palestinians, it is a continuous, diverse, and deeply-rooted struggle for self-determination and return. It is not a monolith, but a dynamic combination of strategies, from the steadfastness of a farmer on his land to the global call for boycott. To understand the resistance is to understand the Palestinian will to exist.
-              </p>
-
-              <div className="mb-8 border-t border-border pt-6 space-y-4">
-                <AccordionItem title="Voices of Defiance" level="2xl">
-                  <div className="space-y-3 text-text-secondary">
-                    <p>
-                      <strong>Ghassan Kanafani:</strong> A leading novelist, journalist, and spokesman for the Popular Front for the Liberation of Palestine (PFLP). His literary works were inseparable from his political struggle, giving voice to the experience of exile and the revolutionary imperative. He was assassinated by Mossad in 1972.
-                    </p>
-                    <p>
-                      <strong>Leila Khaled:</strong> A militant member of the PFLP who became an international icon of armed resistance following her role in two aircraft hijackings in 1969 and 1970. Her image became a powerful symbol of Palestinian defiance and female revolutionary action.
-                    </p>
-                    <p>
-                      <strong>Izz ad-Din al-Qassam:</strong> A Syrian-born cleric and revolutionary leader whose armed struggle against British and Zionist forces in the 1930s inspired a generation. His martyrdom in 1935 was a key catalyst for the 1936–1939 Arab revolt in Palestine, and his legacy endures in the language of Palestinian resistance.
-                    </p>
-                  </div>
-                </AccordionItem>
-              </div>
-
-              <div className="border-t border-border pt-6 space-y-4">
-                <AccordionItem title="Arenas of Struggle" level="2xl">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="text-xl text-gray-200">Popular Uprisings & Sumud</h4>
-                      <p className="text-text-secondary mb-2">
-                        From mass demonstrations to general strikes, the Intifadas (uprisings) represent the power of collective civil action. This is paired with{' '}
-                        <TooltipTrigger term="sumud">Sumud</TooltipTrigger> (steadfastness)—the daily act of remaining on one's land and refusing to be erased.
-                      </p>
-                      <a
-                        href="https://remix.aljazeera.com/aje/PalestineRemix/timeline_main.html"
-                        className="resource-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Chronology of Intifadas
-                      </a>
-                      <a
-                        href="https://www.palquest.org/en/highlight/22198/sumud-steadfastness"
-                        className="resource-link ml-4"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Sumud: The Art of Steadfastness
-                      </a>
-                    </div>
-                    <div>
-                      <h4 className="text-xl text-gray-200">Cultural & Literary Resistance</h4>
-                      <p className="text-text-secondary mb-2">
-                        Art, poetry, music, and film are powerful tools for preserving national identity and challenging colonial narratives. Figures like Mahmoud Darwish used their words to articulate the soul of the resistance, making culture an undeniable front in the struggle.
-                      </p>
-                      <a
-                        href="https://www.poetryfoundation.org/poets/mahmoud-darwish"
-                        className="resource-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        The Poetry of Mahmoud Darwish
-                      </a>
-                    </div>
-                    <div>
-                      <h4 className="text-xl text-gray-200">Global Solidarity & BDS</h4>
-                      <p className="text-text-secondary mb-2">
-                        The Boycott, Divestment, Sanctions (BDS) movement is a Palestinian-led global campaign. It applies non-violent economic and cultural pressure on Israel to comply with international law and end its oppression of Palestinians.
-                      </p>
-                      <a
-                        href="https://bdsmovement.net/"
-                        className="resource-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        The Global BDS Movement
-                      </a>
-                    </div>
-                  </div>
-                </AccordionItem>
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t('scenes.resistance.title')}
+              </h2>
+              <div className="space-y-4 text-text-secondary">
+                <p>{t('scenes.resistance.paragraphs.0')}</p>
+                <p>{t('scenes.resistance.paragraphs.1')}</p>
+                <p>{t('scenes.resistance.paragraphs.2')}</p>
               </div>
             </div>
           </ContentNode>
 
-          <ContentNode ref={cultureRef} alignment="left">
+          <ContentNode ref={cultureRef} alignment="left" id="culture">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
                   src="/images/palestinian-culture.jpg"
-                  alt="A woman embroiders fabric with traditional Palestinian Tatreez, a core symbol of cultural identity."
+                  alt={t('scenes.culture.imageAlt')}
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Culture</h2>
-              <p className="text-text-secondary mb-8">
-                When a colonizing power seeks to erase a people, the preservation of culture becomes an act of war. Every shared meal, every embroidered stitch, every song and dance is a front in the battle for existence. This is not passive tradition; it is{' '}
-                <TooltipTrigger term="sumud">Sumud</TooltipTrigger>—a steadfast refusal to disappear. Palestinian culture is the living, breathing evidence of a nation that colonial logic has failed to expunge. It is the practice of memory, identity, and defiance.
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t('scenes.culture.title')}
+              </h2>
+              <p className="text-text-secondary mb-6">
+                {t('scenes.culture.intro')}
               </p>
+              <div className="space-y-4 text-text-secondary">
+                <p>
+                  <Trans
+                    i18nKey="scenes.culture.paragraphs.0"
+                    components={{ sumud: <TooltipTrigger term="sumud" /> }}
+                  />
+                </p>
+                <p>
+                  <Trans
+                    i18nKey="scenes.culture.paragraphs.1"
+                    components={{
+                      maqluba: <span className="italic" />,
+                    }}
+                  />
+                </p>
+                <p>
+                  <Trans
+                    i18nKey="scenes.culture.paragraphs.2"
+                    components={{
+                      tatreez: <span className="italic" />,
+                    }}
+                  />
+                </p>
+                <p>
+                  <Trans
+                    i18nKey="scenes.culture.paragraphs.3"
+                    components={{
+                      dabke: <span className="italic" />,
+                    }}
+                  />
+                </p>
+              </div>
 
               <div className="space-y-4 border-t border-border pt-6">
-                <AccordionItem title="Cuisine as Identity">
+                <AccordionItem title={t('scenes.culture.accordion.cuisine.title')}>
                   <p className="text-text-secondary my-2">
-                    The kitchen is a site of resistance. Dishes like <em>Maqluba</em> (the “upside-down” pot of rice, meat, and vegetables) are more than food; they are communal rituals that tell a story of land and family. Sharing these meals asserts a national identity that Israel actively attempts to appropriate and rebrand as its own.
+                    <Trans
+                      i18nKey="scenes.culture.paragraphs.1"
+                      components={{
+                        maqluba: <span className="italic" />,
+                      }}
+                    />
                   </p>
                   <a
                     href="https://sustainablefoodtrust.org/news-views/a-taste-of-palestine-cultivating-resistance/"
@@ -544,12 +596,17 @@ const App: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    A Taste of Palestine
+                    {t('scenes.culture.accordion.cuisine.link')}
                   </a>
                 </AccordionItem>
-                <AccordionItem title="Tatreez: The Fabric of a Nation">
+                <AccordionItem title={t('scenes.culture.accordion.tatreez.title')}>
                   <p className="text-text-secondary my-2">
-                    Palestinian embroidery, or <em>Tatreez</em>, is a language in thread. The intricate geometric patterns are not merely decorative; they are a visual dialect signifying regional identity, marital status, and ancestral heritage. A dress from Ramallah tells a different story from one from Gaza. This art form literally stitches the map of a fragmented homeland onto the bodies of its people, defying erasure.
+                    <Trans
+                      i18nKey="scenes.culture.paragraphs.2"
+                      components={{
+                        tatreez: <span className="italic" />,
+                      }}
+                    />
                   </p>
                   <a
                     href="https://www.palestineinamerica.com/blog/untangledtatreez"
@@ -557,12 +614,17 @@ const App: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Untangling Tatreez
+                    {t('scenes.culture.accordion.tatreez.link')}
                   </a>
                 </AccordionItem>
-                <AccordionItem title="Cinema, Music & Dabke">
+                <AccordionItem title={t('scenes.culture.accordion.arts.title')}>
                   <p className="text-text-secondary my-2">
-                    From the politically charged films that document the struggle to the powerful rhythms of the <em>Dabke</em> dance, these art forms carry the spirit of the movement. The <em>Dabke's</em> stomping feet symbolize a connection to the land, while Palestinian cinema gives the people control over their own narrative, challenging the dehumanizing portrayals in Western media.
+                    <Trans
+                      i18nKey="scenes.culture.paragraphs.3"
+                      components={{
+                        dabke: <span className="italic" />,
+                      }}
+                    />
                   </p>
                   <a
                     href="https://arabfilminstitute.org/palestinian-voices/"
@@ -570,7 +632,7 @@ const App: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Palestinian Cinema
+                    {t('scenes.culture.accordion.arts.film')}
                   </a>
                   <a
                     href="https://shado-mag.com/articles/do/dabke-resistance-through-movement/"
@@ -578,38 +640,44 @@ const App: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    The Rhythms of Dabke
+                    {t('scenes.culture.accordion.arts.dance')}
                   </a>
                 </AccordionItem>
               </div>
             </div>
           </ContentNode>
 
-          <ContentNode ref={actionRef} alignment="right">
+          <ContentNode ref={actionRef} alignment="right" id="action">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
                   src="/images/collective-action.jpg"
-                  alt="A crowd of people marching in a street protest, embodying the power of collective action and solidarity."
+                  alt={t('scenes.action.imageAlt')}
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">The Action</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t('scenes.action.title')}
+              </h2>
               <p className="text-text-secondary mb-8">
-                Solidarity is a verb. It is the engine of liberation. Below are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold systems of power accountable. Choose a front; engage in the struggle.
+                {t('scenes.action.intro')}
               </p>
 
               <div className="space-y-4 border-t border-border pt-6">
-                <AccordionItem title="Donate: Vetted Aid & Solidarity Funds">
+                <AccordionItem title={t('scenes.action.accordion.donate.title')}>
                   <p className="text-text-secondary my-2">
-                    Amidst blockade and siege, direct financial support provides critical humanitarian relief and resources for steadfastness. This is a direct counter-measure to the strategy of immiseration.
+                    {t('scenes.action.accordion.donate.description')}
                   </p>
-                  <button type="button" className="resource-link" onClick={() => setDonateOpen(true)}>
-                    Access Solidarity Funds
+                  <button
+                    type="button"
+                    className="resource-link"
+                    onClick={() => setDonateOpen(true)}
+                  >
+                    {t('scenes.action.accordion.donate.button')}
                   </button>
                 </AccordionItem>
-                <AccordionItem title="Support Palestinian Businesses">
+                <AccordionItem title={t('scenes.action.accordion.business.title')}>
                   <p className="text-text-secondary my-2">
-                    Economic solidarity is a powerful tool. Buying from Palestinian artisans and fair-trade initiatives directly supports families and resists the economic strangulation of the occupation.
+                    {t('scenes.action.accordion.business.description')}
                   </p>
                   <a
                     href="https://www.palestineportal.org/action-advocacy/support-palestine-fair-trade/"
@@ -617,28 +685,32 @@ const App: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Buy Palestinian
+                    {t('scenes.action.accordion.business.link')}
                   </a>
                 </AccordionItem>
-                <AccordionItem title="Educate & Advocate">
+                <AccordionItem title={t('scenes.action.accordion.educate.title')}>
                   <p className="text-text-secondary my-2">
-                    The battle is also for hearts and minds. Use these toolkits to effectively challenge disinformation within your own circles and articulate the case for justice to public representatives.
+                    {t('scenes.action.accordion.educate.description')}
                   </p>
-                  <button type="button" className="resource-link" onClick={() => setToolkitOpen(true)}>
-                    Access Toolkits
+                  <button
+                    type="button"
+                    className="resource-link"
+                    data-cy="open-toolkit-modal"
+                    onClick={() => setToolkitOpen(true)}
+                  >
+                    {t('scenes.action.accordion.educate.button')}
                   </button>
                 </AccordionItem>
               </div>
 
               <div className="mt-8 pt-6 border-t border-border space-y-4">
-                <AccordionItem title="Find Your Frontline: Build Local Power" level="2xl">
+                <AccordionItem
+                  title={t('scenes.action.accordion.organize.title')}
+                  level="2xl"
+                >
                   <div className="space-y-3 text-text-secondary">
-                    <p>
-                      Power is built in local struggles. Join or organize teach-ins, pressure campaigns, and rapid-response networks that can mobilize in moments of crisis.
-                    </p>
-                    <p>
-                      Campus and community organizations have been at the forefront of shifting public consciousness. Coordinate with Palestinian-led groups to ensure efforts align with articulated needs.
-                    </p>
+                    <p>{t('scenes.action.accordion.organize.body.0')}</p>
+                    <p>{t('scenes.action.accordion.organize.body.1')}</p>
                     <div className="flex flex-wrap gap-4">
                       <a
                         href="https://www.jewishvoiceforpeace.org/local/"
@@ -646,7 +718,7 @@ const App: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Find a JVP Chapter
+                        {t('scenes.action.accordion.organize.links.jvp')}
                       </a>
                       <a
                         href="https://www.nationalsjp.org/"
@@ -654,7 +726,7 @@ const App: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Connect with SJP
+                        {t('scenes.action.accordion.organize.links.sjp')}
                       </a>
                     </div>
                   </div>
@@ -669,16 +741,20 @@ const App: React.FC = () => {
           id="footer"
           className="text-center py-10 border-t border-border relative z-10"
         >
-          <p className="text-muted">From The River To The Sea, Palestine Will Be Free.</p>
-          <p className="text-xs text-text-secondary mt-2">fromtheriver.org - A project of solidarity.</p>
+          <p className="text-text-tertiary">{t('app.footer.solidarity')}</p>
+          <p className="text-xs text-text-secondary mt-2">
+            {t('app.footer.credit')}
+          </p>
         </footer>
 
         <CodexModal village={selectedVillage} onClose={closeCodex} />
 
-        <Modal isOpen={isToolkitOpen} onClose={() => setToolkitOpen(false)} title="Ideological Toolkit">
-          <p className="text-text-secondary mb-6">
-            Key resources for deconstructing common myths and propaganda.
-          </p>
+        <Modal
+          isOpen={isToolkitOpen}
+          onClose={() => setToolkitOpen(false)}
+          title={t('modals.toolkit.title')}
+        >
+          <p className="text-text-secondary mb-6">{t('modals.toolkit.intro')}</p>
           <ul className="space-y-4">
             <li>
               <a
@@ -687,7 +763,7 @@ const App: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                PaliAnswers: Indexed Responses
+                {t('modals.toolkit.links.paliAnswers')}
               </a>
             </li>
             <li>
@@ -697,133 +773,77 @@ const App: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Decolonize Palestine: Debunking Myths
+                {t('modals.toolkit.links.decolonize')}
               </a>
             </li>
           </ul>
         </Modal>
 
-        <Modal isOpen={isDonateOpen} onClose={() => setDonateOpen(false)} title="Material Solidarity">
-          <p className="text-text-secondary mb-8">
-            Direct aid is a revolutionary act. It counters the siege and provides resources for Sumud (steadfastness). Choose a front.
-          </p>
+        <Modal
+          isOpen={isDonateOpen}
+          onClose={() => setDonateOpen(false)}
+          title={t('modals.donate.title')}
+        >
+          <p className="text-text-secondary mb-8">{t('modals.donate.intro')}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
             <div>
               <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                Direct & Grassroots
+                {t('modals.donate.groups.direct')}
               </h4>
               <ul className="space-y-4">
-                <li>
-                  <a
-                    href="https://docs.google.com/spreadsheets/d/1vtMLLOzuc6GpkFySyVtKQOY2j-Vvg0UsChMCFst_WLA/htmlview"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Operation Olive Branch
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Volunteer-powered grassroots effort helping Palestinian families. Prioritizes transparency.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://linktr.ee/fundsforgaza"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Funds For Gaza
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    List of targeted fundraisers for Gaza, curated by the @letstalkpalestine activist collective.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.instagram.com/p/C03zzwUvClA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    e-SIMs for Gaza
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Activist guide on how to donate a Nomad e-SIM and keep Palestinians in Gaza connected.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.bonfire.com/arkansas-fundraiser-for-palestine/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Local Mutual Aid
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Example of community-level organizing (Arkansas) directly supporting relief efforts.
-                  </p>
-                </li>
+                {(['oliveBranch', 'fundsForGaza', 'eSims', 'mutualAid'] as const).map((entry) => (
+                  <li key={entry}>
+                    <a
+                      href={
+                        {
+                          oliveBranch:
+                            'https://docs.google.com/spreadsheets/d/1vtMLLOzuc6GpkFySyVtKQOY2j-Vvg0UsChMCFst_WLA/htmlview',
+                          fundsForGaza: 'https://linktr.ee/fundsforgaza',
+                          eSims:
+                            'https://www.instagram.com/p/C03zzwUvClA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+                          mutualAid: 'https://www.bonfire.com/arkansas-fundraiser-for-palestine/',
+                        }[entry]
+                      }
+                      className="resource-link text-lg"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t(`modals.donate.entries.${entry}.name`)}
+                    </a>
+                    <p className="text-sm text-text-tertiary mt-1">
+                      {t(`modals.donate.entries.${entry}.description`)}
+                    </p>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
               <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                Medical & Institutional
+                {t('modals.donate.groups.institutional')}
               </h4>
               <ul className="space-y-4">
-                <li>
-                  <a
-                    href="https://www.pcrf.net/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    PCRF
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Palestine Children's Relief Fund. Provides critical medical care to sick and injured children.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.map.org.uk/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    MAP
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Medical Aid for Palestinians. Delivers health and dignity to Palestinians under occupation and as refugees.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.doctorswithoutborders.org/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Doctors Without Borders
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Global medical teams providing emergency care in Gaza and the West Bank.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://donate.unrwa.org/-landing-page/en_EN"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    UNRWA
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    The UN agency for Palestine refugees, providing food, shelter, and essential services.
-                  </p>
-                </li>
+                {(['pcrf', 'map', 'msf', 'unrwa'] as const).map((entry) => (
+                  <li key={entry}>
+                    <a
+                      href={
+                        {
+                          pcrf: 'https://www.pcrf.net/',
+                          map: 'https://www.map.org.uk/',
+                          msf: 'https://www.doctorswithoutborders.org/',
+                          unrwa: 'https://donate.unrwa.org/-landing-page/en_EN',
+                        }[entry]
+                      }
+                      className="resource-link text-lg"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t(`modals.donate.entries.${entry}.name`)}
+                    </a>
+                    <p className="text-sm text-text-tertiary mt-1">
+                      {t(`modals.donate.entries.${entry}.description`)}
+                    </p>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

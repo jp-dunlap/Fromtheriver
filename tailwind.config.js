@@ -13,7 +13,9 @@ module.exports = {
         border: 'hsl(var(--color-border) / <alpha-value>)',
         muted: 'hsl(var(--color-muted) / <alpha-value>)',
         'text-primary': 'hsl(var(--color-text-primary) / <alpha-value>)',
-        'text-secondary': 'hsl(var(--color-text-secondary) / <alpha-value>)'
+        'text-secondary': 'hsl(var(--color-text-secondary) / <alpha-value>)',
+        'text-secondary-strong': 'hsl(var(--color-text-secondary-strong) / <alpha-value>)',
+        'text-tertiary': 'hsl(var(--color-text-tertiary) / <alpha-value>)'
       },
       fontFamily: {
         sans: ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
