@@ -4,17 +4,29 @@ import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 
+const typeCheckedConfigs = tseslint.configs.recommendedTypeChecked.map((config) => ({
+  ...config,
+  languageOptions: {
+    ...config.languageOptions,
+    parserOptions: {
+      ...config.languageOptions?.parserOptions,
+      project: ['./tsconfig.eslint.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+}));
+
 export default [
   {
     ignores: ['dist', 'node_modules', 'public/atlas.js'],
   },
   js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...typeCheckedConfigs,
   {
     files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', 'content/**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.json'],
+        project: ['./tsconfig.eslint.json'],
         tsconfigRootDir: import.meta.dirname,
       },
       globals: {
@@ -35,6 +47,16 @@ export default [
     settings: {
       react: {
         version: 'detect',
+      },
+    },
+  },
+  {
+    files: ['cypress/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.mocha,
+        ...globals.cypress,
       },
     },
   },
