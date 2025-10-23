@@ -1,7 +1,7 @@
 import villagesYaml from '../../data/villages.yaml?raw';
 import type { Village, VillageDataset } from './types';
 
-function parseVillagesYaml(raw: string): VillageDataset {
+export function parseVillagesYaml(raw: string): VillageDataset {
   const yamlMatch = raw.match(/villages_json:\s*\|([\s\S]*)$/);
   if (!yamlMatch) {
     throw new Error('villages_json block missing in villages.yaml');
