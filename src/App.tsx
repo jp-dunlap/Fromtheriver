@@ -33,6 +33,48 @@ interface SceneMetadata {
   focusVillages: string[];
 }
 
+const externalArchiveOverride = import.meta.env.VITE_EXTERNAL_UPDATES_URL as unknown;
+const EXTERNAL_ARCHIVE_ENDPOINT =
+  typeof externalArchiveOverride === 'string' && externalArchiveOverride.trim().length > 0
+    ? externalArchiveOverride
+    : '/.netlify/functions/external-archive';
+const EXTERNAL_ARCHIVE_FALLBACK_ENDPOINT = '/data/external-archive.json';
+
+const isExternalArchivePayload = (value: unknown): value is ExternalArchivePayload => {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<ExternalArchivePayload>;
+  return (
+    typeof candidate.fetchedAt === 'string' &&
+    Array.isArray(candidate.visualizingPalestine) &&
+    Array.isArray(candidate.bdsCampaigns)
+  );
+};
+
+const fetchExternalArchivePayload = async (
+  url: string,
+  signal?: AbortSignal
+): Promise<ExternalArchivePayload> => {
+  const response = await fetch(url, { signal });
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
+  const text = await response.text();
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (!isExternalArchivePayload(parsed)) {
+      throw new Error('Unexpected payload shape');
+    }
+    return parsed;
+  } catch (error) {
+    throw new Error('Invalid JSON response', { cause: error instanceof Error ? error : undefined });
+  }
+};
+
 const App: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
@@ -96,14 +138,10 @@ const App: React.FC = () => {
       setExternalUpdatesErrorCode(null);
 
       try {
-        const response = await fetch('/.netlify/functions/external-archive', {
-          signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const payload = (await response.json()) as ExternalArchivePayload;
+        const payload = await fetchExternalArchivePayload(
+          EXTERNAL_ARCHIVE_ENDPOINT,
+          signal
+        );
         if (signal?.aborted) {
           return;
         }
@@ -113,8 +151,25 @@ const App: React.FC = () => {
         if (signal?.aborted) {
           return;
         }
-        console.error('Failed to load external archive updates', error);
-        setExternalUpdatesErrorCode('load');
+        console.warn('Primary external archive fetch failed, attempting fallback', error);
+
+        try {
+          const fallbackPayload = await fetchExternalArchivePayload(
+            EXTERNAL_ARCHIVE_FALLBACK_ENDPOINT,
+            signal
+          );
+          if (signal?.aborted) {
+            return;
+          }
+          setExternalUpdates(fallbackPayload);
+          setExternalUpdatesErrorCode(null);
+        } catch (fallbackError) {
+          if (signal?.aborted) {
+            return;
+          }
+          console.error('Failed to load external archive updates', fallbackError);
+          setExternalUpdatesErrorCode('load');
+        }
       } finally {
         if (!signal?.aborted) {
           setExternalUpdatesLoading(false);
