@@ -1,0 +1,101 @@
+backend:
+  name: git-gateway
+  branch: main
+  commit_messages:
+    create: "chore(cms): create {{collection}} {{slug}}"
+    update: "chore(cms): update {{collection}} {{slug}}"
+    delete: "chore(cms): delete {{collection}} {{slug}}"
+    uploadMedia: "chore(cms): upload media"
+    deleteMedia: "chore(cms): delete media"
+
+site_url: "https://fromtheriver.example"
+logo_url: "/images/palestinian-culture.jpg"
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+publish_mode: editorial_workflow
+
+collections:
+  - name: narratives
+    label: Community Narratives
+    folder: content/narratives
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: "Publish Date"
+        name: date
+        widget: datetime
+        time_format: false
+        format: "YYYY-MM-DD"
+      - { label: "Featured", name: featured, widget: boolean, default: false }
+      - { label: "Summary", name: summary, widget: text, hint: "Short description for listings" }
+      - label: "Signature Image"
+        name: signature_image
+        widget: string
+        hint: "Path relative to the public folder (e.g., images/example.jpg)."
+      - label: Tags
+        name: tags
+        widget: list
+        allow_add: true
+        summary: "{{value}}"
+        field: { label: Tag, name: tag, widget: string }
+      - label: Sources
+        name: sources
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: URL, name: url, widget: string }
+      - { label: Body, name: body, widget: markdown }
+  - name: editorial_log
+    label: Editorial Log
+    files:
+      - file: docs/editorial-log.md
+        label: Quarterly Retrospectives
+        name: quarterly_retrospectives
+        fields:
+          - label: Retrospectives
+            name: retrospectives
+            widget: list
+            summary: "{{fields.quarter}} ({{fields.date}})"
+            fields:
+              - { label: Quarter, name: quarter, widget: string }
+              - label: Date
+                name: date
+                widget: datetime
+                time_format: false
+                format: "YYYY-MM-DD"
+              - { label: Participants, name: participants, widget: list, field: { label: Participant, name: participant, widget: string } }
+              - { label: "New Sections / Major Updates", name: updates, widget: text }
+              - { label: "Community Feedback Follow-up", name: feedback, widget: text }
+          - label: Next Retrospective
+            name: next_retro
+            widget: datetime
+            time_format: false
+            format: "YYYY-MM-DD"
+          - label: Notes
+            name: body
+            widget: markdown
+            default: |
+              # Editorial Log
+              
+              This log records quarterly editorial retrospectives, membership of the Editorial Stewardship Council, and highlights from community feedback.
+              
+              > _Update the table after saving entries to keep the rendered view in sync with the structured data above._
+  - name: interface_copy
+    label: Interface Copy
+    files:
+      - file: locales/en/common.json
+        label: English UI Strings
+        name: english_common
+        editor:
+          preview: false
+        fields:
+          - label: Content
+            name: content
+            widget: code
+            default_language: json
+            allow_language_selection: false

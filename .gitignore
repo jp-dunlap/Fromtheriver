@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.ts-test/
 .vscode/
 .DS_Store
 cypress/screenshots/
