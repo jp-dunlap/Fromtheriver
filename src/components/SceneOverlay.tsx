@@ -35,13 +35,13 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
       <div className="space-y-4">
         <article className="bg-slate-900/60 rounded-lg p-4 border border-border/40">
           <header className="mb-2">
-            <h4 className="font-semibold text-white text-lg">{primaryVillage.name}</h4>
+            <h4 className="font-semibold text-white text-lg">{primaryVillage.names.en}</h4>
             <p className="text-xs uppercase tracking-wider text-muted">
-              {primaryVillage.district} District · {primaryVillage.name_arabic}
+              {primaryVillage.district} District · {primaryVillage.names.ar}
             </p>
           </header>
           <p className="text-xs text-text-secondary leading-relaxed max-h-32 overflow-hidden">
-            {primaryVillage.story}
+            {primaryVillage.narrative.summary}
           </p>
           <button
             type="button"
@@ -63,7 +63,7 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
                     className="w-full text-left text-xs text-text-secondary/90 hover:text-white transition-colors"
                     onClick={() => onSelectVillage(village)}
                   >
-                    {village.name} · {village.district}
+                    {village.names.en} · {village.district}
                   </button>
                 </li>
               ))}

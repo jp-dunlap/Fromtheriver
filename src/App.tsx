@@ -13,6 +13,10 @@ import SceneAudioControls from './components/SceneAudioControls';
 import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
 import { generateAmbientToneDataUri } from './js/ambientTone';
 import PrototypeGallery from './prototypes/PrototypeGallery';
+import { villages as villagesData, villagesDataset } from './data/villages';
+import ArchiveExplorerModal from './components/ArchiveExplorerModal';
+import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
+import type { ExternalArchivePayload } from './data/external';
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -34,44 +38,47 @@ const App: React.FC = () => {
   const cultureRef = useRef<HTMLElement | null>(null);
   const actionRef = useRef<HTMLElement | null>(null);
 
-  const [villages, setVillages] = useState<Village[]>([]);
-  const [villagesError, setVillagesError] = useState<string | null>(null);
-  const [selectedVillage, setSelectedVillage] = useState<Village | null>(null);
-  const [isToolkitOpen, setToolkitOpen] = useState(false);
-  const [isDonateOpen, setDonateOpen] = useState(false);
-
   const isPrototypeMode =
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('prototype') === 'gallery';
 
+  const [villages, setVillages] = useState<Village[]>(() =>
+    isPrototypeMode ? [] : villagesData
+  );
+  const [villagesError, setVillagesError] = useState<string | null>(null);
+  const [selectedVillage, setSelectedVillage] = useState<Village | null>(null);
+  const [isToolkitOpen, setToolkitOpen] = useState(false);
+  const [isDonateOpen, setDonateOpen] = useState(false);
+  const [isArchiveExplorerOpen, setArchiveExplorerOpen] = useState(false);
+  const [externalUpdates, setExternalUpdates] = useState<ExternalArchivePayload | null>(null);
+  const [externalUpdatesError, setExternalUpdatesError] = useState<string | null>(null);
+  const [isExternalUpdatesLoading, setExternalUpdatesLoading] = useState(false);
+
   useEffect(() => {
     if (isPrototypeMode) {
+      setVillages([]);
+      setVillagesError('Archive data is unavailable in prototype gallery mode.');
       return;
     }
 
-    let isMounted = true;
-    fetch('/villages.json')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data: Village[]) => {
-        if (isMounted) {
-          setVillages(data);
-        }
-      })
-      .catch((error) => {
-        if (isMounted) {
-          setVillagesError('Could not load the historical record.');
-          console.error('Failed to load village data', error);
-        }
-      });
-    return () => {
-      isMounted = false;
-    };
+    setVillages(villagesData);
+    setVillagesError(villagesData.length === 0 ? 'Historical record is empty.' : null);
   }, [isPrototypeMode]);
+
+  useEffect(() => {
+    if (isPrototypeMode) {
+      setExternalUpdates(null);
+      setExternalUpdatesError(null);
+      setExternalUpdatesLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    void loadExternalUpdates(controller.signal);
+    return () => {
+      controller.abort();
+    };
+  }, [isPrototypeMode, loadExternalUpdates]);
 
   const nodeRefs = useMemo(
     () => [rootsRef, resistanceRef, cultureRef, actionRef],
@@ -127,6 +134,22 @@ const App: React.FC = () => {
     }),
     []
   );
+
+  const villagesBySlug = useMemo(() => {
+    const map = new Map<string, Village>();
+    villages.forEach((villageEntry) => {
+      map.set(villageEntry.slug.toLowerCase(), villageEntry);
+    });
+    return map;
+  }, [villages]);
+
+  const villagesByName = useMemo(() => {
+    const map = new Map<string, Village>();
+    villages.forEach((villageEntry) => {
+      map.set(villageEntry.names.en.toLowerCase(), villageEntry);
+    });
+    return map;
+  }, [villages]);
 
   const sceneMeta = useMemo<SceneMetadata[]>(
     () => [
@@ -222,13 +245,14 @@ const App: React.FC = () => {
     }
 
     return activeScene.focusVillages
-      .map((targetName) =>
-        villages.find(
-          (village) => village.name.toLowerCase() === targetName.toLowerCase()
-        )
-      )
+      .map((targetName) => {
+        const normalized = targetName.toLowerCase();
+        return (
+          villagesBySlug.get(normalized) ?? villagesByName.get(normalized) ?? null
+        );
+      })
       .filter((village): village is Village => Boolean(village));
-  }, [activeScene, villages]);
+  }, [activeScene, villagesBySlug, villagesByName]);
 
   const activeAudioState = useMemo(
     () =>
@@ -246,16 +270,81 @@ const App: React.FC = () => {
     });
   }, [sceneMeta, activeSceneId]);
 
-  const handleVillageSelect = useCallback(
-    (name: string) => {
-      const village = villages.find(
-        (entry) => entry.name.toLowerCase() === name.toLowerCase()
-      );
-      if (village) {
-        setSelectedVillage(village);
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handler = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setArchiveExplorerOpen(true);
+      }
+      if (!event.metaKey && !event.ctrlKey && event.key === '/' && !isArchiveExplorerOpen) {
+        event.preventDefault();
+        setArchiveExplorerOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => {
+      window.removeEventListener('keydown', handler);
+    };
+  }, [isArchiveExplorerOpen]);
+
+  const handleVillageOpen = useCallback((village: Village) => {
+    setSelectedVillage(village);
+  }, []);
+
+  const renderVillageLink = useCallback(
+    (identifier: string) => {
+      const normalized = identifier.toLowerCase();
+      const villageEntry =
+        villagesBySlug.get(normalized) ?? villagesByName.get(normalized);
+      if (!villageEntry) {
+        return <span className="font-semibold">{identifier}</span>;
+      }
+      return <VillageLink village={villageEntry} onSelect={handleVillageOpen} />;
+    },
+    [villagesBySlug, villagesByName, handleVillageOpen]
+  );
+
+  const loadExternalUpdates = useCallback(
+    async (signal?: AbortSignal) => {
+      if (isPrototypeMode) {
+        return;
+      }
+
+      setExternalUpdatesLoading(true);
+      setExternalUpdatesError(null);
+
+      try {
+        const response = await fetch('/.netlify/functions/external-archive', {
+          signal,
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const payload = (await response.json()) as ExternalArchivePayload;
+        if (signal?.aborted) {
+          return;
+        }
+        setExternalUpdates(payload);
+        setExternalUpdatesError(null);
+      } catch (error) {
+        if (signal?.aborted) {
+          return;
+        }
+        console.error('Failed to load external archive updates', error);
+        setExternalUpdatesError('Could not refresh solidarity signals.');
+      } finally {
+        if (!signal?.aborted) {
+          setExternalUpdatesLoading(false);
+        }
       }
     },
-    [villages]
+    [isPrototypeMode]
   );
 
   const closeCodex = useCallback(() => setSelectedVillage(null), []);
@@ -286,6 +375,17 @@ const App: React.FC = () => {
   return (
     <TooltipProvider>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="fixed top-6 right-6 z-40 flex flex-col items-end gap-1">
+          <button
+            type="button"
+            className="bg-white/10 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+            onClick={() => setArchiveExplorerOpen(true)}
+          >
+            Archive Explorer
+          </button>
+          <span className="text-xs text-muted hidden md:block">Press ⌘K / Ctrl+K</span>
+        </div>
+
         <RiverPath
           headerRef={headerRef}
           footerRef={footerRef}
@@ -298,7 +398,7 @@ const App: React.FC = () => {
           sceneTitle={activeScene?.title ?? ''}
           description={activeScene?.description ?? ''}
           villages={activeSceneVillages}
-          onSelectVillage={(village) => setSelectedVillage(village)}
+          onSelectVillage={handleVillageOpen}
           isVisible={Boolean(activeScene && activeSceneVillages.length > 0)}
         />
 
@@ -328,6 +428,15 @@ const App: React.FC = () => {
           <p className="mt-6 text-xl md:text-2xl text-text-secondary max-w-3xl">
             A living archive of Palestinian history, culture, and the ongoing struggle for liberation. This is a journey of understanding.
           </p>
+          {villagesError ? (
+            <p className="mt-4 text-sm text-red-200 bg-red-900/40 border border-red-800 rounded-lg px-4 py-2 max-w-md">
+              {villagesError}
+            </p>
+          ) : (
+            <p className="mt-4 text-xs text-muted">
+              Last data refresh: {new Date(villagesDataset.metadata.generated_at).toLocaleDateString()} · {villages.length} villages indexed.
+            </p>
+          )}
           <div className="mt-12 text-muted animate-bounce" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -358,10 +467,10 @@ const App: React.FC = () => {
                 </p>
                 <p>
                   The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities. This was not a byproduct of war; it was the realization of a plan. From the haunting, still-standing homes of{' '}
-                  <VillageLink name="Lifta" onSelect={handleVillageSelect} /> at Jerusalem's edge, to the premeditated massacres at{' '}
-                  <VillageLink name="Deir Yassin" onSelect={handleVillageSelect} /> and{' '}
-                  <VillageLink name="al-Tantura" onSelect={handleVillageSelect} />, to the forced death march from{' '}
-                  <VillageLink name="Lydda" onSelect={handleVillageSelect} />, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure.
+                  {renderVillageLink('Lifta')} at Jerusalem's edge, to the premeditated massacres at{' '}
+                  {renderVillageLink('Deir Yassin')} and{' '}
+                  {renderVillageLink('al-Tantura')}, to the forced death march from{' '}
+                  {renderVillageLink('Lydda')}, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure.
                 </p>
               </div>
 
@@ -660,6 +769,14 @@ const App: React.FC = () => {
                   </div>
                 </AccordionItem>
               </div>
+              <ExternalUpdatesPanel
+                payload={externalUpdates}
+                error={externalUpdatesError}
+                isLoading={isExternalUpdatesLoading}
+                onRetry={() => {
+                  void loadExternalUpdates();
+                }}
+              />
             </div>
           </ContentNode>
         </main>
@@ -672,6 +789,13 @@ const App: React.FC = () => {
           <p className="text-muted">From The River To The Sea, Palestine Will Be Free.</p>
           <p className="text-xs text-text-secondary mt-2">fromtheriver.org - A project of solidarity.</p>
         </footer>
+
+        <ArchiveExplorerModal
+          villages={villages}
+          isOpen={isArchiveExplorerOpen}
+          onClose={() => setArchiveExplorerOpen(false)}
+          onSelectVillage={handleVillageOpen}
+        />
 
         <CodexModal village={selectedVillage} onClose={closeCodex} />
 

@@ -1,16 +1,17 @@
 import React from 'react';
+import type { Village } from '../data/types';
 
 type VillageLinkProps = {
-  name: string;
-  onSelect: (name: string) => void;
+  village: Village;
+  onSelect: (village: Village) => void;
 };
 
-export const VillageLink: React.FC<VillageLinkProps> = ({ name, onSelect }) => (
+export const VillageLink: React.FC<VillageLinkProps> = ({ village, onSelect }) => (
   <button
     type="button"
     className="village-link underline-offset-2"
-    onClick={() => onSelect(name)}
+    onClick={() => onSelect(village)}
   >
-    {name}
+    {village.names.en}
   </button>
 );

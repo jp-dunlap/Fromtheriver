@@ -14,7 +14,7 @@ const VillageTicker: React.FC<VillageTickerProps> = ({ villages }) => {
       return 'Historical record is empty.';
     }
     const village = villages[index];
-    return `Remembering ${village.name}...`;
+    return `Remembering ${village.names.en}...`;
   }, [hasVillages, villages, index]);
 
   useEffect(() => {
