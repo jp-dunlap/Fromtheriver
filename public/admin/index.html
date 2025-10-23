@@ -20,5 +20,28 @@
         });
       }
     </script>
+    <script>
+      window.CMS_MANUAL_INIT = true;
+    </script>
+    <script type="module">
+      import { registerPreviewTemplates } from '/src/cms/previews';
+
+      const initializeCMS = () => {
+        const cms = window.CMS;
+
+        if (!cms) {
+          return;
+        }
+
+        registerPreviewTemplates(cms);
+        cms.init();
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeCMS);
+      } else {
+        initializeCMS();
+      }
+    </script>
   </body>
 </html>
