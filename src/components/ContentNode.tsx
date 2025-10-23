@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
+const isMutableRefObject = (
+  ref: React.ForwardedRef<HTMLElement>
+): ref is React.MutableRefObject<HTMLElement | null> =>
+  typeof ref === 'object' && ref !== null && 'current' in ref;
+
 interface ContentNodeProps extends React.HTMLAttributes<HTMLElement> {
   alignment: 'left' | 'right';
   children: React.ReactNode;
@@ -10,7 +15,7 @@ const ContentNode = React.forwardRef<HTMLElement, ContentNodeProps>(
     const localRef = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
-      const element = (ref as React.MutableRefObject<HTMLElement | null>)?.current ?? localRef.current;
+      const element = isMutableRefObject(ref) ? ref.current : localRef.current;
       if (!element) return;
 
       const observer = new IntersectionObserver(
@@ -33,8 +38,8 @@ const ContentNode = React.forwardRef<HTMLElement, ContentNodeProps>(
       localRef.current = node;
       if (typeof ref === 'function') {
         ref(node);
-      } else if (ref) {
-        (ref as React.MutableRefObject<HTMLElement | null>).current = node;
+      } else if (isMutableRefObject(ref)) {
+        ref.current = node;
       }
     };
 

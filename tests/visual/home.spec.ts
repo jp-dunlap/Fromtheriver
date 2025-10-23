@@ -16,6 +16,6 @@ test.describe('Visual regressions', () => {
       await fs.promises.writeFile(snapshotPath, screenshot);
     }
 
-    await expect(screenshot).toMatchSnapshot(snapshotName);
+    expect(screenshot).toMatchSnapshot(snapshotName);
   });
 });
