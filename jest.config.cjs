@@ -14,6 +14,6 @@ module.exports = {
   },
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',
-    '\\.(yaml|yml)\\?raw$': '<rootDir>/tests/unit/__mocks__/villages-raw.ts',
+    '\\.(yaml|yml)(\\?raw)?$': '<rootDir>/tests/__mocks__/villagesRaw.js',
   },
 };
