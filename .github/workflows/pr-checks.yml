@@ -107,7 +107,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const core = require('@actions/core');
             const previewUrl = process.env.PREVIEW_URL;
             const lighthouseUrl = process.env.LIGHTHOUSE_URL;
             if (!previewUrl && !lighthouseUrl) {
