@@ -11,16 +11,21 @@ const VillageTicker: React.FC<VillageTickerProps> = ({ villages }) => {
   const hasVillages = villages.length > 0;
   const { t } = useTranslation();
 
+  useEffect(() => {
+    setIndex(0);
+  }, [villages, hasVillages]);
+
   const message = useMemo(() => {
     if (!hasVillages) {
       return t('ticker.empty');
     }
+
     const village = villages[index];
-    return `${t('ticker.prefix')} ${village.name}${t('ticker.suffix')}`;
+    return t('ticker.message', { name: village.name });
   }, [hasVillages, villages, index, t]);
 
   useEffect(() => {
-    if (!hasVillages) {
+    if (!hasVillages || typeof window === 'undefined') {
       return;
     }
 

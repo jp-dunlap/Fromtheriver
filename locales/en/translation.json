@@ -25,8 +25,7 @@
   },
   "ticker": {
     "empty": "Historical record is empty.",
-    "prefix": "Remembering",
-    "suffix": "..."
+    "message": "Remembering {{name}}..."
   },
   "errors": {
     "villages": "Could not load the historical record."
