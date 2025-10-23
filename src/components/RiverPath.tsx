@@ -1,13 +1,26 @@
+
 import React, { RefObject, useEffect, useRef } from 'react';
 
 interface RiverPathProps {
   headerRef: RefObject<HTMLElement>;
   footerRef: RefObject<HTMLElement>;
   nodeRefs: Array<RefObject<HTMLElement>>;
+  activeSceneIndex: number;
+  sceneCount: number;
 }
 
-const RiverPath: React.FC<RiverPathProps> = ({ headerRef, footerRef, nodeRefs }) => {
+const RiverPath: React.FC<RiverPathProps> = ({
+  headerRef,
+  footerRef,
+  nodeRefs,
+  activeSceneIndex,
+  sceneCount,
+}) => {
   const svgPathRef = useRef<SVGPathElement | null>(null);
+  const pathLengthRef = useRef(0);
+  const currentOffsetRef = useRef(0);
+  const targetProgressRef = useRef(0);
+  const activeAnimationRef = useRef<Animation | null>(null);
 
   useEffect(() => {
     if (!svgPathRef.current) return;
@@ -52,54 +65,79 @@ const RiverPath: React.FC<RiverPathProps> = ({ headerRef, footerRef, nodeRefs })
 
       pathElement.setAttribute('d', pathData);
       const pathLength = pathElement.getTotalLength();
+      pathLengthRef.current = pathLength;
       pathElement.style.strokeDasharray = `${pathLength}`;
-      pathElement.style.strokeDashoffset = `${pathLength}`;
-
-      updatePathAnimation(pathLength);
-    };
-
-    const updatePathAnimation = (pathLength: number) => {
-      if (pathLength <= 0) return;
-      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollableHeight <= 0) {
-        pathElement.style.strokeDashoffset = '0';
-        return;
-      }
-      const scrollPercentage = Math.min(1, Math.max(0, window.scrollY / scrollableHeight));
-      const drawLength = pathLength * scrollPercentage * 1.2;
-      pathElement.style.strokeDashoffset = `${Math.max(0, pathLength - drawLength)}`;
-    };
-
-    let resizeTimer: number | undefined;
-    let ticking = false;
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        const pathLength = pathElement.getTotalLength();
-        updatePathAnimation(pathLength);
-        ticking = false;
-      });
+      const targetOffset = pathLength * (1 - targetProgressRef.current);
+      currentOffsetRef.current = targetOffset;
+      pathElement.style.strokeDashoffset = `${targetOffset}`;
     };
 
     const onResize = () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(calculateAndDrawPath, 200);
+      calculateAndDrawPath();
     };
 
     calculateAndDrawPath();
-    const initTimer = window.setTimeout(calculateAndDrawPath, 150);
-
-    window.addEventListener('scroll', onScroll, { passive: true });
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => calculateAndDrawPath());
+      resizeObserver.observe(document.body);
+    }
     window.addEventListener('resize', onResize);
 
     return () => {
-      window.clearTimeout(initTimer);
-      window.removeEventListener('scroll', onScroll);
+      resizeObserver?.disconnect();
       window.removeEventListener('resize', onResize);
     };
   }, [footerRef, headerRef, nodeRefs]);
+
+  useEffect(() => {
+    if (!svgPathRef.current) return;
+    if (sceneCount <= 0) return;
+
+    const pathElement = svgPathRef.current;
+    const pathLength = pathLengthRef.current || pathElement.getTotalLength();
+    if (!Number.isFinite(pathLength) || pathLength === 0) {
+      return;
+    }
+
+    const progress = activeSceneIndex >= 0 ? Math.min(1, (activeSceneIndex + 1) / sceneCount) : 0;
+    targetProgressRef.current = progress;
+
+    const targetOffset = pathLength * (1 - progress);
+    const currentOffset = currentOffsetRef.current || pathLength;
+
+    if (activeAnimationRef.current) {
+      activeAnimationRef.current.cancel();
+    }
+
+    const animation = pathElement.animate(
+      [
+        { strokeDashoffset: `${currentOffset}` },
+        { strokeDashoffset: `${targetOffset}` },
+      ],
+      {
+        duration: 900,
+        easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)',
+        fill: 'forwards',
+      }
+    );
+
+    activeAnimationRef.current = animation;
+
+    animation.onfinish = () => {
+      pathElement.style.strokeDashoffset = `${targetOffset}`;
+      currentOffsetRef.current = targetOffset;
+    };
+
+    animation.oncancel = () => {
+      pathElement.style.strokeDashoffset = `${targetOffset}`;
+      currentOffsetRef.current = targetOffset;
+    };
+
+    return () => {
+      animation.cancel();
+    };
+  }, [activeSceneIndex, sceneCount]);
 
   return (
     <div id="svg-path-container" aria-hidden="true">

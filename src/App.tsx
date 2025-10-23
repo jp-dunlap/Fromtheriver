@@ -8,6 +8,23 @@ import Modal from './components/Modal';
 import { TooltipProvider, TooltipTrigger } from './components/TooltipProvider';
 import { Village } from './data/types';
 import { VillageLink } from './components/VillageLink';
+import SceneOverlay from './components/SceneOverlay';
+import SceneAudioControls from './components/SceneAudioControls';
+import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
+import { generateAmbientToneDataUri } from './js/ambientTone';
+import PrototypeGallery from './prototypes/PrototypeGallery';
+
+type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
+
+interface SceneMetadata {
+  id: SceneId;
+  title: string;
+  description: string;
+  ref: React.MutableRefObject<HTMLElement | null>;
+  audioSrc: string;
+  order: number;
+  focusVillages: string[];
+}
 
 const App: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
@@ -23,7 +40,15 @@ const App: React.FC = () => {
   const [isToolkitOpen, setToolkitOpen] = useState(false);
   const [isDonateOpen, setDonateOpen] = useState(false);
 
+  const isPrototypeMode =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('prototype') === 'gallery';
+
   useEffect(() => {
+    if (isPrototypeMode) {
+      return;
+    }
+
     let isMounted = true;
     fetch('/villages.json')
       .then((response) => {
@@ -46,12 +71,180 @@ const App: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isPrototypeMode]);
 
   const nodeRefs = useMemo(
     () => [rootsRef, resistanceRef, cultureRef, actionRef],
     []
   );
+
+  const toneSources = useMemo(
+    () => ({
+      roots: generateAmbientToneDataUri({
+        baseFrequency: 174,
+        layers: [
+          { ratio: 1, gain: 1 },
+          { ratio: 2, gain: 0.25, phase: 0.25 },
+          { ratio: 2.5, gain: 0.2, phase: 0.35 },
+        ],
+        duration: 3,
+        attackPortion: 0.15,
+        releasePortion: 0.25,
+      }),
+      resistance: generateAmbientToneDataUri({
+        baseFrequency: 220,
+        layers: [
+          { ratio: 1, gain: 1 },
+          { ratio: 1.33, gain: 0.4, phase: 0.15 },
+          { ratio: 1.66, gain: 0.35, phase: 0.32 },
+        ],
+        duration: 2.8,
+        attackPortion: 0.05,
+        releasePortion: 0.3,
+      }),
+      culture: generateAmbientToneDataUri({
+        baseFrequency: 262,
+        layers: [
+          { ratio: 1, gain: 1 },
+          { ratio: 1.5, gain: 0.5, phase: 0.2 },
+          { ratio: 2, gain: 0.25, phase: 0.4 },
+        ],
+        duration: 3.2,
+        attackPortion: 0.2,
+        releasePortion: 0.25,
+      }),
+      action: generateAmbientToneDataUri({
+        baseFrequency: 196,
+        layers: [
+          { ratio: 1, gain: 1 },
+          { ratio: 2, gain: 0.3, phase: 0.1 },
+          { ratio: 2.75, gain: 0.25, phase: 0.28 },
+        ],
+        duration: 2.4,
+        attackPortion: 0.08,
+        releasePortion: 0.2,
+      }),
+    }),
+    []
+  );
+
+  const sceneMeta = useMemo<SceneMetadata[]>(
+    () => [
+      {
+        id: 'roots',
+        title: 'The Roots',
+        description:
+          'Follow the colonial timeline from the British Mandate through the Nakba and meet villages whose erasure anchors this archive.',
+        ref: rootsRef,
+        audioSrc: toneSources.roots,
+        order: 0,
+        focusVillages: ['Lifta', 'Deir Yassin', 'al-Tantura'],
+      },
+      {
+        id: 'resistance',
+        title: 'The Resistance',
+        description:
+          'Witness the breadth of Palestinian defiance, from organized uprisings to the cultural figures who embodied liberation.',
+        ref: resistanceRef,
+        audioSrc: toneSources.resistance,
+        order: 1,
+        focusVillages: ['Haifa', 'Acre', 'Safad'],
+      },
+      {
+        id: 'culture',
+        title: 'The Culture',
+        description:
+          'Celebrate the living practices—tatreez, cuisine, film, and dance—that protect memory and identity against erasure.',
+        ref: cultureRef,
+        audioSrc: toneSources.culture,
+        order: 2,
+        focusVillages: ['Jaffa', 'Beisan'],
+      },
+      {
+        id: 'action',
+        title: 'The Action',
+        description:
+          'Translate narrative into solidarity through organizing, fundraising, and amplifying Palestinian-led calls to action.',
+        ref: actionRef,
+        audioSrc: toneSources.action,
+        order: 3,
+        focusVillages: ['Lydda', 'al-Ramla'],
+      },
+    ],
+    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources]
+  );
+
+  const sceneConfigs = useMemo<UseRiverScenesConfig[]>(
+    () =>
+      sceneMeta.map(({ id, ref, audioSrc, order }) => ({
+        id,
+        ref,
+        audioSrc,
+        order,
+      })),
+    [sceneMeta]
+  );
+
+  const sceneObserverOptions = useMemo<IntersectionObserverInit>(
+    () => ({
+      threshold: 0.4,
+      rootMargin: '-15% 0px -25% 0px',
+    }),
+    []
+  );
+
+  const {
+    activeSceneId,
+    playSceneAudio,
+    pauseSceneAudio,
+    toggleAutoPlay,
+    autoPlay,
+    setVolume,
+    getSceneAudioState,
+    volume: audioVolume,
+  } = useRiverScenes(sceneConfigs, sceneObserverOptions);
+
+  const activeScene = useMemo(
+    () => sceneMeta.find((scene) => scene.id === activeSceneId) ?? null,
+    [sceneMeta, activeSceneId]
+  );
+
+  const sceneCount = sceneConfigs.length;
+
+  const activeSceneIndex = useMemo(
+    () => (activeScene ? activeScene.order : -1),
+    [activeScene]
+  );
+
+  const activeSceneVillages = useMemo(() => {
+    if (!activeScene) {
+      return [] as Village[];
+    }
+
+    return activeScene.focusVillages
+      .map((targetName) =>
+        villages.find(
+          (village) => village.name.toLowerCase() === targetName.toLowerCase()
+        )
+      )
+      .filter((village): village is Village => Boolean(village));
+  }, [activeScene, villages]);
+
+  const activeAudioState = useMemo(
+    () =>
+      activeScene
+        ? getSceneAudioState(activeScene.id)
+        : { isPlaying: false, volume: audioVolume },
+    [activeScene, getSceneAudioState, audioVolume]
+  );
+
+  useEffect(() => {
+    sceneMeta.forEach((scene) => {
+      const element = scene.ref.current;
+      if (!element) return;
+      element.dataset.sceneActive = activeSceneId === scene.id ? 'true' : 'false';
+    });
+  }, [sceneMeta, activeSceneId]);
 
   const handleVillageSelect = useCallback(
     (name: string) => {
@@ -67,10 +260,62 @@ const App: React.FC = () => {
 
   const closeCodex = useCallback(() => setSelectedVillage(null), []);
 
+  const handleAutoPlayToggle = useCallback(() => {
+    const willEnable = !autoPlay;
+    toggleAutoPlay();
+    if (willEnable) {
+      if (activeSceneId) {
+        void playSceneAudio(activeSceneId);
+      }
+    } else {
+      pauseSceneAudio();
+    }
+  }, [autoPlay, toggleAutoPlay, activeSceneId, playSceneAudio, pauseSceneAudio]);
+
+  const handleVolumeChange = useCallback(
+    (value: number) => {
+      setVolume(value);
+    },
+    [setVolume]
+  );
+
+  if (isPrototypeMode) {
+    return <PrototypeGallery />;
+  }
+
   return (
     <TooltipProvider>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <RiverPath headerRef={headerRef} footerRef={footerRef} nodeRefs={nodeRefs} />
+        <RiverPath
+          headerRef={headerRef}
+          footerRef={footerRef}
+          nodeRefs={nodeRefs}
+          activeSceneIndex={activeSceneIndex}
+          sceneCount={sceneCount}
+        />
+
+        <SceneOverlay
+          sceneTitle={activeScene?.title ?? ''}
+          description={activeScene?.description ?? ''}
+          villages={activeSceneVillages}
+          onSelectVillage={(village) => setSelectedVillage(village)}
+          isVisible={Boolean(activeScene && activeSceneVillages.length > 0)}
+        />
+
+        <SceneAudioControls
+          sceneId={activeScene?.id ?? 'none'}
+          sceneTitle={activeScene?.title ?? ''}
+          audioAvailable={Boolean(activeScene?.audioSrc)}
+          audioState={activeAudioState}
+          onPlay={(sceneId) => {
+            void playSceneAudio(sceneId);
+          }}
+          onPause={pauseSceneAudio}
+          onToggleAutoPlay={handleAutoPlayToggle}
+          autoPlay={autoPlay}
+          volume={audioVolume}
+          onVolumeChange={handleVolumeChange}
+        />
 
         <header
           ref={headerRef}
