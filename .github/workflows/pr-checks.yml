@@ -52,14 +52,6 @@ jobs:
       - name: Run accessibility tests
         run: npm run test:a11y
 
-      - name: Stop preview server
-        if: always()
-        run: |
-          if [ -f preview.pid ]; then
-            kill $(cat preview.pid) || true
-            rm preview.pid
-          fi
-
       - name: Run Lighthouse tests
         id: lighthouse
         run: |
@@ -79,14 +71,19 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
+            echo "Netlify credentials not provided; skipping deploy."
+            exit 0
+          fi
           if [ ! -d dist ]; then
-            echo "dist directory not found; skipping Netlify deploy."
+            echo "dist directory not found; run the build step before deploying."
             exit 0
           fi
           npx --yes netlify-cli@17 deploy \
             --dir=dist \
             --functions=netlify/functions \
-            --context=deploy-preview \
+            --site="$NETLIFY_SITE_ID" \
+            --auth="$NETLIFY_AUTH_TOKEN" \
             --message="Preview for PR #${{ github.event.pull_request.number }}" \
             --json > netlify-output.json
           preview_url=$(jq -r '.deploy_url // .deploy_ssl_url // ""' netlify-output.json)
@@ -97,6 +94,14 @@ jobs:
             exit 1
           fi
           echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if [ -f preview.pid ]; then
+            kill $(cat preview.pid) || true
+            rm preview.pid
+          fi
 
       - name: Post preview links comment
         if: ${{ always() && github.event_name == 'pull_request' }}
