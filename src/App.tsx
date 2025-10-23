@@ -19,6 +19,7 @@ import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
 import type { ExternalArchivePayload } from './data/external';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import Meta from './seo/meta';
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -405,6 +406,7 @@ const App: React.FC = () => {
 
   return (
     <TooltipProvider>
+      <Meta pageId="home" />
       <a href="#main-content" className="skip-link">
         {t('common:skipLink')}
       </a>
