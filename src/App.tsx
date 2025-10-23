@@ -54,6 +54,44 @@ const App: React.FC = () => {
   const [externalUpdatesError, setExternalUpdatesError] = useState<string | null>(null);
   const [isExternalUpdatesLoading, setExternalUpdatesLoading] = useState(false);
 
+  const loadExternalUpdates = useCallback(
+    async (signal?: AbortSignal) => {
+      if (isPrototypeMode) {
+        return;
+      }
+
+      setExternalUpdatesLoading(true);
+      setExternalUpdatesError(null);
+
+      try {
+        const response = await fetch('/.netlify/functions/external-archive', {
+          signal,
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const payload = (await response.json()) as ExternalArchivePayload;
+        if (signal?.aborted) {
+          return;
+        }
+        setExternalUpdates(payload);
+        setExternalUpdatesError(null);
+      } catch (error) {
+        if (signal?.aborted) {
+          return;
+        }
+        console.error('Failed to load external archive updates', error);
+        setExternalUpdatesError('Could not refresh solidarity signals.');
+      } finally {
+        if (!signal?.aborted) {
+          setExternalUpdatesLoading(false);
+        }
+      }
+    },
+    [isPrototypeMode]
+  );
+
   useEffect(() => {
     if (isPrototypeMode) {
       setVillages([]);
@@ -307,44 +345,6 @@ const App: React.FC = () => {
       return <VillageLink village={villageEntry} onSelect={handleVillageOpen} />;
     },
     [villagesBySlug, villagesByName, handleVillageOpen]
-  );
-
-  const loadExternalUpdates = useCallback(
-    async (signal?: AbortSignal) => {
-      if (isPrototypeMode) {
-        return;
-      }
-
-      setExternalUpdatesLoading(true);
-      setExternalUpdatesError(null);
-
-      try {
-        const response = await fetch('/.netlify/functions/external-archive', {
-          signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const payload = (await response.json()) as ExternalArchivePayload;
-        if (signal?.aborted) {
-          return;
-        }
-        setExternalUpdates(payload);
-        setExternalUpdatesError(null);
-      } catch (error) {
-        if (signal?.aborted) {
-          return;
-        }
-        console.error('Failed to load external archive updates', error);
-        setExternalUpdatesError('Could not refresh solidarity signals.');
-      } finally {
-        if (!signal?.aborted) {
-          setExternalUpdatesLoading(false);
-        }
-      }
-    },
-    [isPrototypeMode]
   );
 
   const closeCodex = useCallback(() => setSelectedVillage(null), []);
