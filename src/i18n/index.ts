@@ -2,6 +2,8 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
+import { applyDocumentLocale } from './layout';
+
 import en from '../../locales/en/common.json';
 import es from '../../locales/es/common.json';
 import ar from '../../locales/ar/common.json';
@@ -28,6 +30,11 @@ void i18n
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
     },
+  })
+  .then(() => {
+    applyDocumentLocale(i18n.resolvedLanguage ?? i18n.language);
   });
+
+i18n.on('languageChanged', applyDocumentLocale);
 
 export default i18n;

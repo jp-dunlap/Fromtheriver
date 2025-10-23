@@ -19,6 +19,12 @@ module.exports = {
         sans: ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
         serif: ['var(--font-serif)', ...defaultTheme.fontFamily.serif]
       },
+      lineHeight: {
+        arabic: '1.85'
+      },
+      letterSpacing: {
+        arabic: '0.015em'
+      },
       boxShadow: {
         card: '0 10px 30px rgba(0, 0, 0, 0.6)'
       }
