@@ -18,6 +18,10 @@
         "ar": "العربية"
       }
     },
+    "archiveExplorer": {
+      "open": "مستكشف الأرشيف",
+      "shortcut": "اختصار: ⌘K / Ctrl+K"
+    },
     "footer": {
       "solidarity": "من النهر إلى البحر، فلسطين ستكون حرة.",
       "credit": "fromtheriver.org - مشروع تضامني."
@@ -45,7 +49,26 @@
     "related": "قرى مرتبطة"
   },
   "villages": {
-    "open": "عرض تفاصيل {{name}}"
+    "open": "عرض تفاصيل {{name}}",
+    "unknownName": "قرية غير معروفة",
+    "unknownDistrict": "قضاء غير معروف"
+  },
+  "archiveExplorer": {
+    "title": "مستكشف الأرشيف",
+    "searchLabel": "ابحث في الأرشيف",
+    "placeholder": "ابحث حسب القرية أو القضاء أو السرد...",
+    "results": "{{count}} نتيجة",
+    "empty": "لا توجد قرى مطابقة لبحثك.",
+    "unknownVillage": "قرية بلا اسم"
+  },
+  "externalUpdates": {
+    "title": "إشارات التضامن",
+    "updated": "تم التحديث في {{date}}",
+    "loading": "جارٍ تحديث إشارات التضامن...",
+    "retry": "إعادة المحاولة",
+    "empty": "لا توجد تحديثات متاحة حالياً.",
+    "published": "نُشر في {{date}}",
+    "fetchError": "تعذّر تحديث إشارات التضامن."
   },
   "modals": {
     "close": "إغلاق النافذة",
@@ -55,6 +78,11 @@
       "destroyedBy": "دمر على يد",
       "militaryOperation": "العملية العسكرية",
       "builtOn": "أقيم على أنقاضه",
+      "coordinates": "الإحداثيات",
+      "keyFacts": "حقائق أساسية",
+      "aftermath": "ما بعد التهجير",
+      "testimonies": "شهادات الناجين",
+      "media": "مواد وقراءات إضافية",
       "viewAtlas": "عرض على أطلس المحو →"
     },
     "toolkit": {

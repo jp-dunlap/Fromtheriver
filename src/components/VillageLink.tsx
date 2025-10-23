@@ -1,20 +1,31 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Village } from '../data/types';
 
 type VillageLinkProps = {
-  name: string;
-  onSelect: (name: string) => void;
+  village: Village | null;
+  fallbackLabel: string;
+  onSelect: (village: Village) => void;
 };
 
-export const VillageLink: React.FC<VillageLinkProps> = ({ name, onSelect }) => {
+export const VillageLink: React.FC<VillageLinkProps> = ({
+  village,
+  fallbackLabel,
+  onSelect,
+}) => {
   const { t } = useTranslation();
+  const label = village?.names?.en ?? village?.name ?? fallbackLabel;
+
+  if (!village) {
+    return <span className="font-semibold">{fallbackLabel}</span>;
+  }
 
   return (
     <button
       type="button"
-      className="village-link underline-offset-2"
-      onClick={() => onSelect(name)}
-      aria-label={t('villages.open', { name })}
+      className="village-link inline-flex items-center gap-1 underline-offset-2"
+      onClick={() => onSelect(village)}
+      aria-label={t('villages.open', { name: label })}
     >
       <span aria-hidden="true" className="inline-flex items-center gap-1">
         <svg
@@ -25,7 +36,7 @@ export const VillageLink: React.FC<VillageLinkProps> = ({ name, onSelect }) => {
         >
           <path d="M3.172 7.172a4 4 0 015.656-5.656l1 1a4 4 0 015.482 5.813l-6.364 6.364a4 4 0 11-5.657-5.657l2.121-2.121 1.414 1.414-2.121 2.121a2 2 0 102.828 2.828l6.364-6.364a2 2 0 10-2.828-2.828l-1-1a2 2 0 00-2.828 2.828l1.414 1.414-1.414 1.414-1.414-1.414z" />
         </svg>
-        {name}
+        <span>{label}</span>
       </span>
     </button>
   );

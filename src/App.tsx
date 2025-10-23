@@ -21,6 +21,12 @@ import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
 import { generateAmbientToneDataUri } from './js/ambientTone';
 import PrototypeGallery from './prototypes/PrototypeGallery';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import ArchiveExplorerModal from './components/ArchiveExplorerModal';
+import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
+import {
+  ExternalArchivePayload,
+  isExternalArchivePayload,
+} from './data/external';
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -33,6 +39,17 @@ interface SceneMetadata {
   order: number;
   focusVillages: string[];
 }
+
+const slugify = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 
 const App: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
@@ -56,6 +73,14 @@ const App: React.FC = () => {
   const [selectedVillage, setSelectedVillage] = useState<Village | null>(null);
   const [isToolkitOpen, setToolkitOpen] = useState(false);
   const [isDonateOpen, setDonateOpen] = useState(false);
+  const [isArchiveExplorerOpen, setArchiveExplorerOpen] = useState(false);
+  const [externalUpdates, setExternalUpdates] =
+    useState<ExternalArchivePayload | null>(null);
+  const [externalUpdatesError, setExternalUpdatesError] = useState<string | null>(
+    null
+  );
+  const [isExternalUpdatesLoading, setExternalUpdatesLoading] =
+    useState(false);
 
   const isPrototypeMode =
     typeof window !== 'undefined' &&
@@ -77,6 +102,7 @@ const App: React.FC = () => {
       .then((data: Village[]) => {
         if (isMounted) {
           setVillages(data);
+          setVillagesErrorKey(null);
         }
       })
       .catch((error) => {
@@ -89,6 +115,89 @@ const App: React.FC = () => {
       isMounted = false;
     };
   }, [isPrototypeMode]);
+
+  const loadExternalUpdates = useCallback(
+    async (signal?: AbortSignal) => {
+      if (isPrototypeMode) {
+        return;
+      }
+
+      setExternalUpdatesLoading(true);
+      setExternalUpdatesError(null);
+
+      try {
+        const response = await fetch('/.netlify/functions/external-archive', {
+          signal,
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        if (signal?.aborted) {
+          return;
+        }
+
+        if (isExternalArchivePayload(payload)) {
+          setExternalUpdates(payload);
+          setExternalUpdatesError(null);
+        } else {
+          throw new Error('Invalid archive payload');
+        }
+      } catch (error) {
+        if (signal?.aborted) {
+          return;
+        }
+        console.error('Failed to load external archive updates', error);
+        setExternalUpdates(null);
+        setExternalUpdatesError(t('externalUpdates.fetchError'));
+      } finally {
+        if (!signal?.aborted) {
+          setExternalUpdatesLoading(false);
+        }
+      }
+    },
+    [isPrototypeMode, t]
+  );
+
+  useEffect(() => {
+    if (isPrototypeMode) {
+      setExternalUpdates(null);
+      setExternalUpdatesError(null);
+      setExternalUpdatesLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    void loadExternalUpdates(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
+  }, [isPrototypeMode, loadExternalUpdates]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handler = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setArchiveExplorerOpen(true);
+      }
+
+      if (!event.metaKey && !event.ctrlKey && event.key === '/' && !isArchiveExplorerOpen) {
+        event.preventDefault();
+        setArchiveExplorerOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => {
+      window.removeEventListener('keydown', handler);
+    };
+  }, [isArchiveExplorerOpen]);
 
   const nodeRefs = useMemo(
     () => [rootsRef, resistanceRef, cultureRef, actionRef],
@@ -229,19 +338,49 @@ const App: React.FC = () => {
     [activeScene]
   );
 
+  const villagesBySlug = useMemo(() => {
+    const map = new Map<string, Village>();
+    villages.forEach((villageEntry) => {
+      const candidateSlug =
+        villageEntry.slug ??
+        slugify(villageEntry.names?.en ?? villageEntry.name ?? '');
+      if (candidateSlug) {
+        map.set(candidateSlug.toLowerCase(), villageEntry);
+      }
+    });
+    return map;
+  }, [villages]);
+
+  const villagesByName = useMemo(() => {
+    const map = new Map<string, Village>();
+    villages.forEach((villageEntry) => {
+      const englishName = villageEntry.names?.en ?? villageEntry.name;
+      if (englishName) {
+        map.set(englishName.toLowerCase(), villageEntry);
+      }
+      if (villageEntry.slug) {
+        map.set(villageEntry.slug.toLowerCase(), villageEntry);
+      }
+    });
+    return map;
+  }, [villages]);
+
   const activeSceneVillages = useMemo(() => {
     if (!activeScene) {
       return [] as Village[];
     }
 
     return activeScene.focusVillages
-      .map((targetName) =>
-        villages.find(
-          (village) => village.name.toLowerCase() === targetName.toLowerCase()
-        )
-      )
+      .map((targetName) => {
+        const normalized = slugify(targetName);
+        return (
+          villagesBySlug.get(normalized) ??
+          villagesByName.get(targetName.toLowerCase()) ??
+          null
+        );
+      })
       .filter((village): village is Village => Boolean(village));
-  }, [activeScene, villages]);
+  }, [activeScene, villagesByName, villagesBySlug]);
 
   const activeAudioState = useMemo(
     () =>
@@ -259,16 +398,27 @@ const App: React.FC = () => {
     });
   }, [sceneMeta, activeSceneId]);
 
-  const handleVillageSelect = useCallback(
-    (name: string) => {
-      const village = villages.find(
-        (entry) => entry.name.toLowerCase() === name.toLowerCase()
+  const handleVillageOpen = useCallback((village: Village) => {
+    setSelectedVillage(village);
+  }, []);
+
+  const renderVillageLink = useCallback(
+    (identifier: string) => {
+      const normalizedSlug = slugify(identifier);
+      const villageEntry =
+        villagesBySlug.get(normalizedSlug) ??
+        villagesByName.get(identifier.toLowerCase()) ??
+        null;
+
+      return (
+        <VillageLink
+          village={villageEntry}
+          fallbackLabel={identifier}
+          onSelect={handleVillageOpen}
+        />
       );
-      if (village) {
-        setSelectedVillage(village);
-      }
     },
-    [villages]
+    [villagesBySlug, villagesByName, handleVillageOpen]
   );
 
   const closeCodex = useCallback(() => setSelectedVillage(null), []);
@@ -333,7 +483,19 @@ const App: React.FC = () => {
               );
             })}
           </ul>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full border border-accent/40 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-accent hover:bg-accent/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70"
+              onClick={() => setArchiveExplorerOpen(true)}
+            >
+              {t('app.archiveExplorer.open')}
+            </button>
+            <span className="hidden text-[0.65rem] uppercase tracking-widest text-text-tertiary md:block">
+              {t('app.archiveExplorer.shortcut')}
+            </span>
+            <LanguageSwitcher />
+          </div>
         </nav>
 
         <RiverPath
@@ -348,7 +510,7 @@ const App: React.FC = () => {
           sceneTitle={activeScene?.title ?? ''}
           description={activeScene?.description ?? ''}
           villages={activeSceneVillages}
-          onSelectVillage={(village) => setSelectedVillage(village)}
+          onSelectVillage={handleVillageOpen}
           isVisible={Boolean(activeScene && activeSceneVillages.length > 0)}
         />
 
@@ -426,24 +588,10 @@ const App: React.FC = () => {
                   <Trans
                     i18nKey="scenes.roots.paragraphs.2"
                     components={{
-                      lifta: (
-                        <VillageLink name="Lifta" onSelect={handleVillageSelect} />
-                      ),
-                      deirYassin: (
-                        <VillageLink
-                          name="Deir Yassin"
-                          onSelect={handleVillageSelect}
-                        />
-                      ),
-                      alTantura: (
-                        <VillageLink
-                          name="al-Tantura"
-                          onSelect={handleVillageSelect}
-                        />
-                      ),
-                      lydda: (
-                        <VillageLink name="Lydda" onSelect={handleVillageSelect} />
-                      ),
+                      lifta: renderVillageLink('Lifta'),
+                      deirYassin: renderVillageLink('Deir Yassin'),
+                      alTantura: renderVillageLink('al-Tantura'),
+                      lydda: renderVillageLink('Lydda'),
                     }}
                   />
                 </p>
@@ -736,6 +884,14 @@ const App: React.FC = () => {
                   </div>
                 </AccordionItem>
               </div>
+              <ExternalUpdatesPanel
+                payload={externalUpdates}
+                error={externalUpdatesError}
+                isLoading={isExternalUpdatesLoading}
+                onRetry={() => {
+                  void loadExternalUpdates();
+                }}
+              />
             </div>
           </ContentNode>
         </main>
@@ -750,6 +906,13 @@ const App: React.FC = () => {
             {t('app.footer.credit')}
           </p>
         </footer>
+
+        <ArchiveExplorerModal
+          villages={villages}
+          isOpen={isArchiveExplorerOpen}
+          onClose={() => setArchiveExplorerOpen(false)}
+          onSelectVillage={handleVillageOpen}
+        />
 
         <CodexModal village={selectedVillage} onClose={closeCodex} />
 

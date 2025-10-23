@@ -25,6 +25,23 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
   }
 
   const primaryVillage = villages[0];
+  const primaryName =
+    primaryVillage.names?.en ??
+    primaryVillage.name ??
+    t('villages.unknownName');
+  const primaryArabicName =
+    primaryVillage.names?.ar ?? primaryVillage.name_arabic ?? '';
+  const primarySummary =
+    primaryVillage.narrative?.summary ??
+    primaryVillage.story ??
+    primaryVillage.overview ??
+    '';
+  const primaryMeta = primaryArabicName
+    ? t('overlay.primaryMeta', {
+        district: primaryVillage.district ?? t('villages.unknownDistrict'),
+        arabicName: primaryArabicName,
+      })
+    : primaryVillage.district ?? t('villages.unknownDistrict');
 
   return (
     <aside
@@ -38,16 +55,13 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
       <div className="space-y-4">
         <article className="bg-slate-900/60 rounded-lg p-4 border border-border/40">
           <header className="mb-2">
-            <h4 className="font-semibold text-white text-lg">{primaryVillage.name}</h4>
+            <h4 className="font-semibold text-white text-lg">{primaryName}</h4>
             <p className="text-xs uppercase tracking-wider text-text-tertiary">
-              {t('overlay.primaryMeta', {
-                district: primaryVillage.district,
-                arabicName: primaryVillage.name_arabic,
-              })}
+              {primaryMeta}
             </p>
           </header>
           <p className="text-xs text-text-secondary leading-relaxed max-h-32 overflow-hidden">
-            {primaryVillage.story}
+            {primarySummary}
           </p>
           <button
             type="button"
@@ -71,7 +85,8 @@ const SceneOverlay: React.FC<SceneOverlayProps> = ({
                     className="w-full text-left text-xs text-text-secondary/90 hover:text-white transition-colors"
                     onClick={() => onSelectVillage(village)}
                   >
-                    {village.name} · {village.district}
+                    {village.names?.en ?? village.name ?? t('villages.unknownName')} ·{' '}
+                    {village.district ?? t('villages.unknownDistrict')}
                   </button>
                 </li>
               ))}

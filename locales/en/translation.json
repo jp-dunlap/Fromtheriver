@@ -18,6 +18,10 @@
         "ar": "العربية"
       }
     },
+    "archiveExplorer": {
+      "open": "Archive Explorer",
+      "shortcut": "Shortcut: ⌘K / Ctrl+K"
+    },
     "footer": {
       "solidarity": "From The River To The Sea, Palestine Will Be Free.",
       "credit": "fromtheriver.org - A project of solidarity."
@@ -45,7 +49,26 @@
     "related": "Related villages"
   },
   "villages": {
-    "open": "Open details for {{name}}"
+    "open": "Open details for {{name}}",
+    "unknownName": "Unknown village",
+    "unknownDistrict": "Unknown district"
+  },
+  "archiveExplorer": {
+    "title": "Archive Explorer",
+    "searchLabel": "Search the archive",
+    "placeholder": "Search by village, district, or story...",
+    "results": "{{count}} results",
+    "empty": "No villages match your search.",
+    "unknownVillage": "Unnamed village"
+  },
+  "externalUpdates": {
+    "title": "Solidarity Signals",
+    "updated": "Updated {{date}}",
+    "loading": "Refreshing solidarity updates...",
+    "retry": "Retry",
+    "empty": "No updates are available right now.",
+    "published": "Published {{date}}",
+    "fetchError": "Could not refresh solidarity signals."
   },
   "modals": {
     "close": "Close modal",
@@ -55,6 +78,11 @@
       "destroyedBy": "Destroyed by",
       "militaryOperation": "Military Operation",
       "builtOn": "Built on its ruins",
+      "coordinates": "Coordinates",
+      "keyFacts": "Key facts",
+      "aftermath": "Aftermath",
+      "testimonies": "Survivor testimonies",
+      "media": "Media & further study",
       "viewAtlas": "View on Atlas of Erasure →"
     },
     "toolkit": {

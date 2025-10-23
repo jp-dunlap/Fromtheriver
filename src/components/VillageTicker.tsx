@@ -21,7 +21,8 @@ const VillageTicker: React.FC<VillageTickerProps> = ({ villages }) => {
     }
 
     const village = villages[index];
-    return t('ticker.message', { name: village.name });
+    const name = village.names?.en ?? village.name ?? t('villages.unknownName');
+    return t('ticker.message', { name });
   }, [hasVillages, villages, index, t]);
 
   useEffect(() => {
