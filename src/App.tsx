@@ -12,6 +12,7 @@ import SceneOverlay from './components/SceneOverlay';
 import SceneAudioControls from './components/SceneAudioControls';
 import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
 import { generateAmbientToneDataUri } from './js/ambientTone';
+import PrototypeGallery from './prototypes/PrototypeGallery';
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -39,7 +40,15 @@ const App: React.FC = () => {
   const [isToolkitOpen, setToolkitOpen] = useState(false);
   const [isDonateOpen, setDonateOpen] = useState(false);
 
+  const isPrototypeMode =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('prototype') === 'gallery';
+
   useEffect(() => {
+    if (isPrototypeMode) {
+      return;
+    }
+
     let isMounted = true;
     fetch('/villages.json')
       .then((response) => {
@@ -62,7 +71,7 @@ const App: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isPrototypeMode]);
 
   const nodeRefs = useMemo(
     () => [rootsRef, resistanceRef, cultureRef, actionRef],
@@ -269,6 +278,10 @@ const App: React.FC = () => {
     },
     [setVolume]
   );
+
+  if (isPrototypeMode) {
+    return <PrototypeGallery />;
+  }
 
   return (
     <TooltipProvider>
