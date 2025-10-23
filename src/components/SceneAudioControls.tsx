@@ -58,6 +58,10 @@ const SceneAudioControls: React.FC<SceneAudioControlsProps> = ({
           type="button"
           className="inline-flex items-center gap-2 rounded-full border border-border/50 px-3 py-1 text-xs font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-slate-900"
           onClick={handleTogglePlayback}
+          aria-pressed={audioState.isPlaying}
+          aria-label={
+            audioState.isPlaying ? t('audio.pause') : t('audio.play')
+          }
         >
           <span aria-hidden="true" className="inline-flex items-center justify-center">
             {audioState.isPlaying ? (

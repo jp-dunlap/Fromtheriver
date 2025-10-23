@@ -20,6 +20,7 @@ const LanguageSwitcher: React.FC = () => {
         id="language-select"
         className="bg-slate-900/70 border border-border/60 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent/70"
         value={currentLanguage}
+        dir={i18n.dir(currentLanguage)}
         onChange={(event) => {
           void i18n.changeLanguage(event.target.value);
         }}

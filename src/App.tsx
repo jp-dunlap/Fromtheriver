@@ -317,17 +317,21 @@ const App: React.FC = () => {
           aria-label={t('app.navLabel')}
         >
           <ul className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
-            {navItems.map((item) => (
-              <li key={item.id}>
-                <a
-                  className="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1 text-white/80 hover:text-white hover:border-accent/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70"
-                  href={`#${item.id}`}
-                >
-                  <span aria-hidden="true">•</span>
-                  {item.label}
-                </a>
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const isCurrent = activeScene?.id === item.id;
+              return (
+                <li key={item.id}>
+                  <a
+                    className="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1 text-white/80 hover:text-white hover:border-accent/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/70"
+                    href={`#${item.id}`}
+                    aria-current={isCurrent ? 'page' : undefined}
+                  >
+                    <span aria-hidden="true">•</span>
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
           <LanguageSwitcher />
         </nav>
@@ -388,7 +392,7 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <main id="main-content" tabIndex={-1} className="relative z-10">
+        <main id="main-content" role="main" tabIndex={-1} className="relative z-10">
           <ContentNode ref={rootsRef} alignment="left" id="roots">
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
