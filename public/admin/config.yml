@@ -1,0 +1,63 @@
+backend:
+  name: git-gateway
+  branch: main
+publish_mode: editorial_workflow
+media_folder: "public/uploads"
+public_folder: "/uploads"
+site_url: "https://fromtheriver.example"
+logo_url: "https://fromtheriver.example/assets/wordmark.svg"
+commit_messages:
+  create: "docs: create {{collection}} entry '{{slug}}'"
+  update: "docs: update {{collection}} entry '{{slug}}'"
+  delete: "docs: delete {{collection}} entry '{{slug}}'"
+  uploadMedia: "media: upload {{path}}"
+  deleteMedia: "media: delete {{path}}"
+collections:
+  - name: pages
+    label: Narrative Pages
+    label_singular: Narrative Page
+    folder: "src/content/pages"
+    create: true
+    slug: "{{slug}}"
+    preview_path: "{{slug}}"
+    format: "frontmatter"
+    editor:
+      preview: false
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Summary", name: "summary", widget: "text" }
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+        hint: "Use reference-style links for citations."
+      - label: "Sources"
+        name: "sources"
+        widget: "list"
+        summary: "{{fields.citation}}"
+        fields:
+          - { label: "Citation", name: "citation", widget: "string" }
+          - { label: "URL", name: "url", widget: "string", required: false }
+  - name: datasets
+    label: Data Modules
+    folder: "src/content/datasets"
+    create: true
+    slug: "{{slug}}"
+    format: "json"
+    extension: "json"
+    editor:
+      preview: false
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - label: "Sources"
+        name: "sources"
+        widget: "list"
+        field: { label: "Source", name: "source", widget: "string" }
+      - label: "Data"
+        name: "records"
+        widget: "list"
+        summary: "{{fields.label}}"
+        fields:
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "Value", name: "value", widget: "number" }
