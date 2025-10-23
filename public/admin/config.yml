@@ -50,6 +50,98 @@ collections:
           - { label: Title, name: title, widget: string }
           - { label: URL, name: url, widget: string }
       - { label: Body, name: body, widget: markdown }
+  - name: resources
+    label: Resources
+    folder: content/resources
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: text, hint: "Short description for listings" }
+      - label: Tags
+        name: tags
+        widget: list
+        allow_add: true
+        summary: "{{value}}"
+        field: { label: Tag, name: tag, widget: string }
+      - label: Sources
+        name: sources
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: URL, name: url, widget: string }
+      - { label: Body, name: body, widget: markdown }
+  - name: glossary
+    label: Glossary
+    folder: content/glossary
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: text, hint: "Short description for listings" }
+      - label: Tags
+        name: tags
+        widget: list
+        allow_add: true
+        summary: "{{value}}"
+        field: { label: Tag, name: tag, widget: string }
+      - label: Sources
+        name: sources
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: URL, name: url, widget: string }
+      - { label: Body, name: body, widget: markdown }
+  - name: toolkits
+    label: Toolkits
+    folder: content/toolkits
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: text, hint: "Short description for listings" }
+      - label: Tags
+        name: tags
+        widget: list
+        allow_add: true
+        summary: "{{value}}"
+        field: { label: Tag, name: tag, widget: string }
+      - label: Sources
+        name: sources
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: URL, name: url, widget: string }
+      - { label: Body, name: body, widget: markdown }
+  - name: calls_to_action
+    label: Calls to Action
+    folder: content/calls-to-action
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: text, hint: "Short description for listings" }
+      - label: Tags
+        name: tags
+        widget: list
+        allow_add: true
+        summary: "{{value}}"
+        field: { label: Tag, name: tag, widget: string }
+      - label: Sources
+        name: sources
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: URL, name: url, widget: string }
+      - { label: Body, name: body, widget: markdown }
   - name: editorial_log
     label: Editorial Log
     files:
