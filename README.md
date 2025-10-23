@@ -7,10 +7,21 @@ Our guiding philosophy is that understanding the struggle for Palestinian libera
 This project is an act of digital solidarity, built to be a durable, beautiful, and unapologetic resource for all who seek justice.
 Technology Stack
 This project is built with a focus on performance, scalability, and modern web standards.
-HTML5: For the core structure and content.
-Tailwind CSS: For a utility-first, responsive, and highly maintainable styling framework.
-JavaScript (ES6+): For all interactivity, including the Intersection Observer API for animations and the dynamic rendering of the SVG "river" path.
-The project is deployed via Netlify from this GitHub repository.
+Vite + React + TypeScript: Component-driven architecture with a fast local development server and optimized production builds.
+Tailwind CSS + PostCSS: Utility-first styling compiled locally with purged, minified output.
+Custom JavaScript & TypeScript modules: Power the interactive river path, codex modal, tooltips, and data-driven visualizations.
+Netlify (or compatible static host): Serves the pre-built `dist/` output with caching configured via the `_headers` file.
+
+Getting Started
+
+```bash
+npm install
+npm run dev    # start the local development server
+npm run build  # produce the optimized production bundle in dist/
+npm run preview # preview the production build locally
+```
+
+Static assets such as the Atlas of Erasure map live in the `public/` directory and are copied as-is during the build step.
 Contributing
 This is currently a personally managed project, but the spirit of solidarity is communal. If you find a broken link, have a suggestion for a critical resource, or encounter a technical issue, please feel free to open an issue in this repository.
 Licensing
