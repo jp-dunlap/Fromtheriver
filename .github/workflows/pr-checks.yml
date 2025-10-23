@@ -1,0 +1,142 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  pr:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit -- --ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Start preview server
+        run: |
+          npm run preview:ci &
+          echo $! > preview.pid
+
+      - name: Wait for preview server
+        run: npx --yes wait-on@7.0.1 http://127.0.0.1:4173
+
+      - name: Run visual tests
+        run: npm run test:visual
+
+      - name: Run accessibility tests
+        run: npm run test:a11y
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if [ -f preview.pid ]; then
+            kill $(cat preview.pid) || true
+            rm preview.pid
+          fi
+
+      - name: Run Lighthouse tests
+        id: lighthouse
+        run: |
+          set -o pipefail
+          npm run test:lighthouse | tee lighthouse.log
+          status=${PIPESTATUS[0]}
+          report_url=$(grep -oE 'https://storage.googleapis.com[^[:space:]]+' lighthouse.log | tail -n 1)
+          if [ -n "$report_url" ]; then
+            echo "report_url=$report_url" >> "$GITHUB_OUTPUT"
+          fi
+          exit $status
+
+      - name: Deploy preview to Netlify
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        id: netlify_deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ ! -d dist ]; then
+            echo "dist directory not found; skipping Netlify deploy."
+            exit 0
+          fi
+          npx --yes netlify-cli@17 deploy \
+            --dir=dist \
+            --functions=netlify/functions \
+            --context=deploy-preview \
+            --message="Preview for PR #${{ github.event.pull_request.number }}" \
+            --json > netlify-output.json
+          preview_url=$(jq -r '.deploy_url // .deploy_ssl_url // ""' netlify-output.json)
+          if [ -z "$preview_url" ]; then
+            echo "Netlify deploy output:"
+            cat netlify-output.json
+            echo "Failed to determine preview URL" >&2
+            exit 1
+          fi
+          echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
+
+      - name: Post preview links comment
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.netlify_deploy.outputs.preview_url }}
+          LIGHTHOUSE_URL: ${{ steps.lighthouse.outputs.report_url }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const core = require('@actions/core');
+            const previewUrl = process.env.PREVIEW_URL;
+            const lighthouseUrl = process.env.LIGHTHOUSE_URL;
+            if (!previewUrl && !lighthouseUrl) {
+              core.info('No URLs to share.');
+              return;
+            }
+            const identifier = '<!-- preview-links -->';
+            const lines = [identifier, '### Preview Links'];
+            if (previewUrl) lines.push(`- 🚀 Netlify Preview: ${previewUrl}`);
+            if (lighthouseUrl) lines.push(`- 🔦 Lighthouse Report: ${lighthouseUrl}`);
+            const body = lines.join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find(comment =>
+              comment.user?.login === 'github-actions[bot]' && comment.body?.includes(identifier)
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
