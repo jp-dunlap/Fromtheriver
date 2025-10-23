@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ModalProps {
@@ -9,8 +9,13 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+  const headingId = useId();
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previousActiveElementRef = useRef<Element | null>(null);
+
   useEffect(() => {
     if (!isOpen) return;
+    previousActiveElementRef.current = document.activeElement;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
@@ -20,6 +25,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      dialogRef.current.focus();
+    }
+    return () => {
+      const previous = previousActiveElementRef.current as HTMLElement | null;
+      if (previous) {
+        previous.focus();
+      }
+    };
+  }, [isOpen]);
+
   if (!isOpen) {
     return null;
   }
@@ -27,7 +44,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative node-card w-full max-w-3xl max-h-[85vh] overflow-y-auto p-8 m-4">
+      <div
+        ref={dialogRef}
+        className="relative node-card w-full max-w-3xl max-h-[85vh] overflow-y-auto p-8 m-4 focus:outline-none"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        tabIndex={-1}
+      >
         <button
           type="button"
           onClick={onClose}
@@ -38,7 +62,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <h3 className="font-serif text-3xl text-white mb-4">{title}</h3>
+        <h3 id={headingId} className="font-serif text-3xl text-white mb-4">
+          {title}
+        </h3>
         {children}
       </div>
     </div>,

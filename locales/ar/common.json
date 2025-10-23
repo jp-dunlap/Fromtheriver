@@ -1,0 +1,72 @@
+{
+  "common": {
+    "skipLink": "انتقل إلى المحتوى الرئيسي",
+    "nav": {
+      "label": "التنقل الرئيسي",
+      "sections": {
+        "roots": "الجذور",
+        "resistance": "المقاومة",
+        "culture": "الثقافة",
+        "action": "الفعل"
+      }
+    },
+    "language": {
+      "label": "اللغة",
+      "english": "الإنجليزية",
+      "spanish": "الإسبانية",
+      "arabic": "العربية"
+    },
+    "status": {
+      "dataRefresh": "آخر تحديث للبيانات: {{date}} · {{count}} قرية موثقة.",
+      "dataEmpty": "السجل التاريخي فارغ.",
+      "dataError": "بيانات الأرشيف غير متاحة في وضع معرض النموذج الأولي.",
+      "externalError": "تعذر تحديث إشارات التضامن.",
+      "externalLoading": "جاري تحديث المستجدات"
+    },
+    "ticker": {
+      "empty": "السجل التاريخي فارغ.",
+      "remembering": "نتذكر {{name}}..."
+    },
+    "overlay": {
+      "ariaLabel": "طبقة المشهد لـ {{title}}",
+      "openCodex": "افتح إدخال السجل",
+      "relatedVillages": "قرى ذات صلة"
+    },
+    "modals": {
+      "toolkit": {
+        "title": "عدة أيديولوجية",
+        "description": "موارد أساسية لتفكيك الأساطير والدعاية الشائعة."
+      },
+      "donate": {
+        "title": "تضامن مادي",
+        "description": "الدعم المباشر فعل ثوري. يواجه الحصار ويوفر موارد للصمود. اختر جبهةً للنضال.",
+        "direct": "مباشر وقاعدي",
+        "institutional": "طبي ومؤسسي"
+      },
+      "codex": {
+        "fallbackTitle": "السجل",
+        "keyFacts": "حقائق أساسية",
+        "district": "المنطقة",
+        "coordinates": "الإحداثيات",
+        "perpetrators": "المرتكبون",
+        "operation": "العملية العسكرية",
+        "builtOnRuins": "بُني على أنقاضها",
+        "aftermath": "التبعات",
+        "survivorTestimonies": "شهادات الناجين",
+        "media": "وسائط ومراجع إضافية",
+        "viewAtlas": "عرض على Atlas of Erasure →"
+      }
+    },
+    "buttons": {
+      "archiveExplorer": "مستكشف الأرشيف",
+      "archiveExplorerHint": "اضغط ⌘K / Ctrl+K",
+      "retry": "إعادة المحاولة"
+    }
+  },
+  "app": {
+    "title": "من النهر",
+    "description": "أرشيف حي لتاريخ فلسطين وثقافتها ونضالها المستمر من أجل التحرر. إنها رحلة للفهم.",
+    "tickerLabel": "شريط تذكّر القرى",
+    "externalUpdatesLabel": "إشارات التضامن"
+  }
+}

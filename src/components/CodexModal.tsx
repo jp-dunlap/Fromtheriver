@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Modal from './Modal';
 import { Village } from '../data/types';
 
@@ -8,13 +9,14 @@ interface CodexModalProps {
 }
 
 const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
+  const { t } = useTranslation(['common']);
   const villageDetails = useMemo(() => village ?? null, [village]);
 
   return (
     <Modal
       isOpen={Boolean(villageDetails)}
       onClose={onClose}
-      title={villageDetails ? villageDetails.names.en : 'Codex'}
+      title={villageDetails ? villageDetails.names.en : t('modals.codex.fallbackTitle')}
     >
       {villageDetails && (
         <div className="space-y-4">
@@ -26,7 +28,7 @@ const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
             {villageDetails.narrative.key_events.length > 0 && (
               <div className="pt-2">
                 <h5 className="text-sm font-semibold text-white uppercase tracking-wider">
-                  Key Facts
+                  {t('modals.codex.keyFacts')}
                 </h5>
                 <ul className="mt-2 space-y-1 text-sm text-muted">
                   {villageDetails.narrative.key_events.map((event) => (
@@ -39,33 +41,33 @@ const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm text-muted">
               <p>
-                <strong className="text-gray-400">District:</strong> {villageDetails.district}
+                <strong className="text-gray-400">{t('modals.codex.district')}:</strong> {villageDetails.district}
               </p>
               <p>
-                <strong className="text-gray-400">Coordinates:</strong>{' '}
+                <strong className="text-gray-400">{t('modals.codex.coordinates')}:</strong>{' '}
                 {villageDetails.coordinates.lat.toFixed(4)}, {villageDetails.coordinates.lon.toFixed(4)}
               </p>
               {villageDetails.destruction.perpetrators.length > 0 && (
                 <p>
-                  <strong className="text-gray-400">Perpetrators:</strong>{' '}
+                  <strong className="text-gray-400">{t('modals.codex.perpetrators')}:</strong>{' '}
                   {villageDetails.destruction.perpetrators.join(', ')}
                 </p>
               )}
               {villageDetails.destruction.operation && (
                 <p>
-                  <strong className="text-gray-400">Military Operation:</strong> {villageDetails.destruction.operation}
+                  <strong className="text-gray-400">{t('modals.codex.operation')}:</strong> {villageDetails.destruction.operation}
                 </p>
               )}
               {villageDetails.aftermath.settlement && (
                 <p>
-                  <strong className="text-gray-400">Built on its ruins:</strong> {villageDetails.aftermath.settlement}
+                  <strong className="text-gray-400">{t('modals.codex.builtOnRuins')}:</strong> {villageDetails.aftermath.settlement}
                 </p>
               )}
             </div>
             {villageDetails.aftermath.notes.length > 0 && (
               <div className="pt-4 border-t border-border">
                 <h5 className="text-sm font-semibold text-white uppercase tracking-wider">
-                  Aftermath
+                  {t('modals.codex.aftermath')}
                 </h5>
                 <ul className="mt-2 space-y-1 text-sm text-muted">
                   {villageDetails.aftermath.notes.map((note) => (
@@ -77,7 +79,7 @@ const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
             {villageDetails.testimonies.length > 0 && (
               <div className="pt-4 border-t border-border space-y-4">
                 <h5 className="text-sm font-semibold text-white uppercase tracking-wider">
-                  Survivor Testimonies
+                  {t('modals.codex.survivorTestimonies')}
                 </h5>
                 {villageDetails.testimonies.map((testimony) => (
                   <figure key={`${villageDetails.slug}-${testimony.witness}`} className="space-y-2">
@@ -113,7 +115,7 @@ const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
               villageDetails.media.maps.length > 0) && (
               <div className="pt-4 border-t border-border space-y-3">
                 <h5 className="text-sm font-semibold text-white uppercase tracking-wider">
-                  Media & Further Study
+                  {t('modals.codex.media')}
                 </h5>
                 <ul className="space-y-2 text-sm text-muted">
                   {[...villageDetails.media.references, ...villageDetails.media.galleries, ...villageDetails.media.maps].map(
@@ -135,7 +137,7 @@ const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
                 className="resource-link"
                 href={`/atlas.html?village=${encodeURIComponent(villageDetails.names.en)}`}
               >
-                View on Atlas of Erasure →
+                {t('modals.codex.viewAtlas')}
               </a>
             </div>
           </div>
