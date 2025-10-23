@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "./.ts-test",
-    "types": ["jest"],
+    "types": ["jest", "node"],
     "module": "commonjs"
   },
   "include": ["tests/**/*", "src/**/*"],

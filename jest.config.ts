@@ -13,6 +13,7 @@ const config: Config = {
   },
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',
+    '\\.(yaml|yml)\\?raw$': '<rootDir>/tests/unit/__mocks__/villages-raw.ts',
   },
 };
 
