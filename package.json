@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/generate-feeds.mjs || echo 'no feeds'",
+    "prebuild": "node scripts/generate-feeds.mjs && node scripts/generate-archive-shims.mjs && node scripts/generate-sitemap.mjs || echo 'no feeds'",
     "build": "vite build",
     "dev": "netlify dev -p 8888",
     "preview": "vite preview",

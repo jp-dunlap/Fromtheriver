@@ -8,3 +8,4 @@ cypress/videos/
 test-results/
 playwright-report/
 public/vendor/leaflet/images/*.png
+public/archive/

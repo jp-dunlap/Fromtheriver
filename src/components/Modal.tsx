@@ -1,5 +1,5 @@
-import React, { useEffect, useId, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,21 +14,111 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   const previousActiveElementRef = useRef<Element | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return undefined;
+    }
+
     previousActiveElementRef.current = document.activeElement;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+    const dialog = dialogRef.current;
+    if (!dialog) {
+      return undefined;
+    }
+
+    const focusableSelectors = [
+      "a[href]",
+      "button:not([disabled])",
+      "textarea:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])',
+    ];
+
+    const getFocusableElements = () =>
+      Array.from(
+        dialog.querySelectorAll<HTMLElement>(focusableSelectors.join(",")),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !== "true",
+      );
+
+    const focusWithinDialog = () => {
+      const focusable = getFocusableElements();
+      const firstFocusable = focusable[0];
+      if (firstFocusable) {
+        firstFocusable.focus();
+      } else {
+        dialog.focus();
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusable = getFocusableElements();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (event.shiftKey) {
+        if (
+          !activeElement ||
+          !dialog.contains(activeElement) ||
+          activeElement === first
+        ) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (
+        !activeElement ||
+        !dialog.contains(activeElement) ||
+        activeElement === last
+      ) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (dialog.contains(event.target as Node)) {
+        return;
+      }
+      focusWithinDialog();
+    };
+
+    focusWithinDialog();
+
+    document.addEventListener("keydown", handleKeyDown, true);
+    document.addEventListener("focusin", handleFocusIn);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+      document.removeEventListener("focusin", handleFocusIn);
+    };
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    if (isOpen && dialogRef.current) {
-      dialogRef.current.focus();
+    if (!isOpen) {
+      const previous = previousActiveElementRef.current as HTMLElement | null;
+      if (previous) {
+        previous.focus();
+      }
+      return;
     }
+
     return () => {
       const previous = previousActiveElementRef.current as HTMLElement | null;
       if (previous) {
@@ -43,7 +133,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden="true"
+      />
       <div
         ref={dialogRef}
         className="relative node-card w-full max-w-3xl max-h-[85vh] overflow-y-auto p-8 m-4 focus:outline-none"
@@ -58,8 +152,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
           className="absolute top-4 right-4 text-muted hover:text-white transition-colors"
           aria-label="Close modal"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
         <h3 id={headingId} className="font-serif text-3xl text-white mb-4">
@@ -68,7 +173,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
         {children}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 
