@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page not found · From The River</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top, rgba(56, 189, 248, 0.2), transparent 55%), #020617;
+        color: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+      main {
+        max-width: 40rem;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.6);
+      }
+      h1 {
+        font-family: 'Lora', 'Times New Roman', serif;
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        margin-bottom: 1rem;
+      }
+      p {
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        color: #cbd5f5;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        color: #38bdf8;
+        text-decoration: none;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+      }
+      a:focus-visible {
+        outline: 3px solid rgba(56, 189, 248, 0.8);
+        outline-offset: 3px;
+      }
+      a:hover {
+        background: rgba(56, 189, 248, 0.1);
+        border-color: rgba(56, 189, 248, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <main role="main" aria-labelledby="not-found-heading">
+      <header>
+        <p class="text-sm uppercase tracking-widest" aria-hidden="true">404 · Missing page</p>
+        <h1 id="not-found-heading">We couldn’t find this page.</h1>
+      </header>
+      <p>
+        The story you’re looking for isn’t here. Return to the unfolding map to continue exploring the record of Palestinian
+        life, resistance, and memory.
+      </p>
+      <nav aria-label="Helpful links">
+        <a href="/">
+          <span aria-hidden="true">←</span>
+          Back to home
+        </a>
+        <a href="/atlas">
+          <span aria-hidden="true">🗺️</span>
+          Visit the Atlas
+        </a>
+      </nav>
+    </main>
+  </body>
+</html>

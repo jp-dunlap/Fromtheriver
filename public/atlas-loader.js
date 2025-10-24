@@ -9,7 +9,48 @@ const ensureStylesheet = (href) => {
   link.rel = 'stylesheet';
   link.href = href;
   link.dataset.dynamicStyle = href;
+  link.addEventListener('error', () => {
+    console.error(`Failed to load stylesheet: ${href}`);
+  });
   document.head.append(link);
+};
+
+const scriptPromises = new Map();
+
+const loadScript = (src) => {
+  if (scriptPromises.has(src)) {
+    return scriptPromises.get(src);
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[data-dynamic-script="${src}"]`);
+    if (existing) {
+      if (existing.dataset.scriptLoaded === 'true') {
+        resolve();
+        return;
+      }
+      existing.addEventListener('load', () => resolve());
+      existing.addEventListener('error', (event) => reject(event.error ?? new Error(`Failed to load ${src}`)));
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    script.defer = false;
+    script.dataset.dynamicScript = src;
+    script.addEventListener('load', () => {
+      script.dataset.scriptLoaded = 'true';
+      resolve();
+    });
+    script.addEventListener('error', (event) => {
+      reject(event.error ?? new Error(`Failed to load ${src}`));
+    });
+    document.head.append(script);
+  });
+
+  scriptPromises.set(src, promise);
+  return promise;
 };
 
 let hasLoaded = false;
@@ -24,28 +65,40 @@ const loadAtlas = async () => {
     statusRegion.textContent = 'Loading interactive atlas…';
   }
 
-  ensureStylesheet('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-  ensureStylesheet('https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css');
-  ensureStylesheet('https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css');
+  ensureStylesheet('/vendor/leaflet/leaflet.css');
+  ensureStylesheet('/vendor/leaflet/MarkerCluster.css');
+  ensureStylesheet('/vendor/leaflet/MarkerCluster.Default.css');
 
   try {
-    const [leafletModule, markerClusterModule, atlasModule] = await Promise.all([
-      import('https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js'),
-      import('https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js?module'),
-      import('./atlas.js')
-    ]);
-
-    const L = leafletModule.default ?? leafletModule;
-    const plugin = markerClusterModule?.default ?? markerClusterModule;
-    if (typeof plugin === 'function') {
-      plugin(L);
-    } else if (plugin?.MarkerClusterGroup && typeof L.markerClusterGroup !== 'function') {
-      L.MarkerClusterGroup = plugin.MarkerClusterGroup;
-      L.markerClusterGroup = function markerClusterGroup(options) {
-        return new L.MarkerClusterGroup(options);
-      };
+    await loadScript('/vendor/leaflet/leaflet.js');
+    await loadScript('/vendor/leaflet/leaflet.markercluster.js');
+  } catch (error) {
+    console.error('Failed to load Leaflet assets', error);
+    if (statusRegion) {
+      statusRegion.textContent = 'Unable to load the interactive atlas resources.';
     }
+    if (mapContainer) {
+      mapContainer.innerHTML = '<div class="atlas-error"><p>Unable to load the interactive atlas. Please refresh and try again.</p></div>';
+      mapContainer.setAttribute('aria-busy', 'false');
+    }
+    return;
+  }
 
+  const L = window.L;
+  if (!L) {
+    console.error('Leaflet library did not initialize.');
+    if (statusRegion) {
+      statusRegion.textContent = 'Atlas unavailable. Map library failed to initialize.';
+    }
+    if (mapContainer) {
+      mapContainer.innerHTML = '<div class="atlas-error"><p>Atlas unavailable. Map library failed to initialize.</p></div>';
+      mapContainer.setAttribute('aria-busy', 'false');
+    }
+    return;
+  }
+
+  try {
+    const atlasModule = await import('./atlas.js');
     if (typeof atlasModule.initializeAtlas === 'function') {
       await atlasModule.initializeAtlas(L);
     }
@@ -60,6 +113,7 @@ const loadAtlas = async () => {
     }
     if (mapContainer) {
       mapContainer.innerHTML = '<div class="atlas-error"><p>Unable to load the interactive atlas. Please refresh and try again.</p></div>';
+      mapContainer.setAttribute('aria-busy', 'false');
     }
   }
 };
