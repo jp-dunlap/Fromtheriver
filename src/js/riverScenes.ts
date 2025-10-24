@@ -188,13 +188,13 @@ export function useRiverScenes(
     );
 
     const controller = controllerRef.current;
-    const cleanup = controller.onChange(async (sceneId) => {
+    const cleanup = controller.onChange((sceneId) => {
       setActiveSceneId(sceneId);
       if (!sceneId) {
         return;
       }
       if (autoPlay && audioMapRef.current.has(sceneId)) {
-        await playScene(sceneId);
+        void playScene(sceneId);
       }
     });
 
@@ -232,13 +232,16 @@ export function useRiverScenes(
   }, [volume]);
 
   useEffect(() => {
+    const audioMap = audioMapRef.current;
+    const controller = controllerRef.current;
+
     return () => {
-      audioMapRef.current.forEach((audio) => {
+      audioMap.forEach((audio) => {
         audio.pause();
         audio.currentTime = 0;
       });
-      audioMapRef.current.clear();
-      controllerRef.current?.disconnect();
+      audioMap.clear();
+      controller?.disconnect();
     };
   }, []);
 

@@ -1,0 +1,55 @@
+import type { ExternalArchivePayload } from './external';
+
+const fallbackExternalArchivePayload: ExternalArchivePayload = {
+  fetchedAt: '2024-10-15T08:00:00.000Z',
+  visualizingPalestine: [
+    {
+      id: 'visualizing-palestine-water-justice',
+      title: 'Water Justice for Gaza',
+      link: 'https://visualizingpalestine.org/visuals/water-justice-gaza',
+      excerpt:
+        'An illustrated breakdown of the infrastructure attacks that have cut Palestinians in Gaza off from clean water.',
+      publishedAt: '2024-09-26T00:00:00.000Z',
+      source: 'visualizing-palestine',
+    },
+    {
+      id: 'visualizing-palestine-cultural-memory',
+      title: 'Preserving Palestinian Cultural Memory',
+      link: 'https://visualizingpalestine.org/visuals/cultural-memory',
+      excerpt:
+        'A timeline of community archives safeguarding stories of Palestinian resistance and daily life.',
+      publishedAt: '2024-08-12T00:00:00.000Z',
+      source: 'visualizing-palestine',
+    },
+  ],
+  bdsCampaigns: [
+    {
+      id: 'bds-movement-scholastic',
+      title: 'Scholastic Ends Textbook Contract',
+      link: 'https://bdsmovement.net/news/scholastic-ends-contract',
+      excerpt:
+        'Following months of organizing, Scholastic has ended a distribution agreement with an Israeli publisher complicit in apartheid.',
+      publishedAt: '2024-09-02T00:00:00.000Z',
+      source: 'bds-movement',
+    },
+    {
+      id: 'bds-movement-universities-divest',
+      title: 'Universities Vote to Divest from Apartheid',
+      link: 'https://bdsmovement.net/news/universities-vote-divest',
+      excerpt:
+        'Student-led referendums secured divestment mandates at three universities, expanding academic commitments to boycott Israeli apartheid.',
+      publishedAt: '2024-07-18T00:00:00.000Z',
+      source: 'bds-movement',
+    },
+  ],
+};
+
+export const cloneFallbackExternalArchivePayload = (): ExternalArchivePayload => ({
+  fetchedAt: fallbackExternalArchivePayload.fetchedAt,
+  visualizingPalestine: fallbackExternalArchivePayload.visualizingPalestine.map((item) => ({
+    ...item,
+  })),
+  bdsCampaigns: fallbackExternalArchivePayload.bdsCampaigns.map((item) => ({
+    ...item,
+  })),
+});

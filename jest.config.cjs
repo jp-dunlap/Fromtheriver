@@ -1,6 +1,7 @@
-import type { Config } from 'jest';
-
-const config: Config = {
+/**
+ * @type {import('jest').Config}
+ */
+module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/tests/unit'],
@@ -13,8 +14,6 @@ const config: Config = {
   },
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',
-    '\\.(yaml|yml)\\?raw$': '<rootDir>/tests/unit/__mocks__/villages-raw.ts',
+    '\\.(yaml|yml)(\\?raw)?$': '<rootDir>/tests/__mocks__/villagesRaw.js',
   },
 };
-
-export default config;
