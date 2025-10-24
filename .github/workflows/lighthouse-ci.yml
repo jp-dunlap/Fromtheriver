@@ -10,11 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - run: npm install
-      - run: npm run build
+          check-latest: true   # no cache; repo has no lockfile
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build project
+        run: npm run build
+
       - name: Run Lighthouse CI
         run: npx @lhci/cli@0.13.0 autorun --config=./lighthouserc.json
