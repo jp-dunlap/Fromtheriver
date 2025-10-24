@@ -114,6 +114,27 @@ const App: React.FC = () => {
           return;
         }
         console.error('Failed to load external archive updates', error);
+
+        try {
+          const fallbackResponse = await fetch('/data/external-archive.json', { signal });
+          if (!fallbackResponse.ok) {
+            throw new Error(`Fallback HTTP error: ${fallbackResponse.status}`);
+          }
+
+          const fallbackPayload = (await fallbackResponse.json()) as ExternalArchivePayload;
+          if (signal?.aborted) {
+            return;
+          }
+
+          setExternalUpdates(fallbackPayload);
+          setExternalUpdatesErrorCode(null);
+          return;
+        } catch (fallbackError) {
+          if (!signal?.aborted) {
+            console.error('Falling back to cached external archive failed', fallbackError);
+          }
+        }
+
         setExternalUpdatesErrorCode('load');
       } finally {
         if (!signal?.aborted) {
@@ -411,20 +432,25 @@ const App: React.FC = () => {
         {t('common:skipLink')}
       </a>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="fixed top-6 right-6 z-40 flex flex-col items-end gap-1">
-          <button
-            type="button"
-            className="bg-white/10 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
-            onClick={() => setArchiveExplorerOpen(true)}
-          >
-            {t('common:buttons.archiveExplorer')}
-          </button>
-          <span className="text-xs text-muted hidden md:block">
-            {t('common:buttons.archiveExplorerHint')}
-          </span>
+        <div className="fixed top-6 right-6 z-40 flex flex-col items-end gap-4">
+          <div className="bg-slate-900/90 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur px-4 py-2 focus-within:ring-2 focus-within:ring-white/60">
+            <LanguageSwitcher />
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <button
+              type="button"
+              className="bg-white/10 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+              onClick={() => setArchiveExplorerOpen(true)}
+            >
+              {t('common:buttons.archiveExplorer')}
+            </button>
+            <span className="text-xs text-muted hidden md:block">
+              {t('common:buttons.archiveExplorerHint')}
+            </span>
+          </div>
         </div>
 
-        <nav className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-6" aria-label={t('common:nav.label')}>
+        <nav className="flex flex-col md:flex-row md:items-center gap-4 py-6" aria-label={t('common:nav.label')}>
           <ul className="flex items-center gap-4 text-sm text-text-secondary flex-wrap">
             {sceneMeta.map((scene) => (
               <li key={scene.id}>
@@ -438,7 +464,6 @@ const App: React.FC = () => {
               </li>
             ))}
           </ul>
-          <LanguageSwitcher />
         </nav>
 
         <RiverPath

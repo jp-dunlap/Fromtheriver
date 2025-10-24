@@ -1,3 +1,7 @@
 /atlas.html   /atlas        301
-/atlas        /atlas.html   200
+/feed.json    /feed.json    200
+/feed.xml     /feed.xml     200
+/rss.xml      /feed.xml     200
+/sitemap.xml  /sitemap.xml  200
+/robots.txt   /robots.txt   200
 /*            /index.html   200

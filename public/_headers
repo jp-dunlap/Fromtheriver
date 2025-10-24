@@ -1,5 +1,8 @@
 /*
   X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
   Cross-Origin-Resource-Policy: same-site
   Permissions-Policy: accelerometer=(), ambient-light-sensor=(), autoplay=(), camera=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
