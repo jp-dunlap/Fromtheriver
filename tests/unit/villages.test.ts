@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import { parseVillagesYaml } from '../../src/data/villages';
 
 describe('parseVillagesYaml', () => {

@@ -14,7 +14,7 @@ async function readCache() {
   try {
     const raw = await fs.readFile(CACHE_PATH, 'utf8');
     return JSON.parse(raw);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

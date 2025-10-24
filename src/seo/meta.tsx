@@ -29,7 +29,7 @@ type PagesConfig = {
   readonly pages: StaticPageConfig[];
 };
 
-const config = pagesConfig as PagesConfig;
+const config: PagesConfig = pagesConfig;
 
 const SITE_NAME = 'From The River';
 
@@ -168,9 +168,7 @@ const useDocumentMeta = (
     const head = document.head;
 
     const descriptionSelector = 'meta[name="description"]';
-    let descriptionTag = head.querySelector(descriptionSelector) as
-      | HTMLMetaElement
-      | null;
+    let descriptionTag = head.querySelector<HTMLMetaElement>(descriptionSelector);
     if (!descriptionTag) {
       descriptionTag = document.createElement('meta');
       descriptionTag.setAttribute('name', 'description');

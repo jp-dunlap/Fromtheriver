@@ -17,6 +17,7 @@ import { villages as villagesData, villagesDataset } from './data/villages';
 import ArchiveExplorerModal from './components/ArchiveExplorerModal';
 import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
 import type { ExternalArchivePayload } from './data/external';
+import { cloneFallbackExternalArchivePayload } from './data/external-fallback';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import Meta from './seo/meta';
@@ -32,6 +33,64 @@ interface SceneMetadata {
   order: number;
   focusVillages: string[];
 }
+
+const externalArchiveOverride = import.meta.env.VITE_EXTERNAL_UPDATES_URL as unknown;
+const EXTERNAL_ARCHIVE_ENDPOINT =
+  typeof externalArchiveOverride === 'string' && externalArchiveOverride.trim().length > 0
+    ? externalArchiveOverride
+    : '/.netlify/functions/external-archive';
+
+const STATIC_EXTERNAL_ARCHIVE_ENDPOINT = '/data/external-archive.json';
+
+const shouldUseStaticExternalArchive = () => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const hostname = window.location.hostname.toLowerCase();
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '0.0.0.0' ||
+    hostname === '::1' ||
+    hostname === ''
+  );
+};
+
+const isExternalArchivePayload = (value: unknown): value is ExternalArchivePayload => {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<ExternalArchivePayload>;
+  return (
+    typeof candidate.fetchedAt === 'string' &&
+    Array.isArray(candidate.visualizingPalestine) &&
+    Array.isArray(candidate.bdsCampaigns)
+  );
+};
+
+const fetchExternalArchivePayload = async (
+  url: string,
+  signal?: AbortSignal
+): Promise<ExternalArchivePayload> => {
+  const response = await fetch(url, { signal });
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
+  const text = await response.text();
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (!isExternalArchivePayload(parsed)) {
+      throw new Error('Unexpected payload shape');
+    }
+    return parsed;
+  } catch (error) {
+    throw new Error('Invalid JSON response', { cause: error instanceof Error ? error : undefined });
+  }
+};
 
 const App: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
@@ -92,19 +151,60 @@ const App: React.FC = () => {
         return;
       }
 
+      if (signal?.aborted) {
+        setExternalUpdatesLoading(false);
+        return;
+      }
+
       setExternalUpdatesLoading(true);
       setExternalUpdatesErrorCode(null);
 
-      try {
-        const response = await fetch('/.netlify/functions/external-archive', {
-          signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
+      const preferStaticArchive = shouldUseStaticExternalArchive();
 
-        const payload = (await response.json()) as ExternalArchivePayload;
+      let staticPayload: ExternalArchivePayload | null = null;
+
+      try {
+        staticPayload = await fetchExternalArchivePayload(
+          STATIC_EXTERNAL_ARCHIVE_ENDPOINT,
+          signal
+        );
+      } catch (staticError) {
+        if (!signal?.aborted) {
+          console.warn('Static external archive fetch failed, falling back to bundled data', staticError);
+        }
+      }
+
+      if (signal?.aborted) {
+        setExternalUpdatesLoading(false);
+        return;
+      }
+
+      let fallbackPayload = cloneFallbackExternalArchivePayload();
+
+      if (staticPayload) {
+        setExternalUpdates(staticPayload);
+        fallbackPayload = {
+          fetchedAt: staticPayload.fetchedAt,
+          visualizingPalestine: staticPayload.visualizingPalestine.map((item) => ({ ...item })),
+          bdsCampaigns: staticPayload.bdsCampaigns.map((item) => ({ ...item })),
+        };
+      } else {
+        setExternalUpdates(fallbackPayload);
+      }
+
+      if (preferStaticArchive) {
+        setExternalUpdatesErrorCode(staticPayload ? null : 'load');
+        setExternalUpdatesLoading(false);
+        return;
+      }
+
+      try {
+        const payload = await fetchExternalArchivePayload(
+          EXTERNAL_ARCHIVE_ENDPOINT,
+          signal
+        );
         if (signal?.aborted) {
+          setExternalUpdatesLoading(false);
           return;
         }
         setExternalUpdates(payload);
@@ -113,7 +213,8 @@ const App: React.FC = () => {
         if (signal?.aborted) {
           return;
         }
-        console.error('Failed to load external archive updates', error);
+        console.warn('Primary external archive fetch failed, continuing with bundled data', error);
+        setExternalUpdates(fallbackPayload);
         setExternalUpdatesErrorCode('load');
       } finally {
         if (!signal?.aborted) {

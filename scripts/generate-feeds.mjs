@@ -33,13 +33,30 @@ async function main() {
       const summary = truncate(stripHtml(village.narrative?.summary ?? ''));
       const descriptionCdata = sanitizeCdata(summary);
       const link = `${siteUrl}/archive/${village.slug}`;
-      return `    <item>\n      <title><![CDATA[${sanitizeCdata(
-        village.names?.en ?? 'Unknown Village'
-      )}]]></title>\n      <link>${link}</link>\n      <guid isPermaLink=\"false\">villages/${village.slug}</guid>\n      <description><![CDATA[${descriptionCdata}]]></description>\n    </item>`;
+      return [
+        '    <item>',
+        `      <title><![CDATA[${sanitizeCdata(village.names?.en ?? 'Unknown Village')}]]></title>`,
+        `      <link>${link}</link>`,
+        `      <guid isPermaLink="false">villages/${village.slug}</guid>`,
+        `      <description><![CDATA[${descriptionCdata}]]></description>`,
+        '    </item>',
+      ].join('\n');
     })
     .join('\n');
 
-  const rss = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\">\n  <channel>\n    <title>From The River · Archive Updates</title>\n    <link>${siteUrl}</link>\n    <description>Latest additions to the From The River archive.</description>\n    <lastBuildDate>${now}</lastBuildDate>\n${rssItems}\n  </channel>\n</rss>\n`;
+  const rss = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0">',
+    '  <channel>',
+    '    <title>From The River · Archive Updates</title>',
+    `    <link>${siteUrl}</link>`,
+    '    <description>Latest additions to the From The River archive.</description>',
+    `    <lastBuildDate>${now}</lastBuildDate>`,
+    `${rssItems}`,
+    '  </channel>',
+    '</rss>',
+    '',
+  ].join('\n');
 
   const jsonFeed = {
     version: 'https://jsonfeed.org/version/1',
