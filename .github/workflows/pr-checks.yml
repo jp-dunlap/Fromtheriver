@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          check-latest: true   # caching removed to avoid missing lockfile error
+          check-latest: true   # no cache; repo has no lockfile
 
       - name: Install dependencies
         shell: bash
@@ -46,6 +46,7 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Start Vite preview (or whatever your preview:ci script does)
       - name: Start preview server
         run: |
           npm run preview:ci &
