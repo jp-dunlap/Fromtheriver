@@ -160,10 +160,10 @@ export async function initializeAtlas(L) {
   clusterGroup.addTo(map);
 
   const villageIcon = L.divIcon({
-    className: 'custom-div-icon',
-    html: "<div style='background-color:#E53E3E; width:10px; height:10px; border-radius:50%; border: 1px solid #FFF;'></div>",
-    iconSize: [10, 10],
-    iconAnchor: [5, 5]
+    className: 'village-dot',
+    html: '',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
   });
 
   let allVillages = [];

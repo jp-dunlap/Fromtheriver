@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -43,6 +44,37 @@ async function main() {
   if (!sitemapXml.includes('<urlset')) {
     throw new Error('sitemap.xml must contain a urlset');
   }
+
+  const fetchImpl = globalThis.fetch?.bind(globalThis);
+  if (!fetchImpl) {
+    throw new Error('Fetch API is not available in this Node runtime');
+  }
+
+  const origin = process.env.SMOKE_ORIGIN || 'http://127.0.0.1:4173';
+
+  const head = async (pathname) => fetchImpl(`${origin}${pathname}`, { method: 'HEAD' });
+
+  const atlasResponse = await fetchImpl(`${origin}/atlas`);
+  assert(atlasResponse.ok, 'GET /atlas should 200');
+
+  const atlasHtmlHead = await head('/atlas.html');
+  assert(String(atlasHtmlHead.status).startsWith('3'), 'atlas.html should redirect');
+
+  const robotsHead = await head('/robots.txt');
+  assert(robotsHead.ok, '/robots.txt should be present');
+
+  const rssHead = await head('/feed.xml');
+  assert(rssHead.ok, '/feed.xml should be present');
+
+  const sitemapHead = await head('/sitemap.xml');
+  assert(sitemapHead.ok, '/sitemap.xml should be present');
+
+  const rootHead = await head('/');
+  const hstsHeader = rootHead.headers.get('strict-transport-security') || '';
+  assert(/strict-transport/i.test(hstsHeader), 'HSTS header should be set');
+
+  const referrerPolicy = rootHead.headers.get('referrer-policy') || '';
+  assert(/strict-origin-when-cross-origin/i.test(referrerPolicy), 'Referrer-Policy should be strict-origin-when-cross-origin');
 
   console.log('[smoke] All checks passed');
 }
