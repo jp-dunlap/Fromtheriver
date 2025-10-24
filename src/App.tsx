@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import RiverPath from './components/RiverPath';
 import ContentNode from './components/ContentNode';
 import AccordionItem from './components/AccordionItem';
 import VillageTicker from './components/VillageTicker';
-import CodexModal from './components/CodexModal';
 import Modal from './components/Modal';
 import { TooltipProvider, TooltipTrigger } from './components/TooltipProvider';
 import { Village } from './data/types';
@@ -14,12 +13,14 @@ import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
 import { generateAmbientToneDataUri } from './js/ambientTone';
 import PrototypeGallery from './prototypes/PrototypeGallery';
 import { villages as villagesData, villagesDataset } from './data/villages';
-import ArchiveExplorerModal from './components/ArchiveExplorerModal';
 import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
 import type { ExternalArchivePayload } from './data/external';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import Meta from './seo/meta';
+
+const ArchiveExplorerModal = React.lazy(() => import('./components/ArchiveExplorerModal'));
+const CodexModal = React.lazy(() => import('./components/CodexModal'));
 
 type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
 
@@ -568,6 +569,8 @@ const App: React.FC = () => {
                 <img
                   src="/images/ancient-olive-tree.jpg"
                   alt="An ancient, gnarled olive tree stands testament to deep roots and Palestinian steadfastness."
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.roots')}</h2>
@@ -662,6 +665,8 @@ const App: React.FC = () => {
                 <img
                   src="/images/resistance.jpg"
                   alt="A protestor holds a Palestinian flag and a megaphone, vocally symbolizing active resistance."
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.resistance')}</h2>
@@ -751,6 +756,8 @@ const App: React.FC = () => {
                 <img
                   src="/images/palestinian-culture.jpg"
                   alt="A woman embroiders fabric with traditional Palestinian Tatreez, a core symbol of cultural identity."
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.culture')}</h2>
@@ -817,6 +824,8 @@ const App: React.FC = () => {
                 <img
                   src="/images/collective-action.jpg"
                   alt="A crowd of people marching in a street protest, embodying the power of collective action and solidarity."
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.action')}</h2>
@@ -907,14 +916,22 @@ const App: React.FC = () => {
           <p className="text-xs text-text-secondary mt-2">fromtheriver.org - A project of solidarity.</p>
         </footer>
 
-        <ArchiveExplorerModal
-          villages={villages}
-          isOpen={isArchiveExplorerOpen}
-          onClose={() => setArchiveExplorerOpen(false)}
-          onSelectVillage={handleVillageOpen}
-        />
+        <Suspense fallback={null}>
+          {isArchiveExplorerOpen ? (
+            <ArchiveExplorerModal
+              villages={villages}
+              isOpen={isArchiveExplorerOpen}
+              onClose={() => setArchiveExplorerOpen(false)}
+              onSelectVillage={handleVillageOpen}
+            />
+          ) : null}
+        </Suspense>
 
-        <CodexModal village={selectedVillage} onClose={closeCodex} />
+        <Suspense fallback={null}>
+          {selectedVillage ? (
+            <CodexModal village={selectedVillage} onClose={closeCodex} />
+          ) : null}
+        </Suspense>
 
         <Modal
           isOpen={isToolkitOpen}

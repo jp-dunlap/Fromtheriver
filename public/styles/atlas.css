@@ -9,6 +9,32 @@
   --font-sans: 'Inter', sans-serif;
 }
 
+.village-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e11d48;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-div-icon.village-dot {
+  background: transparent;
+  border: none;
+}
+
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: rgba(17, 24, 39, 0.8);
+  color: #fff;
+}
+
+.marker-cluster div {
+  background: transparent;
+}
+
 body {
   background-color: var(--bg-color);
   color: var(--text-primary);
