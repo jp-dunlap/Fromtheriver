@@ -13,6 +13,7 @@ jobs:
   pr:
     name: Validate PR
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -21,10 +22,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # You can switch/remove this later if you don't commit package-lock.json
+          cache: npm
+          cache-dependency-path: package-lock.json
 
+      # Install — tolerant to either lockfile or none
       - name: Install dependencies
-        run: npm install
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -38,13 +49,14 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Start Vite preview (or whatever your preview:ci script does)
       - name: Start preview server
         run: |
           npm run preview:ci &
           echo $! > preview.pid
 
       - name: Wait for preview server
-        run: npx --yes wait-on@7.0.1 http://127.0.0.1:4173
+        run: npx --yes wait-on@7.0.1 http://127.0.0.1:4173 --timeout 120000
 
       - name: Run visual tests
         run: npm run test:visual
@@ -56,28 +68,32 @@ jobs:
         if: always()
         run: |
           if [ -f preview.pid ]; then
-            kill $(cat preview.pid) || true
-            rm preview.pid
+            kill "$(cat preview.pid)" || true
+            rm -f preview.pid
           fi
 
+      # Lighthouse: capture a public report URL (if your script prints one)
       - name: Run Lighthouse tests
         id: lighthouse
+        shell: bash
         run: |
           set -o pipefail
           npm run test:lighthouse | tee lighthouse.log
           status=${PIPESTATUS[0]}
-          report_url=$(grep -oE 'https://storage.googleapis.com[^[:space:]]+' lighthouse.log | tail -n 1)
+          report_url=$(grep -oE 'https://storage.googleapis.com[^[:space:]]+' lighthouse.log | tail -n 1 || true)
           if [ -n "$report_url" ]; then
             echo "report_url=$report_url" >> "$GITHUB_OUTPUT"
           fi
-          exit $status
+          exit "$status"
 
+      # Deploy preview to Netlify (needs secrets in repo/org settings)
       - name: Deploy preview to Netlify
         if: ${{ always() && github.event_name == 'pull_request' }}
         id: netlify_deploy
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        shell: bash
         run: |
           if [ ! -d dist ]; then
             echo "dist directory not found; skipping Netlify deploy."
@@ -89,6 +105,7 @@ jobs:
             --context=deploy-preview \
             --message="Preview for PR #${{ github.event.pull_request.number }}" \
             --json > netlify-output.json
+
           preview_url=$(jq -r '.deploy_url // .deploy_ssl_url // ""' netlify-output.json)
           if [ -z "$preview_url" ]; then
             echo "Netlify deploy output:"
@@ -98,8 +115,13 @@ jobs:
           fi
           echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
 
+      # Post links as a PR comment (uses injected github/context/core; no redeclare)
       - name: Comment preview links
         uses: actions/github-script@v7
+        if: ${{ always() }}
+        env:
+          PREVIEW_URL: ${{ steps.netlify_deploy.outputs.preview_url }}
+          LIGHTHOUSE_URL: ${{ steps.lighthouse.outputs.report_url }}
         with:
           script: |
             // Use injected `core` if present; otherwise require it without redeclaring
