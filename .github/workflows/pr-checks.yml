@@ -22,11 +22,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # You can switch/remove this later if you don't commit package-lock.json
-          cache: npm
-          cache-dependency-path: package-lock.json
+          check-latest: true   # caching removed to avoid missing lockfile error
 
-      # Install — tolerant to either lockfile or none
       - name: Install dependencies
         shell: bash
         run: |
@@ -49,7 +46,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # Start Vite preview (or whatever your preview:ci script does)
       - name: Start preview server
         run: |
           npm run preview:ci &
@@ -72,7 +68,6 @@ jobs:
             rm -f preview.pid
           fi
 
-      # Lighthouse: capture a public report URL (if your script prints one)
       - name: Run Lighthouse tests
         id: lighthouse
         shell: bash
@@ -86,7 +81,6 @@ jobs:
           fi
           exit "$status"
 
-      # Deploy preview to Netlify (needs secrets in repo/org settings)
       - name: Deploy preview to Netlify
         if: ${{ always() && github.event_name == 'pull_request' }}
         id: netlify_deploy
@@ -115,7 +109,6 @@ jobs:
           fi
           echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
 
-      # Post links as a PR comment (uses injected github/context/core; no redeclare)
       - name: Comment preview links
         uses: actions/github-script@v7
         if: ${{ always() }}
