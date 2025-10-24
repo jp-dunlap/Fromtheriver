@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          check-latest: true   # no cache; repo has no lockfile
+          check-latest: true
 
       - name: Install dependencies
         shell: bash
@@ -25,6 +25,10 @@ jobs:
           else
             npm install
           fi
+
+      # ensure ts-node present for jest.config.ts
+      - name: Ensure ts-node is available for Jest
+        run: npm ls ts-node || npm i -D ts-node
 
       - name: Run unit tests
         run: npm run test:unit -- --ci
