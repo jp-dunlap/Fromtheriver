@@ -1,28 +1,38 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import RiverPath from './components/RiverPath';
-import ContentNode from './components/ContentNode';
-import AccordionItem from './components/AccordionItem';
-import VillageTicker from './components/VillageTicker';
-import Modal from './components/Modal';
-import { TooltipProvider, TooltipTrigger } from './components/TooltipProvider';
-import { Village } from './data/types';
-import { VillageLink } from './components/VillageLink';
-import SceneOverlay from './components/SceneOverlay';
-import SceneAudioControls from './components/SceneAudioControls';
-import { useRiverScenes, UseRiverScenesConfig } from './js/riverScenes';
-import { generateAmbientToneDataUri } from './js/ambientTone';
-import PrototypeGallery from './prototypes/PrototypeGallery';
-import { villages as villagesData, villagesDataset } from './data/villages';
-import ExternalUpdatesPanel from './components/ExternalUpdatesPanel';
-import type { ExternalArchivePayload } from './data/external';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import { useTranslation } from 'react-i18next';
-import Meta from './seo/meta';
+import React, {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import RiverPath from "./components/RiverPath";
+import ContentNode from "./components/ContentNode";
+import AccordionItem from "./components/AccordionItem";
+import VillageTicker from "./components/VillageTicker";
+import Modal from "./components/Modal";
+import { TooltipProvider, TooltipTrigger } from "./components/TooltipProvider";
+import { Village } from "./data/types";
+import { VillageLink } from "./components/VillageLink";
+import SceneOverlay from "./components/SceneOverlay";
+import SceneAudioControls from "./components/SceneAudioControls";
+import { useRiverScenes, UseRiverScenesConfig } from "./js/riverScenes";
+import { generateAmbientToneDataUri } from "./js/ambientTone";
+import PrototypeGallery from "./prototypes/PrototypeGallery";
+import { villages as villagesData, villagesDataset } from "./data/villages";
+import ExternalUpdatesPanel from "./components/ExternalUpdatesPanel";
+import type { ExternalArchivePayload } from "./data/external";
+import LanguageSwitcher from "./components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
+import Meta from "./seo/meta";
+import { initArchiveDeepLink, updateArchiveDeepLink } from "./lib/deeplink";
 
-const ArchiveExplorerModal = React.lazy(() => import('./components/ArchiveExplorerModal'));
-const CodexModal = React.lazy(() => import('./components/CodexModal'));
+const ArchiveExplorerModal = React.lazy(
+  () => import("./components/ArchiveExplorerModal"),
+);
+const CodexModal = React.lazy(() => import("./components/CodexModal"));
 
-type SceneId = 'roots' | 'resistance' | 'culture' | 'action';
+type SceneId = "roots" | "resistance" | "culture" | "action";
 
 interface SceneMetadata {
   id: SceneId;
@@ -43,48 +53,54 @@ const App: React.FC = () => {
   const actionRef = useRef<HTMLElement | null>(null);
 
   const isPrototypeMode =
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('prototype') === 'gallery';
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("prototype") === "gallery";
 
   const [villages, setVillages] = useState<Village[]>(() =>
-    isPrototypeMode ? [] : villagesData
+    isPrototypeMode ? [] : villagesData,
   );
-  const [villagesErrorCode, setVillagesErrorCode] = useState<'prototype' | 'empty' | null>(null);
+  const [villagesErrorCode, setVillagesErrorCode] = useState<
+    "prototype" | "empty" | null
+  >(null);
   const [selectedVillage, setSelectedVillage] = useState<Village | null>(null);
   const [isToolkitOpen, setToolkitOpen] = useState(false);
   const [isDonateOpen, setDonateOpen] = useState(false);
   const [isArchiveExplorerOpen, setArchiveExplorerOpen] = useState(false);
-  const [externalUpdates, setExternalUpdates] = useState<ExternalArchivePayload | null>(null);
-  const [externalUpdatesErrorCode, setExternalUpdatesErrorCode] = useState<'load' | null>(null);
+  const [externalUpdates, setExternalUpdates] =
+    useState<ExternalArchivePayload | null>(null);
+  const [externalUpdatesErrorCode, setExternalUpdatesErrorCode] = useState<
+    "load" | null
+  >(null);
   const [isExternalUpdatesLoading, setExternalUpdatesLoading] = useState(false);
-  const { t, i18n } = useTranslation(['common', 'app']);
+  const { t, i18n } = useTranslation(["common", "app"]);
+  const deepLinkOriginRef = useRef(false);
   const activeLocale = i18n.resolvedLanguage ?? i18n.language;
   const generatedDate = useMemo(
     () =>
       new Date(villagesDataset.metadata.generated_at).toLocaleDateString(
-        activeLocale
+        activeLocale,
       ),
-    [activeLocale]
+    [activeLocale],
   );
   const formattedVillageCount = useMemo(
     () => villages.length.toLocaleString(activeLocale),
-    [villages.length, activeLocale]
+    [villages.length, activeLocale],
   );
   const villagesStatusMessage = useMemo(() => {
-    if (villagesErrorCode === 'prototype') {
-      return t('common:status.dataError');
+    if (villagesErrorCode === "prototype") {
+      return t("common:status.dataError");
     }
-    if (villagesErrorCode === 'empty') {
-      return t('common:status.dataEmpty');
+    if (villagesErrorCode === "empty") {
+      return t("common:status.dataEmpty");
     }
-    return t('common:status.dataRefresh', {
+    return t("common:status.dataRefresh", {
       date: generatedDate,
       count: formattedVillageCount,
     });
   }, [villagesErrorCode, t, generatedDate, formattedVillageCount]);
   const villagesStatusIsError = villagesErrorCode !== null;
   const externalUpdatesErrorMessage = externalUpdatesErrorCode
-    ? t('common:status.externalError')
+    ? t("common:status.externalError")
     : null;
 
   const loadExternalUpdates = useCallback(
@@ -97,7 +113,7 @@ const App: React.FC = () => {
       setExternalUpdatesErrorCode(null);
 
       try {
-        const response = await fetch('/.netlify/functions/external-archive', {
+        const response = await fetch("/.netlify/functions/external-archive", {
           signal,
         });
         if (!response.ok) {
@@ -114,15 +130,18 @@ const App: React.FC = () => {
         if (signal?.aborted) {
           return;
         }
-        console.error('Failed to load external archive updates', error);
+        console.error("Failed to load external archive updates", error);
 
         try {
-          const fallbackResponse = await fetch('/data/external-archive.json', { signal });
+          const fallbackResponse = await fetch("/data/external-archive.json", {
+            signal,
+          });
           if (!fallbackResponse.ok) {
             throw new Error(`Fallback HTTP error: ${fallbackResponse.status}`);
           }
 
-          const fallbackPayload = (await fallbackResponse.json()) as ExternalArchivePayload;
+          const fallbackPayload =
+            (await fallbackResponse.json()) as ExternalArchivePayload;
           if (signal?.aborted) {
             return;
           }
@@ -132,29 +151,32 @@ const App: React.FC = () => {
           return;
         } catch (fallbackError) {
           if (!signal?.aborted) {
-            console.error('Falling back to cached external archive failed', fallbackError);
+            console.error(
+              "Falling back to cached external archive failed",
+              fallbackError,
+            );
           }
         }
 
-        setExternalUpdatesErrorCode('load');
+        setExternalUpdatesErrorCode("load");
       } finally {
         if (!signal?.aborted) {
           setExternalUpdatesLoading(false);
         }
       }
     },
-    [isPrototypeMode]
+    [isPrototypeMode],
   );
 
   useEffect(() => {
     if (isPrototypeMode) {
       setVillages([]);
-      setVillagesErrorCode('prototype');
+      setVillagesErrorCode("prototype");
       return;
     }
 
     setVillages(villagesData);
-    setVillagesErrorCode(villagesData.length === 0 ? 'empty' : null);
+    setVillagesErrorCode(villagesData.length === 0 ? "empty" : null);
   }, [isPrototypeMode]);
 
   useEffect(() => {
@@ -174,7 +196,7 @@ const App: React.FC = () => {
 
   const nodeRefs = useMemo(
     () => [rootsRef, resistanceRef, cultureRef, actionRef],
-    []
+    [],
   );
 
   const toneSources = useMemo(
@@ -224,7 +246,7 @@ const App: React.FC = () => {
         releasePortion: 0.2,
       }),
     }),
-    []
+    [],
   );
 
   const villagesBySlug = useMemo(() => {
@@ -246,47 +268,47 @@ const App: React.FC = () => {
   const sceneMeta = useMemo<SceneMetadata[]>(
     () => [
       {
-        id: 'roots',
-        title: t('common:nav.sections.roots'),
+        id: "roots",
+        title: t("common:nav.sections.roots"),
         description:
-          'Follow the colonial timeline from the British Mandate through the Nakba and meet villages whose erasure anchors this archive.',
+          "Follow the colonial timeline from the British Mandate through the Nakba and meet villages whose erasure anchors this archive.",
         ref: rootsRef,
         audioSrc: toneSources.roots,
         order: 0,
-        focusVillages: ['Lifta', 'Deir Yassin', 'al-Tantura'],
+        focusVillages: ["Lifta", "Deir Yassin", "al-Tantura"],
       },
       {
-        id: 'resistance',
-        title: t('common:nav.sections.resistance'),
+        id: "resistance",
+        title: t("common:nav.sections.resistance"),
         description:
-          'Witness the breadth of Palestinian defiance, from organized uprisings to the cultural figures who embodied liberation.',
+          "Witness the breadth of Palestinian defiance, from organized uprisings to the cultural figures who embodied liberation.",
         ref: resistanceRef,
         audioSrc: toneSources.resistance,
         order: 1,
-        focusVillages: ['Haifa', 'Acre', 'Safad'],
+        focusVillages: ["Haifa", "Acre", "Safad"],
       },
       {
-        id: 'culture',
-        title: t('common:nav.sections.culture'),
+        id: "culture",
+        title: t("common:nav.sections.culture"),
         description:
-          'Celebrate the living practices—tatreez, cuisine, film, and dance—that protect memory and identity against erasure.',
+          "Celebrate the living practices—tatreez, cuisine, film, and dance—that protect memory and identity against erasure.",
         ref: cultureRef,
         audioSrc: toneSources.culture,
         order: 2,
-        focusVillages: ['Jaffa', 'Beisan'],
+        focusVillages: ["Jaffa", "Beisan"],
       },
       {
-        id: 'action',
-        title: t('common:nav.sections.action'),
+        id: "action",
+        title: t("common:nav.sections.action"),
         description:
-          'Translate narrative into solidarity through organizing, fundraising, and amplifying Palestinian-led calls to action.',
+          "Translate narrative into solidarity through organizing, fundraising, and amplifying Palestinian-led calls to action.",
         ref: actionRef,
         audioSrc: toneSources.action,
         order: 3,
-        focusVillages: ['Lydda', 'al-Ramla'],
+        focusVillages: ["Lydda", "al-Ramla"],
       },
     ],
-    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources, t]
+    [actionRef, cultureRef, resistanceRef, rootsRef, toneSources, t],
   );
 
   const sceneConfigs = useMemo<UseRiverScenesConfig[]>(
@@ -297,15 +319,15 @@ const App: React.FC = () => {
         audioSrc,
         order,
       })),
-    [sceneMeta]
+    [sceneMeta],
   );
 
   const sceneObserverOptions = useMemo<IntersectionObserverInit>(
     () => ({
       threshold: 0.4,
-      rootMargin: '-15% 0px -25% 0px',
+      rootMargin: "-15% 0px -25% 0px",
     }),
-    []
+    [],
   );
 
   const {
@@ -321,14 +343,14 @@ const App: React.FC = () => {
 
   const activeScene = useMemo(
     () => sceneMeta.find((scene) => scene.id === activeSceneId) ?? null,
-    [sceneMeta, activeSceneId]
+    [sceneMeta, activeSceneId],
   );
 
   const sceneCount = sceneConfigs.length;
 
   const activeSceneIndex = useMemo(
     () => (activeScene ? activeScene.order : -1),
-    [activeScene]
+    [activeScene],
   );
 
   const activeSceneVillages = useMemo(() => {
@@ -340,7 +362,9 @@ const App: React.FC = () => {
       .map((targetName) => {
         const normalized = targetName.toLowerCase();
         return (
-          villagesBySlug.get(normalized) ?? villagesByName.get(normalized) ?? null
+          villagesBySlug.get(normalized) ??
+          villagesByName.get(normalized) ??
+          null
         );
       })
       .filter((village): village is Village => Boolean(village));
@@ -351,42 +375,90 @@ const App: React.FC = () => {
       activeScene
         ? getSceneAudioState(activeScene.id)
         : { isPlaying: false, volume: audioVolume },
-    [activeScene, getSceneAudioState, audioVolume]
+    [activeScene, getSceneAudioState, audioVolume],
   );
 
   useEffect(() => {
     sceneMeta.forEach((scene) => {
       const element = scene.ref.current;
       if (!element) return;
-      element.dataset.sceneActive = activeSceneId === scene.id ? 'true' : 'false';
+      element.dataset.sceneActive =
+        activeSceneId === scene.id ? "true" : "false";
     });
   }, [sceneMeta, activeSceneId]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
     const handler = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setArchiveExplorerOpen(true);
       }
-      if (!event.metaKey && !event.ctrlKey && event.key === '/' && !isArchiveExplorerOpen) {
+      if (
+        !event.metaKey &&
+        !event.ctrlKey &&
+        event.key === "/" &&
+        !isArchiveExplorerOpen
+      ) {
         event.preventDefault();
         setArchiveExplorerOpen(true);
       }
     };
 
-    window.addEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener('keydown', handler);
+      window.removeEventListener("keydown", handler);
     };
   }, [isArchiveExplorerOpen]);
 
-  const handleVillageOpen = useCallback((village: Village) => {
-    setSelectedVillage(village);
-  }, []);
+  const openVillage = useCallback(
+    (
+      village: Village,
+      options: { replace?: boolean; fromDeepLink?: boolean } = {},
+    ) => {
+      setSelectedVillage(village);
+      deepLinkOriginRef.current = options.fromDeepLink ?? false;
+      updateArchiveDeepLink(village.slug, {
+        replace: options.replace ?? false,
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const cleanup = initArchiveDeepLink((slug) => {
+      if (!slug) {
+        setSelectedVillage(null);
+        deepLinkOriginRef.current = false;
+        return;
+      }
+
+      const normalizedSlug = slug.toLowerCase();
+      const match = villagesBySlug.get(normalizedSlug);
+
+      if (match) {
+        openVillage(match, { replace: true, fromDeepLink: true });
+        return;
+      }
+
+      console.warn(`Archive entry not found for slug: ${slug}`);
+      updateArchiveDeepLink(null, { replace: true });
+      setSelectedVillage(null);
+      deepLinkOriginRef.current = false;
+    });
+
+    return cleanup;
+  }, [openVillage, villagesBySlug]);
+
+  const handleVillageOpen = useCallback(
+    (village: Village) => {
+      openVillage(village);
+    },
+    [openVillage],
+  );
 
   const renderVillageLink = useCallback(
     (identifier: string) => {
@@ -396,12 +468,18 @@ const App: React.FC = () => {
       if (!villageEntry) {
         return <span className="font-semibold">{identifier}</span>;
       }
-      return <VillageLink village={villageEntry} onSelect={handleVillageOpen} />;
+      return (
+        <VillageLink village={villageEntry} onSelect={handleVillageOpen} />
+      );
     },
-    [villagesBySlug, villagesByName, handleVillageOpen]
+    [villagesBySlug, villagesByName, handleVillageOpen],
   );
 
-  const closeCodex = useCallback(() => setSelectedVillage(null), []);
+  const closeCodex = useCallback(() => {
+    setSelectedVillage(null);
+    updateArchiveDeepLink(null, { replace: deepLinkOriginRef.current });
+    deepLinkOriginRef.current = false;
+  }, []);
 
   const handleAutoPlayToggle = useCallback(() => {
     const willEnable = !autoPlay;
@@ -413,13 +491,19 @@ const App: React.FC = () => {
     } else {
       pauseSceneAudio();
     }
-  }, [autoPlay, toggleAutoPlay, activeSceneId, playSceneAudio, pauseSceneAudio]);
+  }, [
+    autoPlay,
+    toggleAutoPlay,
+    activeSceneId,
+    playSceneAudio,
+    pauseSceneAudio,
+  ]);
 
   const handleVolumeChange = useCallback(
     (value: number) => {
       setVolume(value);
     },
-    [setVolume]
+    [setVolume],
   );
 
   if (isPrototypeMode) {
@@ -430,7 +514,7 @@ const App: React.FC = () => {
     <TooltipProvider>
       <Meta pageId="home" />
       <a href="#main-content" className="skip-link">
-        {t('common:skipLink')}
+        {t("common:skipLink")}
       </a>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="fixed top-6 right-6 z-40 flex flex-col items-end gap-4">
@@ -443,15 +527,18 @@ const App: React.FC = () => {
               className="bg-white/10 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
               onClick={() => setArchiveExplorerOpen(true)}
             >
-              {t('common:buttons.archiveExplorer')}
+              {t("common:buttons.archiveExplorer")}
             </button>
             <span className="text-xs text-muted hidden md:block">
-              {t('common:buttons.archiveExplorerHint')}
+              {t("common:buttons.archiveExplorerHint")}
             </span>
           </div>
         </div>
 
-        <nav className="flex flex-col md:flex-row md:items-center gap-4 py-6" aria-label={t('common:nav.label')}>
+        <nav
+          className="flex flex-col md:flex-row md:items-center gap-4 py-6"
+          aria-label={t("common:nav.label")}
+        >
           <ul className="flex items-center gap-4 text-sm text-text-secondary flex-wrap">
             {sceneMeta.map((scene) => (
               <li key={scene.id}>
@@ -459,7 +546,10 @@ const App: React.FC = () => {
                   className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-slate-900/60 text-text-secondary hover:text-text-primary hover:border-accent focus:outline-none focus:ring-2 focus:ring-accent"
                   href={`#scene-${scene.id}`}
                 >
-                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
+                  <span
+                    aria-hidden="true"
+                    className="h-2 w-2 rounded-full bg-accent"
+                  />
                   {scene.title}
                 </a>
               </li>
@@ -476,16 +566,16 @@ const App: React.FC = () => {
         />
 
         <SceneOverlay
-          sceneTitle={activeScene?.title ?? ''}
-          description={activeScene?.description ?? ''}
+          sceneTitle={activeScene?.title ?? ""}
+          description={activeScene?.description ?? ""}
           villages={activeSceneVillages}
           onSelectVillage={handleVillageOpen}
           isVisible={Boolean(activeScene && activeSceneVillages.length > 0)}
         />
 
         <SceneAudioControls
-          sceneId={activeScene?.id ?? 'none'}
-          sceneTitle={activeScene?.title ?? ''}
+          sceneId={activeScene?.id ?? "none"}
+          sceneTitle={activeScene?.title ?? ""}
           audioAvailable={Boolean(activeScene?.audioSrc)}
           audioState={activeAudioState}
           onPlay={(sceneId) => {
@@ -504,10 +594,10 @@ const App: React.FC = () => {
           className="min-h-screen flex flex-col justify-center items-center text-center py-20 relative z-10"
         >
           <h1 className="font-serif text-6xl md:text-8xl text-white leading-tight tracking-tight">
-            {t('app:title')}
+            {t("app:title")}
           </h1>
           <p className="mt-6 text-xl md:text-2xl text-text-secondary max-w-3xl">
-            {t('app:description')}
+            {t("app:description")}
           </p>
           {villagesStatusIsError ? (
             <div
@@ -521,8 +611,18 @@ const App: React.FC = () => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <path d="M12 9v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path
+                  d="M12 9v4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M12 17h.01"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
                 <path
                   d="M10.073 3.51 1.824 18a2 2 0 0 0 1.754 3h16.844a2 2 0 0 0 1.754-3L13.176 3.51a2 2 0 0 0-3.103 0Z"
                   stroke="currentColor"
@@ -541,7 +641,12 @@ const App: React.FC = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M7 10h5v5H7z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                  <path
+                    d="M7 10h5v5H7z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
                   <path
                     d="M7 3v3M17 3v3M5 7h14M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
                     stroke="currentColor"
@@ -556,8 +661,19 @@ const App: React.FC = () => {
           )}
           <VillageTicker villages={villages} />
           <div className="mt-12 text-muted animate-bounce" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
             </svg>
           </div>
         </header>
@@ -573,31 +689,71 @@ const App: React.FC = () => {
                   decoding="async"
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.roots')}</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t("common:nav.sections.roots")}
+              </h2>
 
               <div className="space-y-4 text-text-secondary mb-8">
                 <p>
-                  To understand Palestine is to understand a history systematically targeted for erasure. The story does not begin in 1948, but in the soil and soul of a people whose dispossession was planned decades earlier. The British Mandate (1922-1948), established after the fall of the Ottoman Empire, was tasked with guiding Palestine to self-rule. Instead, it implemented the 1917{' '}
-                  <TooltipTrigger term="balfour">Balfour Declaration</TooltipTrigger>, promising a “national home for the Jewish people” in a land that was already 94% Palestinian Arab. This inherent contradiction set the stage for conflict, privileging the ambitions of a{' '}
-                  <TooltipTrigger term="settler-colonialism">settler movement</TooltipTrigger> over the rights of the indigenous majority.
+                  To understand Palestine is to understand a history
+                  systematically targeted for erasure. The story does not begin
+                  in 1948, but in the soil and soul of a people whose
+                  dispossession was planned decades earlier. The British Mandate
+                  (1922-1948), established after the fall of the Ottoman Empire,
+                  was tasked with guiding Palestine to self-rule. Instead, it
+                  implemented the 1917{" "}
+                  <TooltipTrigger term="balfour">
+                    Balfour Declaration
+                  </TooltipTrigger>
+                  , promising a “national home for the Jewish people” in a land
+                  that was already 94% Palestinian Arab. This inherent
+                  contradiction set the stage for conflict, privileging the
+                  ambitions of a{" "}
+                  <TooltipTrigger term="settler-colonialism">
+                    settler movement
+                  </TooltipTrigger>{" "}
+                  over the rights of the indigenous majority.
                 </p>
                 <p>
-                  <TooltipTrigger term="zionism">Zionism</TooltipTrigger>, at its core, is a 19th-century European settler-colonial project. Its foundational premise required the transformation of Palestine into a Jewish state, which could not be achieved without the displacement of the native population. Early Zionist leaders were explicit about this, viewing their work as a “colonization adventure.” The lead-up to 1948 saw the systematic execution of this vision, culminating in the{' '}
-                  <TooltipTrigger term="nakba">Nakba</TooltipTrigger> (“The Catastrophe”).
+                  <TooltipTrigger term="zionism">Zionism</TooltipTrigger>, at
+                  its core, is a 19th-century European settler-colonial project.
+                  Its foundational premise required the transformation of
+                  Palestine into a Jewish state, which could not be achieved
+                  without the displacement of the native population. Early
+                  Zionist leaders were explicit about this, viewing their work
+                  as a “colonization adventure.” The lead-up to 1948 saw the
+                  systematic execution of this vision, culminating in the{" "}
+                  <TooltipTrigger term="nakba">Nakba</TooltipTrigger> (“The
+                  Catastrophe”).
                 </p>
                 <p>
-                  The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities. This was not a byproduct of war; it was the realization of a plan. From the haunting, still-standing homes of{' '}
-                  {renderVillageLink('Lifta')} at Jerusalem's edge, to the premeditated massacres at{' '}
-                  {renderVillageLink('Deir Yassin')} and{' '}
-                  {renderVillageLink('al-Tantura')}, to the forced death march from{' '}
-                  {renderVillageLink('Lydda')}, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure.
+                  The 1947 UN Partition Plan allocated 55% of Palestine to a
+                  Jewish state, despite Jews owning only around 7% of the land
+                  and comprising a third of the population. This triggered the
+                  1948 war, during which Zionist militias and later the Israeli
+                  army depopulated over 500 Palestinian villages and cities.
+                  This was not a byproduct of war; it was the realization of a
+                  plan. From the haunting, still-standing homes of{" "}
+                  {renderVillageLink("Lifta")} at Jerusalem's edge, to the
+                  premeditated massacres at {renderVillageLink("Deir Yassin")}{" "}
+                  and {renderVillageLink("al-Tantura")}, to the forced death
+                  march from {renderVillageLink("Lydda")}, a systematic ethnic
+                  cleansing campaign expelled over 750,000 Palestinians, making
+                  them refugees and paving the way for the new state. The Roots
+                  of this conflict are found in this violent, ongoing process of
+                  erasure.
                 </p>
               </div>
 
               <div className="space-y-6 border-l-2 border-border pl-4 mb-8">
                 <blockquote className="text-gray-300 italic">
-                  <p>“The surest way to eradicate a people's right to their land is to deny their historical connection to it.”</p>
-                  <cite className="text-muted not-italic block mt-2">— Rashid Khalidi, 'The Hundred Years' War on Palestine'</cite>
+                  <p>
+                    “The surest way to eradicate a people's right to their land
+                    is to deny their historical connection to it.”
+                  </p>
+                  <cite className="text-muted not-italic block mt-2">
+                    — Rashid Khalidi, 'The Hundred Years' War on Palestine'
+                  </cite>
                 </blockquote>
                 <AccordionItem title="Further Analysis" level="2xl">
                   <ul className="space-y-3">
@@ -608,7 +764,9 @@ const App: React.FC = () => {
                     </li>
                     <li>
                       {villagesStatusIsError ? (
-                        <p className="text-sm text-muted mt-2 h-6">{villagesStatusMessage}</p>
+                        <p className="text-sm text-muted mt-2 h-6">
+                          {villagesStatusMessage}
+                        </p>
                       ) : (
                         <VillageTicker villages={villages} />
                       )}
@@ -659,7 +817,11 @@ const App: React.FC = () => {
             </div>
           </ContentNode>
 
-          <ContentNode ref={resistanceRef} alignment="right" id="scene-resistance">
+          <ContentNode
+            ref={resistanceRef}
+            alignment="right"
+            id="scene-resistance"
+          >
             <div className="node-card w-full md:w-1/2">
               <div className="node-image-container">
                 <img
@@ -669,22 +831,44 @@ const App: React.FC = () => {
                   decoding="async"
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.resistance')}</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t("common:nav.sections.resistance")}
+              </h2>
               <p className="text-text-secondary mb-8">
-                Resistance is the natural and righteous response to occupation and oppression. For Palestinians, it is a continuous, diverse, and deeply-rooted struggle for self-determination and return. It is not a monolith, but a dynamic combination of strategies, from the steadfastness of a farmer on his land to the global call for boycott. To understand the resistance is to understand the Palestinian will to exist.
+                Resistance is the natural and righteous response to occupation
+                and oppression. For Palestinians, it is a continuous, diverse,
+                and deeply-rooted struggle for self-determination and return. It
+                is not a monolith, but a dynamic combination of strategies, from
+                the steadfastness of a farmer on his land to the global call for
+                boycott. To understand the resistance is to understand the
+                Palestinian will to exist.
               </p>
 
               <div className="mb-8 border-t border-border pt-6 space-y-4">
                 <AccordionItem title="Voices of Defiance" level="2xl">
                   <div className="space-y-3 text-text-secondary">
                     <p>
-                      <strong>Ghassan Kanafani:</strong> A leading novelist, journalist, and spokesman for the Popular Front for the Liberation of Palestine (PFLP). His literary works were inseparable from his political struggle, giving voice to the experience of exile and the revolutionary imperative. He was assassinated by Mossad in 1972.
+                      <strong>Ghassan Kanafani:</strong> A leading novelist,
+                      journalist, and spokesman for the Popular Front for the
+                      Liberation of Palestine (PFLP). His literary works were
+                      inseparable from his political struggle, giving voice to
+                      the experience of exile and the revolutionary imperative.
+                      He was assassinated by Mossad in 1972.
                     </p>
                     <p>
-                      <strong>Leila Khaled:</strong> A militant member of the PFLP who became an international icon of armed resistance following her role in two aircraft hijackings in 1969 and 1970. Her image became a powerful symbol of Palestinian defiance and female revolutionary action.
+                      <strong>Leila Khaled:</strong> A militant member of the
+                      PFLP who became an international icon of armed resistance
+                      following her role in two aircraft hijackings in 1969 and
+                      1970. Her image became a powerful symbol of Palestinian
+                      defiance and female revolutionary action.
                     </p>
                     <p>
-                      <strong>Izz ad-Din al-Qassam:</strong> A Syrian-born cleric and revolutionary leader whose armed struggle against British and Zionist forces in the 1930s inspired a generation. His martyrdom in 1935 was a key catalyst for the 1936–1939 Arab revolt in Palestine, and his legacy endures in the language of Palestinian resistance.
+                      <strong>Izz ad-Din al-Qassam:</strong> A Syrian-born
+                      cleric and revolutionary leader whose armed struggle
+                      against British and Zionist forces in the 1930s inspired a
+                      generation. His martyrdom in 1935 was a key catalyst for
+                      the 1936–1939 Arab revolt in Palestine, and his legacy
+                      endures in the language of Palestinian resistance.
                     </p>
                   </div>
                 </AccordionItem>
@@ -694,10 +878,16 @@ const App: React.FC = () => {
                 <AccordionItem title="Arenas of Struggle" level="2xl">
                   <div className="space-y-4">
                     <div>
-                      <h4 className="text-xl text-gray-200">Popular Uprisings & Sumud</h4>
+                      <h4 className="text-xl text-gray-200">
+                        Popular Uprisings & Sumud
+                      </h4>
                       <p className="text-text-secondary mb-2">
-                        From mass demonstrations to general strikes, the Intifadas (uprisings) represent the power of collective civil action. This is paired with{' '}
-                        <TooltipTrigger term="sumud">Sumud</TooltipTrigger> (steadfastness)—the daily act of remaining on one's land and refusing to be erased.
+                        From mass demonstrations to general strikes, the
+                        Intifadas (uprisings) represent the power of collective
+                        civil action. This is paired with{" "}
+                        <TooltipTrigger term="sumud">Sumud</TooltipTrigger>{" "}
+                        (steadfastness)—the daily act of remaining on one's land
+                        and refusing to be erased.
                       </p>
                       <a
                         href="https://remix.aljazeera.com/aje/PalestineRemix/timeline_main.html"
@@ -717,9 +907,15 @@ const App: React.FC = () => {
                       </a>
                     </div>
                     <div>
-                      <h4 className="text-xl text-gray-200">Cultural & Literary Resistance</h4>
+                      <h4 className="text-xl text-gray-200">
+                        Cultural & Literary Resistance
+                      </h4>
                       <p className="text-text-secondary mb-2">
-                        Art, poetry, music, and film are powerful tools for preserving national identity and challenging colonial narratives. Figures like Mahmoud Darwish used their words to articulate the soul of the resistance, making culture an undeniable front in the struggle.
+                        Art, poetry, music, and film are powerful tools for
+                        preserving national identity and challenging colonial
+                        narratives. Figures like Mahmoud Darwish used their
+                        words to articulate the soul of the resistance, making
+                        culture an undeniable front in the struggle.
                       </p>
                       <a
                         href="https://www.poetryfoundation.org/poets/mahmoud-darwish"
@@ -731,9 +927,15 @@ const App: React.FC = () => {
                       </a>
                     </div>
                     <div>
-                      <h4 className="text-xl text-gray-200">Global Solidarity & BDS</h4>
+                      <h4 className="text-xl text-gray-200">
+                        Global Solidarity & BDS
+                      </h4>
                       <p className="text-text-secondary mb-2">
-                        The Boycott, Divestment, Sanctions (BDS) movement is a Palestinian-led global campaign. It applies non-violent economic and cultural pressure on Israel to comply with international law and end its oppression of Palestinians.
+                        The Boycott, Divestment, Sanctions (BDS) movement is a
+                        Palestinian-led global campaign. It applies non-violent
+                        economic and cultural pressure on Israel to comply with
+                        international law and end its oppression of
+                        Palestinians.
                       </p>
                       <a
                         href="https://bdsmovement.net/"
@@ -760,16 +962,30 @@ const App: React.FC = () => {
                   decoding="async"
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.culture')}</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t("common:nav.sections.culture")}
+              </h2>
               <p className="text-text-secondary mb-8">
-                When a colonizing power seeks to erase a people, the preservation of culture becomes an act of war. Every shared meal, every embroidered stitch, every song and dance is a front in the battle for existence. This is not passive tradition; it is{' '}
-                <TooltipTrigger term="sumud">Sumud</TooltipTrigger>—a steadfast refusal to disappear. Palestinian culture is the living, breathing evidence of a nation that colonial logic has failed to expunge. It is the practice of memory, identity, and defiance.
+                When a colonizing power seeks to erase a people, the
+                preservation of culture becomes an act of war. Every shared
+                meal, every embroidered stitch, every song and dance is a front
+                in the battle for existence. This is not passive tradition; it
+                is <TooltipTrigger term="sumud">Sumud</TooltipTrigger>—a
+                steadfast refusal to disappear. Palestinian culture is the
+                living, breathing evidence of a nation that colonial logic has
+                failed to expunge. It is the practice of memory, identity, and
+                defiance.
               </p>
 
               <div className="space-y-4 border-t border-border pt-6">
                 <AccordionItem title="Cuisine as Identity">
                   <p className="text-text-secondary my-2">
-                    The kitchen is a site of resistance. Dishes like <em>Maqluba</em> (the “upside-down” pot of rice, meat, and vegetables) are more than food; they are communal rituals that tell a story of land and family. Sharing these meals asserts a national identity that Israel actively attempts to appropriate and rebrand as its own.
+                    The kitchen is a site of resistance. Dishes like{" "}
+                    <em>Maqluba</em> (the “upside-down” pot of rice, meat, and
+                    vegetables) are more than food; they are communal rituals
+                    that tell a story of land and family. Sharing these meals
+                    asserts a national identity that Israel actively attempts to
+                    appropriate and rebrand as its own.
                   </p>
                   <a
                     href="https://sustainablefoodtrust.org/news-views/a-taste-of-palestine-cultivating-resistance/"
@@ -782,7 +998,13 @@ const App: React.FC = () => {
                 </AccordionItem>
                 <AccordionItem title="Tatreez: The Fabric of a Nation">
                   <p className="text-text-secondary my-2">
-                    Palestinian embroidery, or <em>Tatreez</em>, is a language in thread. The intricate geometric patterns are not merely decorative; they are a visual dialect signifying regional identity, marital status, and ancestral heritage. A dress from Ramallah tells a different story from one from Gaza. This art form literally stitches the map of a fragmented homeland onto the bodies of its people, defying erasure.
+                    Palestinian embroidery, or <em>Tatreez</em>, is a language
+                    in thread. The intricate geometric patterns are not merely
+                    decorative; they are a visual dialect signifying regional
+                    identity, marital status, and ancestral heritage. A dress
+                    from Ramallah tells a different story from one from Gaza.
+                    This art form literally stitches the map of a fragmented
+                    homeland onto the bodies of its people, defying erasure.
                   </p>
                   <a
                     href="https://www.palestineinamerica.com/blog/untangledtatreez"
@@ -795,7 +1017,13 @@ const App: React.FC = () => {
                 </AccordionItem>
                 <AccordionItem title="Cinema, Music & Dabke">
                   <p className="text-text-secondary my-2">
-                    From the politically charged films that document the struggle to the powerful rhythms of the <em>Dabke</em> dance, these art forms carry the spirit of the movement. The <em>Dabke's</em> stomping feet symbolize a connection to the land, while Palestinian cinema gives the people control over their own narrative, challenging the dehumanizing portrayals in Western media.
+                    From the politically charged films that document the
+                    struggle to the powerful rhythms of the <em>Dabke</em>{" "}
+                    dance, these art forms carry the spirit of the movement. The{" "}
+                    <em>Dabke's</em> stomping feet symbolize a connection to the
+                    land, while Palestinian cinema gives the people control over
+                    their own narrative, challenging the dehumanizing portrayals
+                    in Western media.
                   </p>
                   <a
                     href="https://arabfilminstitute.org/palestinian-voices/"
@@ -828,23 +1056,38 @@ const App: React.FC = () => {
                   decoding="async"
                 />
               </div>
-              <h2 className="font-serif text-4xl text-white mb-4">{t('common:nav.sections.action')}</h2>
+              <h2 className="font-serif text-4xl text-white mb-4">
+                {t("common:nav.sections.action")}
+              </h2>
               <p className="text-text-secondary mb-8">
-                Solidarity is a verb. It is the engine of liberation. Below are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold systems of power accountable. Choose a front; engage in the struggle.
+                Solidarity is a verb. It is the engine of liberation. Below are
+                tangible, effective ways to support the Palestinian cause,
+                amplify their voices, and hold systems of power accountable.
+                Choose a front; engage in the struggle.
               </p>
 
               <div className="space-y-4 border-t border-border pt-6">
                 <AccordionItem title="Donate: Vetted Aid & Solidarity Funds">
                   <p className="text-text-secondary my-2">
-                    Amidst blockade and siege, direct financial support provides critical humanitarian relief and resources for steadfastness. This is a direct counter-measure to the strategy of immiseration.
+                    Amidst blockade and siege, direct financial support provides
+                    critical humanitarian relief and resources for
+                    steadfastness. This is a direct counter-measure to the
+                    strategy of immiseration.
                   </p>
-                  <button type="button" className="resource-link" onClick={() => setDonateOpen(true)}>
+                  <button
+                    type="button"
+                    className="resource-link"
+                    onClick={() => setDonateOpen(true)}
+                  >
                     Access Solidarity Funds
                   </button>
                 </AccordionItem>
                 <AccordionItem title="Support Palestinian Businesses">
                   <p className="text-text-secondary my-2">
-                    Economic solidarity is a powerful tool. Buying from Palestinian artisans and fair-trade initiatives directly supports families and resists the economic strangulation of the occupation.
+                    Economic solidarity is a powerful tool. Buying from
+                    Palestinian artisans and fair-trade initiatives directly
+                    supports families and resists the economic strangulation of
+                    the occupation.
                   </p>
                   <a
                     href="https://www.palestineportal.org/action-advocacy/support-palestine-fair-trade/"
@@ -857,22 +1100,37 @@ const App: React.FC = () => {
                 </AccordionItem>
                 <AccordionItem title="Educate & Advocate">
                   <p className="text-text-secondary my-2">
-                    The battle is also for hearts and minds. Use these toolkits to effectively challenge disinformation within your own circles and articulate the case for justice to public representatives.
+                    The battle is also for hearts and minds. Use these toolkits
+                    to effectively challenge disinformation within your own
+                    circles and articulate the case for justice to public
+                    representatives.
                   </p>
-                  <button type="button" className="resource-link" onClick={() => setToolkitOpen(true)}>
+                  <button
+                    type="button"
+                    className="resource-link"
+                    onClick={() => setToolkitOpen(true)}
+                  >
                     Access Toolkits
                   </button>
                 </AccordionItem>
               </div>
 
               <div className="mt-8 pt-6 border-t border-border space-y-4">
-                <AccordionItem title="Find Your Frontline: Build Local Power" level="2xl">
+                <AccordionItem
+                  title="Find Your Frontline: Build Local Power"
+                  level="2xl"
+                >
                   <div className="space-y-3 text-text-secondary">
                     <p>
-                      Power is built in local struggles. Join or organize teach-ins, pressure campaigns, and rapid-response networks that can mobilize in moments of crisis.
+                      Power is built in local struggles. Join or organize
+                      teach-ins, pressure campaigns, and rapid-response networks
+                      that can mobilize in moments of crisis.
                     </p>
                     <p>
-                      Campus and community organizations have been at the forefront of shifting public consciousness. Coordinate with Palestinian-led groups to ensure efforts align with articulated needs.
+                      Campus and community organizations have been at the
+                      forefront of shifting public consciousness. Coordinate
+                      with Palestinian-led groups to ensure efforts align with
+                      articulated needs.
                     </p>
                     <div className="flex flex-wrap gap-4">
                       <a
@@ -912,8 +1170,12 @@ const App: React.FC = () => {
           id="footer"
           className="text-center py-10 border-t border-border relative z-10"
         >
-          <p className="text-muted">From The River To The Sea, Palestine Will Be Free.</p>
-          <p className="text-xs text-text-secondary mt-2">fromtheriver.org - A project of solidarity.</p>
+          <p className="text-muted">
+            From The River To The Sea, Palestine Will Be Free.
+          </p>
+          <p className="text-xs text-text-secondary mt-2">
+            fromtheriver.org - A project of solidarity.
+          </p>
         </footer>
 
         <Suspense fallback={null}>
@@ -936,9 +1198,11 @@ const App: React.FC = () => {
         <Modal
           isOpen={isToolkitOpen}
           onClose={() => setToolkitOpen(false)}
-          title={t('common:modals.toolkit.title')}
+          title={t("common:modals.toolkit.title")}
         >
-          <p className="text-text-secondary mb-6">{t('common:modals.toolkit.description')}</p>
+          <p className="text-text-secondary mb-6">
+            {t("common:modals.toolkit.description")}
+          </p>
           <ul className="space-y-4">
             <li>
               <a
@@ -966,13 +1230,15 @@ const App: React.FC = () => {
         <Modal
           isOpen={isDonateOpen}
           onClose={() => setDonateOpen(false)}
-          title={t('common:modals.donate.title')}
+          title={t("common:modals.donate.title")}
         >
-          <p className="text-text-secondary mb-8">{t('common:modals.donate.description')}</p>
+          <p className="text-text-secondary mb-8">
+            {t("common:modals.donate.description")}
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
             <div>
               <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                {t('common:modals.donate.direct')}
+                {t("common:modals.donate.direct")}
               </h4>
               <ul className="space-y-4">
                 <li>
@@ -985,7 +1251,8 @@ const App: React.FC = () => {
                     Operation Olive Branch
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    Volunteer-powered grassroots effort helping Palestinian families. Prioritizes transparency.
+                    Volunteer-powered grassroots effort helping Palestinian
+                    families. Prioritizes transparency.
                   </p>
                 </li>
                 <li>
@@ -998,7 +1265,8 @@ const App: React.FC = () => {
                     Funds For Gaza
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    List of targeted fundraisers for Gaza, curated by the @letstalkpalestine activist collective.
+                    List of targeted fundraisers for Gaza, curated by the
+                    @letstalkpalestine activist collective.
                   </p>
                 </li>
                 <li>
@@ -1011,7 +1279,8 @@ const App: React.FC = () => {
                     e-SIMs for Gaza
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    Activist guide on how to donate a Nomad e-SIM and keep Palestinians in Gaza connected.
+                    Activist guide on how to donate a Nomad e-SIM and keep
+                    Palestinians in Gaza connected.
                   </p>
                 </li>
                 <li>
@@ -1024,14 +1293,15 @@ const App: React.FC = () => {
                     Local Mutual Aid
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    Example of community-level organizing (Arkansas) directly supporting relief efforts.
+                    Example of community-level organizing (Arkansas) directly
+                    supporting relief efforts.
                   </p>
                 </li>
               </ul>
             </div>
             <div>
               <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                {t('common:modals.donate.institutional')}
+                {t("common:modals.donate.institutional")}
               </h4>
               <ul className="space-y-4">
                 <li>
@@ -1044,7 +1314,8 @@ const App: React.FC = () => {
                     PCRF
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    Palestine Children's Relief Fund. Provides critical medical care to sick and injured children.
+                    Palestine Children's Relief Fund. Provides critical medical
+                    care to sick and injured children.
                   </p>
                 </li>
                 <li>
@@ -1057,7 +1328,8 @@ const App: React.FC = () => {
                     MAP
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    Medical Aid for Palestinians. Delivers health and dignity to Palestinians under occupation and as refugees.
+                    Medical Aid for Palestinians. Delivers health and dignity to
+                    Palestinians under occupation and as refugees.
                   </p>
                 </li>
                 <li>
@@ -1070,7 +1342,8 @@ const App: React.FC = () => {
                     Doctors Without Borders
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    Global medical teams providing emergency care in Gaza and the West Bank.
+                    Global medical teams providing emergency care in Gaza and
+                    the West Bank.
                   </p>
                 </li>
                 <li>
@@ -1083,7 +1356,8 @@ const App: React.FC = () => {
                     UNRWA
                   </a>
                   <p className="text-sm text-muted mt-1">
-                    The UN agency for Palestine refugees, providing food, shelter, and essential services.
+                    The UN agency for Palestine refugees, providing food,
+                    shelter, and essential services.
                   </p>
                 </li>
               </ul>

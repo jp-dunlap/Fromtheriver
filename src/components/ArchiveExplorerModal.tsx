@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import Modal from './Modal';
-import type { Village } from '../data/types';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Modal from "./Modal";
+import type { Village } from "../data/types";
 
 interface ArchiveExplorerModalProps {
   villages: Village[];
@@ -18,7 +18,7 @@ interface SearchIndexEntry {
 const tokenize = (value: string): string[] =>
   value
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
     .filter(Boolean);
 
@@ -54,8 +54,8 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
   onClose,
   onSelectVillage,
 }) => {
-  const [query, setQuery] = useState('');
-  const [districtFilter, setDistrictFilter] = useState('all');
+  const [query, setQuery] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("all");
   const [hasTestimonyOnly, setHasTestimonyOnly] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -65,8 +65,8 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
         inputRef.current?.focus();
       }, 120);
     } else {
-      setQuery('');
-      setDistrictFilter('all');
+      setQuery("");
+      setDistrictFilter("all");
       setHasTestimonyOnly(false);
     }
   }, [isOpen]);
@@ -74,7 +74,9 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
   const index = useMemo(() => buildIndex(villages), [villages]);
 
   const districts = useMemo(() => {
-    const unique = Array.from(new Set(villages.map((village) => village.district))).sort();
+    const unique = Array.from(
+      new Set(villages.map((village) => village.district)),
+    ).sort();
     return unique;
   }, [villages]);
 
@@ -93,7 +95,7 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
 
         const passesQuery = hasTokens ? matchesTokens > 0 : true;
         const passesDistrict =
-          districtFilter === 'all' || entry.village.district === districtFilter;
+          districtFilter === "all" || entry.village.district === districtFilter;
         const passesTestimony = hasTestimonyOnly
           ? entry.village.testimonies.length > 0
           : true;
@@ -106,10 +108,17 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
           passesTestimony,
         };
       })
-      .filter((candidate) => candidate.passesQuery && candidate.passesDistrict && candidate.passesTestimony)
+      .filter(
+        (candidate) =>
+          candidate.passesQuery &&
+          candidate.passesDistrict &&
+          candidate.passesTestimony,
+      )
       .sort((a, b) => {
         if (b.matchesTokens === a.matchesTokens) {
-          return a.entry.village.names.en.localeCompare(b.entry.village.names.en);
+          return a.entry.village.names.en.localeCompare(
+            b.entry.village.names.en,
+          );
         }
         return b.matchesTokens - a.matchesTokens;
       })
@@ -125,9 +134,15 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title="Archive Explorer">
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row md:items-end gap-4">
-          <label className="flex-1">
-            <span className="text-xs uppercase tracking-wider text-muted block mb-1">Search the archive</span>
+          <div className="flex-1">
+            <label
+              htmlFor="archive-search"
+              className="text-xs uppercase tracking-wider text-muted block mb-1"
+            >
+              Search the archive
+            </label>
             <input
+              id="archive-search"
               ref={inputRef}
               type="search"
               value={query}
@@ -135,9 +150,11 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
               placeholder="Type a village, district, or historical keyword…"
               className="w-full rounded-md bg-slate-900/80 border border-border px-3 py-2 text-sm text-white focus:ring-2 focus:ring-white/40 focus:outline-none"
             />
-          </label>
+          </div>
           <label className="w-full md:w-48">
-            <span className="text-xs uppercase tracking-wider text-muted block mb-1">District</span>
+            <span className="text-xs uppercase tracking-wider text-muted block mb-1">
+              District
+            </span>
             <select
               value={districtFilter}
               onChange={(event) => setDistrictFilter(event.target.value)}
@@ -180,8 +197,12 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-lg text-white font-semibold">{village.names.en}</p>
-                    <p className="text-sm text-text-secondary">{village.names.ar}</p>
+                    <p className="text-lg text-white font-semibold">
+                      {village.names.en}
+                    </p>
+                    <p className="text-sm text-text-secondary">
+                      {village.names.ar}
+                    </p>
                   </div>
                   <div className="text-xs uppercase tracking-wider text-muted">
                     {village.district} District
