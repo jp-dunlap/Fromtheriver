@@ -215,7 +215,11 @@ async function main() {
   console.log("[smoke] All checks passed");
 }
 
-main().catch((error) => {
-  console.error("[smoke] failed:", error.message ?? error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error("[smoke] failed:", error.message ?? error);
+    process.exit(1);
+  });

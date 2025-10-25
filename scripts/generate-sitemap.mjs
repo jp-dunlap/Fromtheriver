@@ -17,6 +17,9 @@ const requestedLimit = Number.parseInt(
 const SITEMAP_ARCHIVE_LIMIT = Number.isNaN(requestedLimit)
   ? DEFAULT_ARCHIVE_PAGE_LIMIT
   : requestedLimit;
+const BASE_URL = (process.env.DEPLOY_PRIME_URL || process.env.URL || SITE_URL)
+  .toString()
+  .replace(/\/+$/, "");
 
 function escapeXml(value) {
   return value
@@ -38,7 +41,7 @@ async function main() {
   const body = uniqueRoutes
     .map(
       (route) =>
-        `  <url>\n    <loc>${escapeXml(`${SITE_URL}${route}`)}</loc>\n  </url>`,
+        `  <url>\n    <loc>${escapeXml(`${BASE_URL}${route}`)}</loc>\n  </url>`,
     )
     .join("\n");
 
