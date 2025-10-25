@@ -147,9 +147,12 @@ export async function initializeAtlas(L) {
 
   const clusterGroup = typeof L.markerClusterGroup === 'function'
     ? L.markerClusterGroup({
-        disableClusteringAtZoom: 12,
-        spiderfyOnMaxZoom: true,
+        // Two-tier clustering: broader groups until zoom 10, then individual pins
+        disableClusteringAtZoom: 10,
+        maxClusterRadius: 70,
         showCoverageOnHover: false,
+        spiderfyOnMaxZoom: false,
+        zoomToBoundsOnClick: true,
         chunkedLoading: true
       })
     : L.layerGroup();
@@ -285,6 +288,8 @@ export async function initializeAtlas(L) {
     const destroyedBy = getVillageDestroyedBy(village);
     const operation = getVillageOperation(village);
     const settlement = getVillageSettlement(village);
+    const slug = getVillageSlug(village);
+    const codexHref = slug ? `/archive/${encodeURIComponent(slug)}` : null;
 
     const details = [
       district ? `<p class="text-sm text-gray-500"><strong class="text-gray-400">District:</strong> ${district}</p>` : '',
@@ -294,11 +299,14 @@ export async function initializeAtlas(L) {
     ].filter(Boolean).join('');
 
     return `
-      <div class="space-y-2 max-h-64 overflow-y-auto">
-        ${primary ? `<h3 class="font-serif text-2xl text-white">${primary}</h3>` : ''}
-        ${secondary ? `<h4 class="font-sans text-lg text-gray-400 -mt-2">${secondary}</h4>` : ''}
-        ${story ? `<p class="text-gray-300">${story}</p>` : ''}
-        ${details ? `<div class="pt-2 border-t border-gray-600">${details}</div>` : ''}
+      <div class="popup-card">
+        <div class="space-y-2 max-h-64 overflow-y-auto">
+          ${primary ? `<h3 class="popup-title font-serif text-2xl text-white">${primary}</h3>` : ''}
+          ${secondary ? `<h4 class="popup-sub font-sans text-lg text-gray-400 -mt-2">${secondary}</h4>` : ''}
+          ${story ? `<p class="text-gray-300">${story}</p>` : ''}
+          ${details ? `<div class="pt-2 border-t border-gray-600">${details}</div>` : ''}
+        </div>
+        ${codexHref ? `<p class="popup-actions"><a class="popup-cta" href="${codexHref}">Open Codex Entry →</a></p>` : ''}
       </div>
     `;
   }
