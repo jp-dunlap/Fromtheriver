@@ -67,6 +67,20 @@
     "title": "من النهر",
     "description": "أرشيف حي لتاريخ فلسطين وثقافتها ونضالها المستمر من أجل التحرر. إنها رحلة للفهم.",
     "tickerLabel": "شريط تذكّر القرى",
-    "externalUpdatesLabel": "إشارات التضامن"
+    "externalUpdatesLabel": "إشارات التضامن",
+    "roots": {
+      "p1": "To understand Palestine is to understand a history systematically targeted for erasure. The story does not begin in 1948, but in the soil and soul of a people whose dispossession was planned decades earlier. The British Mandate (1922-1948), established after the fall of the Ottoman Empire, was tasked with guiding Palestine to self-rule. Instead, it implemented the 1917 <balfour>Balfour Declaration</balfour>, promising a “national home for the Jewish people” in a land that was already 94% Palestinian Arab. This inherent contradiction set the stage for conflict, privileging the ambitions of a <settler>settler movement</settler> over the rights of the indigenous majority.",
+      "p2": "<zionism>Zionism</zionism>, at its core, is a 19th-century European settler-colonial project. Its foundational premise required the transformation of Palestine into a Jewish state, which could not be achieved without the displacement of the native population. Early Zionist leaders were explicit about this, viewing their work as a “colonization adventure.” The lead-up to 1948 saw the systematic execution of this vision, culminating in the <nakba>Nakba</nakba> (“The Catastrophe”).",
+      "p3": "The 1947 UN Partition Plan allocated 55% of Palestine to a Jewish state, despite Jews owning only around 7% of the land and comprising a third of the population. This triggered the 1948 war, during which Zionist militias and later the Israeli army depopulated over 500 Palestinian villages and cities. This was not a byproduct of war; it was the realization of a plan. From the haunting, still-standing homes of <lifta/> at Jerusalem's edge, to the premeditated massacres at <deirYassin/> and <alTantura/>, to the forced death march from <lydda/>, a systematic ethnic cleansing campaign expelled over 750,000 Palestinians, making them refugees and paving the way for the new state. The Roots of this conflict are found in this violent, ongoing process of erasure."
+    },
+    "resistance": {
+      "p1": "Resistance is the natural and righteous response to occupation and oppression. For Palestinians, it is a continuous, diverse, and deeply-rooted struggle for self-determination and return. It is not a monolith, but a dynamic combination of strategies, from the steadfastness of a farmer on his land to the global call for boycott. To understand the resistance is to understand the Palestinian will to exist."
+    },
+    "culture": {
+      "p1": "When a colonizing power seeks to erase a people, the preservation of culture becomes an act of war. Every shared meal, every embroidered stitch, every song and dance is a front in the battle for existence. This is not passive tradition; it is <sumud>Sumud</sumud>—a steadfast refusal to disappear. Palestinian culture is the living, breathing evidence of a nation that colonial logic has failed to expunge. It is the practice of memory, identity, and defiance."
+    },
+    "action": {
+      "p1": "Solidarity is a verb. It is the engine of liberation. Below are tangible, effective ways to support the Palestinian cause, amplify their voices, and hold systems of power accountable. Choose a front; engage in the struggle."
+    }
   }
 }
