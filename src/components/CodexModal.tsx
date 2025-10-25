@@ -135,7 +135,7 @@ const CodexModal: React.FC<CodexModalProps> = ({ village, onClose }) => {
             <div className="pt-4 border-t border-border">
               <a
                 className="resource-link"
-                href={`/atlas.html?village=${encodeURIComponent(villageDetails.names.en)}`}
+                href={`/atlas?village=${encodeURIComponent(villageDetails.names.en)}`}
               >
                 {t('modals.codex.viewAtlas')}
               </a>

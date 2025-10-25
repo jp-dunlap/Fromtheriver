@@ -23,7 +23,7 @@ import { villages as villagesData, villagesDataset } from "./data/villages";
 import ExternalUpdatesPanel from "./components/ExternalUpdatesPanel";
 import type { ExternalArchivePayload } from "./data/external";
 import LanguageSwitcher from "./components/LanguageSwitcher";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import Meta from "./seo/meta";
 import { initArchiveDeepLink, updateArchiveDeepLink } from "./lib/deeplink";
 
@@ -429,7 +429,18 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-    const cleanup = initArchiveDeepLink((slug) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const { pathname } = window.location;
+    const shouldInit =
+      pathname.startsWith("/archive") || pathname.startsWith("/atlas");
+    if (!shouldInit) {
+      return;
+    }
+
+    const stop = initArchiveDeepLink((slug) => {
       if (!slug) {
         setSelectedVillage(null);
         deepLinkOriginRef.current = false;
@@ -450,7 +461,9 @@ const App: React.FC = () => {
       deepLinkOriginRef.current = false;
     });
 
-    return cleanup;
+    return () => {
+      stop();
+    };
   }, [openVillage, villagesBySlug]);
 
   const handleVillageOpen = useCallback(
@@ -695,53 +708,45 @@ const App: React.FC = () => {
 
               <div className="space-y-4 text-text-secondary mb-8">
                 <p>
-                  To understand Palestine is to understand a history
-                  systematically targeted for erasure. The story does not begin
-                  in 1948, but in the soil and soul of a people whose
-                  dispossession was planned decades earlier. The British Mandate
-                  (1922-1948), established after the fall of the Ottoman Empire,
-                  was tasked with guiding Palestine to self-rule. Instead, it
-                  implemented the 1917{" "}
-                  <TooltipTrigger term="balfour">
-                    Balfour Declaration
-                  </TooltipTrigger>
-                  , promising a “national home for the Jewish people” in a land
-                  that was already 94% Palestinian Arab. This inherent
-                  contradiction set the stage for conflict, privileging the
-                  ambitions of a{" "}
-                  <TooltipTrigger term="settler-colonialism">
-                    settler movement
-                  </TooltipTrigger>{" "}
-                  over the rights of the indigenous majority.
+                  <Trans
+                    i18nKey="app:roots.p1"
+                    components={{
+                      balfour: (
+                        <TooltipTrigger term="balfour">
+                          Balfour Declaration
+                        </TooltipTrigger>
+                      ),
+                      settler: (
+                        <TooltipTrigger term="settler-colonialism">
+                          settler movement
+                        </TooltipTrigger>
+                      ),
+                    }}
+                  />
                 </p>
                 <p>
-                  <TooltipTrigger term="zionism">Zionism</TooltipTrigger>, at
-                  its core, is a 19th-century European settler-colonial project.
-                  Its foundational premise required the transformation of
-                  Palestine into a Jewish state, which could not be achieved
-                  without the displacement of the native population. Early
-                  Zionist leaders were explicit about this, viewing their work
-                  as a “colonization adventure.” The lead-up to 1948 saw the
-                  systematic execution of this vision, culminating in the{" "}
-                  <TooltipTrigger term="nakba">Nakba</TooltipTrigger> (“The
-                  Catastrophe”).
+                  <Trans
+                    i18nKey="app:roots.p2"
+                    components={{
+                      zionism: (
+                        <TooltipTrigger term="zionism">Zionism</TooltipTrigger>
+                      ),
+                      nakba: (
+                        <TooltipTrigger term="nakba">Nakba</TooltipTrigger>
+                      ),
+                    }}
+                  />
                 </p>
                 <p>
-                  The 1947 UN Partition Plan allocated 55% of Palestine to a
-                  Jewish state, despite Jews owning only around 7% of the land
-                  and comprising a third of the population. This triggered the
-                  1948 war, during which Zionist militias and later the Israeli
-                  army depopulated over 500 Palestinian villages and cities.
-                  This was not a byproduct of war; it was the realization of a
-                  plan. From the haunting, still-standing homes of{" "}
-                  {renderVillageLink("Lifta")} at Jerusalem's edge, to the
-                  premeditated massacres at {renderVillageLink("Deir Yassin")}{" "}
-                  and {renderVillageLink("al-Tantura")}, to the forced death
-                  march from {renderVillageLink("Lydda")}, a systematic ethnic
-                  cleansing campaign expelled over 750,000 Palestinians, making
-                  them refugees and paving the way for the new state. The Roots
-                  of this conflict are found in this violent, ongoing process of
-                  erasure.
+                  <Trans
+                    i18nKey="app:roots.p3"
+                    components={{
+                      lifta: <>{renderVillageLink("Lifta")}</>,
+                      deirYassin: <>{renderVillageLink("Deir Yassin")}</>,
+                      alTantura: <>{renderVillageLink("al-Tantura")}</>,
+                      lydda: <>{renderVillageLink("Lydda")}</>,
+                    }}
+                  />
                 </p>
               </div>
 
@@ -758,7 +763,7 @@ const App: React.FC = () => {
                 <AccordionItem title="Further Analysis" level="2xl">
                   <ul className="space-y-3">
                     <li>
-                      <a href="/atlas.html" className="resource-link font-bold">
+                      <a href="/atlas" className="resource-link font-bold">
                         Explore the Atlas of Erasure →
                       </a>
                     </li>
@@ -835,13 +840,7 @@ const App: React.FC = () => {
                 {t("common:nav.sections.resistance")}
               </h2>
               <p className="text-text-secondary mb-8">
-                Resistance is the natural and righteous response to occupation
-                and oppression. For Palestinians, it is a continuous, diverse,
-                and deeply-rooted struggle for self-determination and return. It
-                is not a monolith, but a dynamic combination of strategies, from
-                the steadfastness of a farmer on his land to the global call for
-                boycott. To understand the resistance is to understand the
-                Palestinian will to exist.
+                {t("app:resistance.p1")}
               </p>
 
               <div className="mb-8 border-t border-border pt-6 space-y-4">
@@ -966,15 +965,12 @@ const App: React.FC = () => {
                 {t("common:nav.sections.culture")}
               </h2>
               <p className="text-text-secondary mb-8">
-                When a colonizing power seeks to erase a people, the
-                preservation of culture becomes an act of war. Every shared
-                meal, every embroidered stitch, every song and dance is a front
-                in the battle for existence. This is not passive tradition; it
-                is <TooltipTrigger term="sumud">Sumud</TooltipTrigger>—a
-                steadfast refusal to disappear. Palestinian culture is the
-                living, breathing evidence of a nation that colonial logic has
-                failed to expunge. It is the practice of memory, identity, and
-                defiance.
+                <Trans
+                  i18nKey="app:culture.p1"
+                  components={{
+                    sumud: <TooltipTrigger term="sumud">Sumud</TooltipTrigger>,
+                  }}
+                />
               </p>
 
               <div className="space-y-4 border-t border-border pt-6">
@@ -1060,10 +1056,7 @@ const App: React.FC = () => {
                 {t("common:nav.sections.action")}
               </h2>
               <p className="text-text-secondary mb-8">
-                Solidarity is a verb. It is the engine of liberation. Below are
-                tangible, effective ways to support the Palestinian cause,
-                amplify their voices, and hold systems of power accountable.
-                Choose a front; engage in the struggle.
+                {t("app:action.p1")}
               </p>
 
               <div className="space-y-4 border-t border-border pt-6">
