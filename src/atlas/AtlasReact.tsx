@@ -1,5 +1,4 @@
+// Atlas is served as a static page at /atlas. This is a no-op to prevent accidental imports from crashing the app.
 export default function AtlasReact() {
-  // Atlas is now a static page served from /public/atlas.html.
-  // This stub intentionally renders nothing.
   return null;
 }
