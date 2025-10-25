@@ -30,22 +30,19 @@ const getVillageDestroyedBy = (village) => {
 const getVillageSettlement = (village) => village?.israeli_settlement ?? village?.aftermath?.settlement ?? '';
 
 const getVillageCoordinates = (village) => {
-  if (typeof village?.lat === 'number' && typeof village?.lon === 'number') {
-    return [village.lat, village.lon];
+  // Prefer top-level values first, accepting both `lon` and `lng`
+  const topLat = village?.lat;
+  const topLonLike = village?.lon ?? village?.lng;
+  if (topLat != null && topLonLike != null) {
+    const lat = Number(topLat);
+    const lon = Number(topLonLike);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) return [lat, lon];
   }
-  if (village?.lat != null && village?.lon != null) {
-    const lat = Number(village.lat);
-    const lon = Number(village.lon);
-    if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-      return [lat, lon];
-    }
-  }
+  // Then support nested coordinates as a fallback
   if (village?.coordinates) {
     const lat = Number(village.coordinates.lat);
     const lon = Number(village.coordinates.lon ?? village.coordinates.lng);
-    if (!Number.isNaN(lat) && !Number.isNaN(lon)) {
-      return [lat, lon];
-    }
+    if (Number.isFinite(lat) && Number.isFinite(lon)) return [lat, lon];
   }
   return null;
 };
@@ -186,6 +183,9 @@ export async function initializeAtlas(L) {
 
   try {
     allVillages = await fetchVillages();
+    console.info('Atlas data loaded', { total: allVillages.length });
+    const sampleWithCoords = allVillages.find((village) => !!getVillageCoordinates(village));
+    console.info('Sample village with coords', sampleWithCoords?.slug || sampleWithCoords);
   } catch (error) {
     console.error('Atlas initialization failed to load villages.', error);
     if (statusRegion) {
