@@ -31,7 +31,6 @@ const ArchiveExplorerModal = React.lazy(
   () => import("./components/ArchiveExplorerModal"),
 );
 const CodexModal = React.lazy(() => import("./components/CodexModal"));
-const AtlasReact = React.lazy(() => import("./atlas/AtlasReact"));
 
 type SceneId = "roots" | "resistance" | "culture" | "action";
 
@@ -62,13 +61,6 @@ const App: React.FC = () => {
   const isPrototypeMode =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("prototype") === "gallery";
-
-  const isAtlasRoute = useMemo(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return window.location.pathname.startsWith("/atlas");
-  }, []);
 
   const allowOverlay = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -444,7 +436,7 @@ const App: React.FC = () => {
         return;
       }
 
-      const shouldPreserve = options.preserveLocation ?? isAtlasRoute;
+      const shouldPreserve = options.preserveLocation ?? false;
       if (!shouldPreserve) {
         updateArchiveDeepLink(slug, { replace: options.replace });
         return;
@@ -465,7 +457,7 @@ const App: React.FC = () => {
       const next = query ? `${url.pathname}?${query}` : url.pathname;
       window.history[method](null, "", next);
     },
-    [isAtlasRoute],
+    [],
   );
 
   const openVillage = useCallback(
@@ -538,43 +530,6 @@ const App: React.FC = () => {
       window.removeEventListener("codex:open", onOpen as EventListener);
     };
   }, [handleVillageOpenBySlug]);
-
-  useEffect(() => {
-    if (!isAtlasRoute || typeof window === "undefined") {
-      return;
-    }
-
-    const applyFromSearch = () => {
-      const params = new URLSearchParams(window.location.search);
-      const slugParam = params.get("slug");
-
-      if (slugParam) {
-        const result = handleVillageOpenBySlug(slugParam, {
-          fromDeepLink: true,
-          replace: true,
-          preserveLocation: true,
-        });
-        if (result) {
-          return;
-        }
-        console.warn(`Atlas entry not found for slug: ${slugParam}`);
-      }
-
-      setSelectedVillage(null);
-      deepLinkOriginRef.current = false;
-    };
-
-    applyFromSearch();
-
-    const onPopState = () => {
-      applyFromSearch();
-    };
-
-    window.addEventListener("popstate", onPopState);
-    return () => {
-      window.removeEventListener("popstate", onPopState);
-    };
-  }, [isAtlasRoute, handleVillageOpenBySlug]);
 
   const handleVillageOpenBySlug = useCallback(
     (slug: string, options: OpenVillageOptions = {}) => {
@@ -843,23 +798,6 @@ const App: React.FC = () => {
 
   if (isPrototypeMode) {
     return <PrototypeGallery />;
-  }
-
-  if (isAtlasRoute) {
-    return (
-      <TooltipProvider>
-        <Meta pageId="home" />
-        <a href="#main-content" className="skip-link">
-          {t("common:skipLink")}
-        </a>
-        <main id="main-content" className="min-h-screen">
-          <Suspense fallback={null}>
-            <AtlasReact />
-          </Suspense>
-        </main>
-        {renderModals()}
-      </TooltipProvider>
-    );
   }
 
   return (
