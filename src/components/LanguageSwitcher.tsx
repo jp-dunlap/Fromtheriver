@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-const RTL_LANGS = new Set(["ar"]);
+import { applyDocumentLocale } from "../i18n/layout";
 const SUPPORTED_LANGS = new Set(["en", "es", "ar"]);
 const STORAGE_KEY = "lang";
 
@@ -36,13 +36,7 @@ const LanguageSwitcher: React.FC = () => {
   }, [i18n, normalizedLanguage]);
 
   useEffect(() => {
-    if (typeof document === "undefined") {
-      return;
-    }
-    const language = normalizedLanguage;
-    const html = document.documentElement;
-    html.lang = language;
-    html.dir = RTL_LANGS.has(language) ? "rtl" : "ltr";
+    applyDocumentLocale(normalizedLanguage);
   }, [normalizedLanguage]);
 
   return (
