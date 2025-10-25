@@ -31,6 +31,7 @@ const ArchiveExplorerModal = React.lazy(
   () => import("./components/ArchiveExplorerModal"),
 );
 const CodexModal = React.lazy(() => import("./components/CodexModal"));
+const AtlasReact = React.lazy(() => import("./atlas/AtlasReact"));
 
 type SceneId = "roots" | "resistance" | "culture" | "action";
 
@@ -44,6 +45,12 @@ interface SceneMetadata {
   focusVillages: string[];
 }
 
+interface OpenVillageOptions {
+  replace?: boolean;
+  fromDeepLink?: boolean;
+  preserveLocation?: boolean;
+}
+
 const App: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
@@ -55,6 +62,13 @@ const App: React.FC = () => {
   const isPrototypeMode =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("prototype") === "gallery";
+
+  const isAtlasRoute = useMemo(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.location.pathname.startsWith("/atlas");
+  }, []);
 
   const allowOverlay = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -421,18 +435,49 @@ const App: React.FC = () => {
     };
   }, [isArchiveExplorerOpen]);
 
-  const openVillage = useCallback(
+  const syncDeepLink = useCallback(
     (
-      village: Village,
-      options: { replace?: boolean; fromDeepLink?: boolean } = {},
+      slug: string | null,
+      options: { replace?: boolean; preserveLocation?: boolean } = {},
     ) => {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      const shouldPreserve = options.preserveLocation ?? isAtlasRoute;
+      if (!shouldPreserve) {
+        updateArchiveDeepLink(slug, { replace: options.replace });
+        return;
+      }
+
+      const url = new URL(window.location.href);
+      const method: "replaceState" | "pushState" = options.replace
+        ? "replaceState"
+        : "pushState";
+
+      if (slug) {
+        url.searchParams.set("slug", slug);
+      } else {
+        url.searchParams.delete("slug");
+      }
+
+      const query = url.searchParams.toString();
+      const next = query ? `${url.pathname}?${query}` : url.pathname;
+      window.history[method](null, "", next);
+    },
+    [isAtlasRoute],
+  );
+
+  const openVillage = useCallback(
+    (village: Village, options: OpenVillageOptions = {}) => {
       setSelectedVillage(village);
       deepLinkOriginRef.current = options.fromDeepLink ?? false;
-      updateArchiveDeepLink(village.slug, {
-        replace: options.replace ?? false,
+      syncDeepLink(village.slug, {
+        replace: options.replace,
+        preserveLocation: options.preserveLocation,
       });
     },
-    [],
+    [syncDeepLink],
   );
 
   useEffect(() => {
@@ -441,8 +486,7 @@ const App: React.FC = () => {
     }
 
     const { pathname } = window.location;
-    const shouldInit =
-      pathname.startsWith("/archive") || pathname.startsWith("/atlas");
+    const shouldInit = pathname.startsWith("/archive");
     if (!shouldInit) {
       return;
     }
@@ -454,15 +498,16 @@ const App: React.FC = () => {
         return;
       }
 
-      const normalizedSlug = slug.toLowerCase();
-      const match = villagesBySlug.get(normalizedSlug);
+      const result = handleVillageOpenBySlug(slug, {
+        replace: true,
+        fromDeepLink: true,
+        preserveLocation: false,
+      });
 
-      if (match) {
-        openVillage(match, { replace: true, fromDeepLink: true });
+      if (result) {
         return;
       }
 
-      console.warn(`Archive entry not found for slug: ${slug}`);
       updateArchiveDeepLink(null, { replace: true });
       setSelectedVillage(null);
       deepLinkOriginRef.current = false;
@@ -471,7 +516,84 @@ const App: React.FC = () => {
     return () => {
       stop();
     };
-  }, [openVillage, villagesBySlug]);
+  }, [handleVillageOpenBySlug]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const onOpen = (event: Event) => {
+      const detail = (event as CustomEvent<{ slug?: string }>).detail;
+      const slug = detail?.slug;
+      if (!slug) {
+        return;
+      }
+
+      handleVillageOpenBySlug(slug);
+    };
+
+    window.addEventListener("codex:open", onOpen as EventListener);
+    return () => {
+      window.removeEventListener("codex:open", onOpen as EventListener);
+    };
+  }, [handleVillageOpenBySlug]);
+
+  useEffect(() => {
+    if (!isAtlasRoute || typeof window === "undefined") {
+      return;
+    }
+
+    const applyFromSearch = () => {
+      const params = new URLSearchParams(window.location.search);
+      const slugParam = params.get("slug");
+
+      if (slugParam) {
+        const result = handleVillageOpenBySlug(slugParam, {
+          fromDeepLink: true,
+          replace: true,
+          preserveLocation: true,
+        });
+        if (result) {
+          return;
+        }
+        console.warn(`Atlas entry not found for slug: ${slugParam}`);
+      }
+
+      setSelectedVillage(null);
+      deepLinkOriginRef.current = false;
+    };
+
+    applyFromSearch();
+
+    const onPopState = () => {
+      applyFromSearch();
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, [isAtlasRoute, handleVillageOpenBySlug]);
+
+  const handleVillageOpenBySlug = useCallback(
+    (slug: string, options: OpenVillageOptions = {}) => {
+      const normalizedSlug = slug?.trim().toLowerCase();
+      if (!normalizedSlug) {
+        return null;
+      }
+
+      const match = villagesBySlug.get(normalizedSlug);
+      if (!match) {
+        console.warn(`Archive entry not found for slug: ${slug}`);
+        return null;
+      }
+
+      openVillage(match, options);
+      return match;
+    },
+    [openVillage, villagesBySlug],
+  );
 
   const handleVillageOpen = useCallback(
     (village: Village) => {
@@ -497,9 +619,11 @@ const App: React.FC = () => {
 
   const closeCodex = useCallback(() => {
     setSelectedVillage(null);
-    updateArchiveDeepLink(null, { replace: deepLinkOriginRef.current });
+    syncDeepLink(null, {
+      replace: deepLinkOriginRef.current,
+    });
     deepLinkOriginRef.current = false;
-  }, []);
+  }, [syncDeepLink]);
 
   const handleAutoPlayToggle = useCallback(() => {
     const willEnable = !autoPlay;
@@ -526,8 +650,216 @@ const App: React.FC = () => {
     [setVolume],
   );
 
+  const renderModals = () => (
+    <>
+      <Suspense fallback={null}>
+        {isArchiveExplorerOpen ? (
+          <ArchiveExplorerModal
+            villages={villages}
+            isOpen={isArchiveExplorerOpen}
+            onClose={() => setArchiveExplorerOpen(false)}
+            onSelectVillage={handleVillageOpen}
+          />
+        ) : null}
+      </Suspense>
+
+      <Suspense fallback={null}>
+        {selectedVillage ? (
+          <CodexModal village={selectedVillage} onClose={closeCodex} />
+        ) : null}
+      </Suspense>
+
+      <Modal
+        isOpen={isToolkitOpen}
+        onClose={() => setToolkitOpen(false)}
+        title={t("common:modals.toolkit.title")}
+      >
+        <p className="text-text-secondary mb-6">
+          {t("common:modals.toolkit.description")}
+        </p>
+        <ul className="space-y-4">
+          <li>
+            <a
+              href="https://palianswers.com/"
+              className="resource-link text-lg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PaliAnswers: Indexed Responses
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://decolonizepalestine.com/myths/"
+              className="resource-link text-lg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Decolonize Palestine: Debunking Myths
+            </a>
+          </li>
+        </ul>
+      </Modal>
+
+      <Modal
+        isOpen={isDonateOpen}
+        onClose={() => setDonateOpen(false)}
+        title={t("common:modals.donate.title")}
+      >
+        <p className="text-text-secondary mb-8">
+          {t("common:modals.donate.description")}
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <div>
+            <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
+              {t("common:modals.donate.direct")}
+            </h4>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="https://docs.google.com/spreadsheets/d/1vtMLLOzuc6GpkFySyVtKQOY2j-Vvg0UsChMCFst_WLA/htmlview"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Operation Olive Branch
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  Volunteer-powered grassroots effort helping Palestinian
+                  families. Prioritizes transparency.
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://linktr.ee/fundsforgaza"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Funds For Gaza
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  List of targeted fundraisers for Gaza, curated by the
+                  @letstalkpalestine activist collective.
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://www.instagram.com/p/C03zzwUvClA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  e-SIMs for Gaza
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  Activist guide on how to donate a Nomad e-SIM and keep
+                  Palestinians in Gaza connected.
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://www.bonfire.com/arkansas-fundraiser-for-palestine/"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Local Mutual Aid
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  Example of community-level organizing (Arkansas) directly
+                  supporting relief efforts.
+                </p>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
+              {t("common:modals.donate.institutional")}
+            </h4>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="https://www.pcrf.net/"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  PCRF
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  Palestine Children's Relief Fund. Provides critical medical
+                  care to sick and injured children.
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://www.map.org.uk/"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  MAP
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  Medical Aid for Palestinians. Delivers health and dignity to
+                  Palestinians under occupation and as refugees.
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://www.doctorswithoutborders.org/"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Doctors Without Borders
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  Global medical teams providing emergency care in Gaza and the
+                  West Bank.
+                </p>
+              </li>
+              <li>
+                <a
+                  href="https://donate.unrwa.org/-landing-page/en_EN"
+                  className="resource-link text-lg"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  UNRWA
+                </a>
+                <p className="text-sm text-muted mt-1">
+                  The UN agency for Palestine refugees, providing food, shelter,
+                  and essential services.
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+
   if (isPrototypeMode) {
     return <PrototypeGallery />;
+  }
+
+  if (isAtlasRoute) {
+    return (
+      <TooltipProvider>
+        <Meta pageId="home" />
+        <a href="#main-content" className="skip-link">
+          {t("common:skipLink")}
+        </a>
+        <main id="main-content" className="min-h-screen">
+          <Suspense fallback={null}>
+            <AtlasReact />
+          </Suspense>
+        </main>
+        {renderModals()}
+      </TooltipProvider>
+    );
   }
 
   return (
@@ -1180,192 +1512,7 @@ const App: React.FC = () => {
           </p>
         </footer>
 
-        <Suspense fallback={null}>
-          {isArchiveExplorerOpen ? (
-            <ArchiveExplorerModal
-              villages={villages}
-              isOpen={isArchiveExplorerOpen}
-              onClose={() => setArchiveExplorerOpen(false)}
-              onSelectVillage={handleVillageOpen}
-            />
-          ) : null}
-        </Suspense>
-
-        <Suspense fallback={null}>
-          {selectedVillage ? (
-            <CodexModal village={selectedVillage} onClose={closeCodex} />
-          ) : null}
-        </Suspense>
-
-        <Modal
-          isOpen={isToolkitOpen}
-          onClose={() => setToolkitOpen(false)}
-          title={t("common:modals.toolkit.title")}
-        >
-          <p className="text-text-secondary mb-6">
-            {t("common:modals.toolkit.description")}
-          </p>
-          <ul className="space-y-4">
-            <li>
-              <a
-                href="https://palianswers.com/"
-                className="resource-link text-lg"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                PaliAnswers: Indexed Responses
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://decolonizepalestine.com/myths/"
-                className="resource-link text-lg"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Decolonize Palestine: Debunking Myths
-              </a>
-            </li>
-          </ul>
-        </Modal>
-
-        <Modal
-          isOpen={isDonateOpen}
-          onClose={() => setDonateOpen(false)}
-          title={t("common:modals.donate.title")}
-        >
-          <p className="text-text-secondary mb-8">
-            {t("common:modals.donate.description")}
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-            <div>
-              <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                {t("common:modals.donate.direct")}
-              </h4>
-              <ul className="space-y-4">
-                <li>
-                  <a
-                    href="https://docs.google.com/spreadsheets/d/1vtMLLOzuc6GpkFySyVtKQOY2j-Vvg0UsChMCFst_WLA/htmlview"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Operation Olive Branch
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Volunteer-powered grassroots effort helping Palestinian
-                    families. Prioritizes transparency.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://linktr.ee/fundsforgaza"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Funds For Gaza
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    List of targeted fundraisers for Gaza, curated by the
-                    @letstalkpalestine activist collective.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.instagram.com/p/C03zzwUvClA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    e-SIMs for Gaza
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Activist guide on how to donate a Nomad e-SIM and keep
-                    Palestinians in Gaza connected.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.bonfire.com/arkansas-fundraiser-for-palestine/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Local Mutual Aid
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Example of community-level organizing (Arkansas) directly
-                    supporting relief efforts.
-                  </p>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-serif text-xl text-white mb-3 border-b border-border pb-2">
-                {t("common:modals.donate.institutional")}
-              </h4>
-              <ul className="space-y-4">
-                <li>
-                  <a
-                    href="https://www.pcrf.net/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    PCRF
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Palestine Children's Relief Fund. Provides critical medical
-                    care to sick and injured children.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.map.org.uk/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    MAP
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Medical Aid for Palestinians. Delivers health and dignity to
-                    Palestinians under occupation and as refugees.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://www.doctorswithoutborders.org/"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Doctors Without Borders
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    Global medical teams providing emergency care in Gaza and
-                    the West Bank.
-                  </p>
-                </li>
-                <li>
-                  <a
-                    href="https://donate.unrwa.org/-landing-page/en_EN"
-                    className="resource-link text-lg"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    UNRWA
-                  </a>
-                  <p className="text-sm text-muted mt-1">
-                    The UN agency for Palestine refugees, providing food,
-                    shelter, and essential services.
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Modal>
+        {renderModals()}
       </div>
     </TooltipProvider>
   );

@@ -19,4 +19,18 @@ test.describe('Atlas markers', () => {
       contentType: 'image/png',
     });
   });
+
+  test('opens Codex modal when clicking a village marker', async ({ page }) => {
+    await page.goto('/atlas');
+    await page.waitForLoadState('networkidle');
+
+    const marker = page.locator('.leaflet-marker-pane .village-dot').first();
+    await marker.waitFor({ state: 'visible' });
+    await marker.click();
+
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('h3')).toHaveText(/.+/);
+    expect(page.url()).toContain('/atlas');
+  });
 });
