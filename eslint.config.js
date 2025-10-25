@@ -11,7 +11,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   {
-    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', 'content/**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}', 'content/**/*.{ts,tsx}', 'cypress/**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
         project: ['./tsconfig.json'],
@@ -43,6 +43,18 @@ export default [
     languageOptions: {
       globals: {
         ...globals.jest,
+      },
+    },
+  },
+  {
+    files: ['*.ts', '*.tsx', '*.mts', '*.cts'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      globals: {
+        ...globals.node,
       },
     },
   },

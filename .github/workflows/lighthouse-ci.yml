@@ -15,7 +15,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          check-latest: true   # no cache; repo has no lockfile
+          cache: npm
+          cache-dependency-path: package-lock.json
+          check-latest: true
 
       - name: Install dependencies
         shell: bash
