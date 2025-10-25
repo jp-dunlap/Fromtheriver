@@ -17,9 +17,19 @@ const ARCHIVE_PAGE_LIMIT = Number.isNaN(limit)
   ? DEFAULT_ARCHIVE_PAGE_LIMIT
   : limit;
 
-function buildDocument({ slug, encodedSlug, title, excerpt, canonicalUrl }) {
+function buildDocument({
+  slug,
+  encodedSlug,
+  title,
+  excerpt,
+  canonicalUrl,
+  imageUrl,
+  date,
+}) {
   const safeTitle = escapeHtml(title);
   const safeExcerpt = escapeHtml(excerpt);
+  const safeImageUrl = escapeHtml(imageUrl);
+  const publishedTime = typeof date === 'string' ? date : null;
 
   return `<!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -32,11 +42,18 @@ function buildDocument({ slug, encodedSlug, title, excerpt, canonicalUrl }) {
     <meta property="og:title" content="${safeTitle}" />
     <meta property="og:description" content="${safeExcerpt}" />
     <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:image" content="${safeImageUrl}" />
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="From The River" />
+    ${
+      publishedTime
+        ? `<meta property="article:published_time" content="${publishedTime}" />`
+        : ''
+    }
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${safeTitle}" />
     <meta name="twitter:description" content="${safeExcerpt}" />
+    <meta name="twitter:image" content="${safeImageUrl}" />
     <style>
       *,*::before,*::after{box-sizing:border-box;}
       body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#050a12;color:#e8edf7;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}

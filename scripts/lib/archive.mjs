@@ -18,17 +18,31 @@ export function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-export function normalizeExcerpt(value) {
+export function normalizeExcerpt(value, maxLength = 280) {
   if (typeof value !== 'string' || value.trim() === '') {
     return FALLBACK_EXCERPT;
   }
 
   const condensed = value.replace(/\s+/g, ' ').trim();
-  if (condensed.length <= 280) {
+  if (condensed.length <= maxLength) {
     return condensed;
   }
 
-  return `${condensed.slice(0, 277)}…`;
+  const limit = Math.max(0, maxLength - 1);
+  return `${condensed.slice(0, limit)}…`;
+}
+
+export function coerceIsoDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toISOString();
 }
 
 export function normalizeTitle(value) {
@@ -110,6 +124,19 @@ export async function getArchiveEntries({
     const title = normalizeTitle(item?.title);
     const excerpt = normalizeExcerpt(item?.summary ?? item?.content_text);
     const encodedSlug = encodeURIComponent(slug);
+    const isoDate =
+      coerceIsoDate(
+        item?.date ??
+          item?.date_published ??
+          item?.datePublished ??
+          item?.published ??
+          item?.published_at ??
+          item?.publishedAt,
+      ) ?? null;
+    const imageUrl =
+      typeof item?.image === 'string' && item.image.trim() !== ''
+        ? item.image.trim()
+        : `${SITE_URL}/og/${encodedSlug}.svg`;
 
     entries.push({
       slug,
@@ -117,6 +144,8 @@ export async function getArchiveEntries({
       title,
       excerpt,
       canonicalUrl: `${SITE_URL}/archive/${encodedSlug}`,
+      imageUrl,
+      date: isoDate,
     });
   }
 

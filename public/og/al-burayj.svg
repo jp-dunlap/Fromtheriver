@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="og-card-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1120" />
+      <stop offset="100%" stop-color="#112240" />
+    </linearGradient>
+    <style><![CDATA[
+      :root {
+        color-scheme: dark;
+      }
+      .og-body {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #e2e8f0;
+      }
+      .og-mark {
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        font-size: 28px;
+        font-weight: 600;
+        color: #94a3b8;
+        margin: 0 0 32px;
+      }
+      .og-title {
+        font-size: 72px;
+        line-height: 1.05;
+        font-weight: 700;
+        color: #f8fafc;
+        margin: 0 0 24px;
+      }
+      .og-excerpt {
+        font-size: 34px;
+        line-height: 1.35;
+        margin: 0 0 32px;
+        color: #cbd5f5;
+      }
+      .og-date {
+        font-size: 28px;
+        font-weight: 500;
+        margin: 0;
+        color: #94a3b8;
+      }
+      .og-card {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 80px 120px;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.76));
+      }
+    ]]></style>
+  </defs>
+  <rect width="1200" height="630" fill="url(#og-card-bg)" rx="48" />
+  <foreignObject x="0" y="0" width="1200" height="630">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="og-body">
+      <div class="og-card">
+        <p class="og-mark">From The River</p>
+        <h1 class="og-title">al-Burayj</h1>
+        <p class="og-excerpt">A small village named after a Crusader tower (&#39;al-Burj&#39;), al-Burayj was located in the foothills of the Jerusalem mountains. The village was depopulated on October 1, 1948, during the fighting that f…</p>
+        <p class="og-date">Oct 23, 2025</p>
+      </div>
+    </div>
+  </foreignObject>
+</svg>
