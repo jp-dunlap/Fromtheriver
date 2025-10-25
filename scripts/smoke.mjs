@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { escapeHtml, extractSlugFromUrl } from "./lib/archive.mjs";
+
 const ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 
 const requiredFiles = [
@@ -37,20 +39,14 @@ async function main() {
     throw new Error("feed.json must contain an items array");
   }
 
-  const firstArchiveUrl =
-    typeof feedJson.items[0]?.url === "string" ? feedJson.items[0].url : null;
-  let archivePath = "/archive/al-birwa";
-  if (firstArchiveUrl) {
-    try {
-      const parsed = new URL(firstArchiveUrl);
-      archivePath = parsed.pathname || archivePath;
-    } catch (error) {
-      const fallbackMatch = firstArchiveUrl.match(/\/archive\/[^/?#]+/);
-      if (fallbackMatch) {
-        archivePath = fallbackMatch[0];
-      }
-    }
-  }
+  const firstItem = feedJson.items[0] ?? null;
+  const firstSlug = extractSlugFromUrl(firstItem?.url);
+  const encodedSlug = firstSlug ? encodeURIComponent(firstSlug) : null;
+  const archivePath = encodedSlug ? `/archive/${encodedSlug}` : "/archive/al-birwa";
+  const firstTitle =
+    typeof firstItem?.title === "string" && firstItem.title.trim() !== ""
+      ? firstItem.title.trim()
+      : null;
 
   const feedXml = await readFile(path.resolve(ROOT, "public/feed.xml"), "utf8");
   if (!feedXml.includes("<rss")) {
@@ -65,7 +61,12 @@ async function main() {
     throw new Error("sitemap.xml must contain a urlset");
   }
 
-  if (!sitemapXml.includes("/archive/")) {
+  if (encodedSlug) {
+    assert(
+      sitemapXml.includes(`/archive/${encodedSlug}`),
+      "sitemap.xml must include the first archive slug",
+    );
+  } else if (!sitemapXml.includes("/archive/")) {
     throw new Error("sitemap.xml must include archive entries");
   }
 
@@ -99,6 +100,27 @@ async function main() {
 
   const archiveHead = await head(archivePath);
   assert(archiveHead.ok, `${archivePath} should be present`);
+
+  const archiveResponse = await fetchImpl(`${origin}${archivePath}`);
+  assert(archiveResponse.ok, `${archivePath} should return HTML`);
+  const archiveHtml = await archiveResponse.text();
+  if (firstTitle) {
+    const escapedTitle = escapeHtml(firstTitle);
+    assert(
+      archiveHtml.includes(
+        `<meta property="og:title" content="${escapedTitle}"`,
+      ),
+      "archive HTML should include og:title meta tag",
+    );
+  }
+  if (encodedSlug) {
+    assert(
+      archiveHtml.includes(
+        `<link rel="canonical" href="https://fromtheriver.org/archive/${encodedSlug}`,
+      ),
+      "archive HTML should include canonical link",
+    );
+  }
 
   const sitemapHead = await head("/sitemap.xml");
   assert(sitemapHead.ok, "/sitemap.xml should be present");

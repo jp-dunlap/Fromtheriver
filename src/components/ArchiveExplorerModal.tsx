@@ -137,7 +137,7 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
           <div className="flex-1">
             <label
               htmlFor="archive-search"
-              className="text-xs uppercase tracking-wider text-muted block mb-1"
+              className="text-xs uppercase tracking-wider text-text-secondary block mb-1"
             >
               Search the archive
             </label>
@@ -152,7 +152,7 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
             />
           </div>
           <label className="w-full md:w-48">
-            <span className="text-xs uppercase tracking-wider text-muted block mb-1">
+            <span className="text-xs uppercase tracking-wider text-text-secondary block mb-1">
               District
             </span>
             <select
@@ -170,7 +170,7 @@ const ArchiveExplorerModal: React.FC<ArchiveExplorerModalProps> = ({
           </label>
         </div>
 
-        <label className="inline-flex items-center gap-2 text-sm text-muted">
+        <label className="inline-flex items-center gap-2 text-sm text-text-secondary">
           <input
             type="checkbox"
             checked={hasTestimonyOnly}

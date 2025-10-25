@@ -2,12 +2,12 @@
   --color-background: 210 33% 6%;
   --color-surface: 217 36% 16%;
   --color-overlay: 220 33% 6%;
-  --color-border: 215 32% 52%;
-  --color-muted: 210 18% 80%;
+  --color-border: 215 34% 56%;
+  --color-muted: 210 24% 82%;
   --color-accent: 199 96% 62%;
   --color-accent-strong: 199 100% 48%;
-  --color-text-primary: 210 40% 96%;
-  --color-text-secondary: 210 28% 90%;
+  --color-text-primary: 210 44% 97%;
+  --color-text-secondary: 210 32% 92%;
   --font-serif: 'Lora', serif;
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-arabic-sans: 'DejaVu Sans Arabic', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
