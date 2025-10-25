@@ -247,3 +247,41 @@ body {
 .filter-accordion-trigger[aria-expanded='true'] .accordion-icon {
   transform: rotate(180deg);
 }
+
+/* Popup CTA styling */
+.popup-card {
+  min-width: 220px;
+}
+
+.popup-title {
+  font-size: 1rem;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.popup-sub {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.popup-actions {
+  margin-top: 0.5rem;
+}
+
+.popup-cta {
+  display: inline-block;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-primary);
+  background-image: linear-gradient(var(--accent-color), var(--accent-color));
+  background-size: 0% 2px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.popup-cta:hover {
+  color: #fff;
+  background-size: 100% 2px;
+  transform: translateY(-1px);
+}
