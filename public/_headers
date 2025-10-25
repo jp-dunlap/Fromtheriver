@@ -21,14 +21,9 @@
 
 /atlas.html
   Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy: \
-    default-src 'self'; \
-    script-src 'self' https://cdn.tailwindcss.com; \
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
-    img-src 'self' data: https://tile.openstreetmap.org https://*.basemaps.cartocdn.com; \
-    font-src 'self' data: https://fonts.gstatic.com; \
-    connect-src 'self' https://tile.openstreetmap.org https://*.basemaps.cartocdn.com; \
-    frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://tile.openstreetmap.org https://*.basemaps.cartocdn.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://tile.openstreetmap.org https://*.basemaps.cartocdn.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  Cross-Origin-Embedder-Policy: unsafe-none
+  Cross-Origin-Opener-Policy: same-origin
 
 /atlas*
   Cross-Origin-Embedder-Policy: unsafe-none
