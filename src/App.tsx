@@ -56,6 +56,11 @@ const App: React.FC = () => {
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("prototype") === "gallery";
 
+  const allowOverlay = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).has("overlay");
+  }, []);
+
   const [villages, setVillages] = useState<Village[]>(() =>
     isPrototypeMode ? [] : villagesData,
   );
@@ -583,7 +588,9 @@ const App: React.FC = () => {
           description={activeScene?.description ?? ""}
           villages={activeSceneVillages}
           onSelectVillage={handleVillageOpen}
-          isVisible={Boolean(activeScene && activeSceneVillages.length > 0)}
+          isVisible={
+            allowOverlay && Boolean(activeScene && activeSceneVillages.length > 0)
+          }
         />
 
         <SceneAudioControls
