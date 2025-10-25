@@ -147,6 +147,15 @@ body::after {
   color: hsl(var(--color-text-primary));
 }
 
+.village-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e11d48;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
 #svg-path-container {
   position: absolute;
   inset: 0;
