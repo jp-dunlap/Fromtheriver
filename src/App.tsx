@@ -58,7 +58,9 @@ const App: React.FC = () => {
 
   const allowOverlay = useMemo(() => {
     if (typeof window === "undefined") return false;
-    return new URLSearchParams(window.location.search).has("overlay");
+    const q = new URLSearchParams(window.location.search);
+    const val = q.get("overlay");
+    return val === "1" || val === "true";
   }, []);
 
   const [villages, setVillages] = useState<Village[]>(() =>
