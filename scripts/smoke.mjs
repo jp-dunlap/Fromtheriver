@@ -43,6 +43,7 @@ async function main() {
   const firstSlug = extractSlugFromUrl(firstItem?.url);
   const encodedSlug = firstSlug ? encodeURIComponent(firstSlug) : null;
   const archivePath = encodedSlug ? `/archive/${encodedSlug}` : "/archive/al-birwa";
+  const ogPath = encodedSlug ? `/og/${encodedSlug}.svg` : "/og/al-birwa.svg";
   const firstTitle =
     typeof firstItem?.title === "string" && firstItem.title.trim() !== ""
       ? firstItem.title.trim()
@@ -98,6 +99,14 @@ async function main() {
   const rssHead = await head("/feed.xml");
   assert(rssHead.ok, "/feed.xml should be present");
 
+  const ogHead = await head(ogPath);
+  assert(ogHead.ok, `${ogPath} should be present`);
+  const ogContentType = ogHead.headers.get("content-type") || "";
+  assert(
+    /image\/svg\+xml/i.test(ogContentType),
+    "OG image should be served as image/svg+xml",
+  );
+
   const archiveHead = await head(archivePath);
   assert(archiveHead.ok, `${archivePath} should be present`);
 
@@ -122,12 +131,32 @@ async function main() {
     );
   }
 
+  const expectedOgImage = `https://fromtheriver.org${ogPath}`;
+  assert(
+    archiveHtml.includes(
+      `<meta property="og:image" content="${escapeHtml(expectedOgImage)}`,
+    ),
+    "archive HTML should include og:image meta tag",
+  );
+  assert(
+    archiveHtml.includes(
+      `<meta name="twitter:image" content="${escapeHtml(expectedOgImage)}`,
+    ),
+    "archive HTML should include twitter:image meta tag",
+  );
+
   const sitemapHead = await head("/sitemap.xml");
   assert(sitemapHead.ok, "/sitemap.xml should be present");
 
   const rootHead = await head("/");
   const hstsHeader = rootHead.headers.get("strict-transport-security") || "";
   assert(/strict-transport/i.test(hstsHeader), "HSTS header should be set");
+
+  const cspHeader = rootHead.headers.get("content-security-policy") || "";
+  assert(
+    cspHeader.includes("default-src 'self'"),
+    "CSP header should restrict default-src to 'self'",
+  );
 
   const referrerPolicy = rootHead.headers.get("referrer-policy") || "";
   assert(
@@ -170,6 +199,17 @@ async function main() {
   assert(
     /max-age=300/.test(externalCacheControl),
     "external archive cache should be 5 minutes",
+  );
+
+  const healthResponse = await fetchImpl(`${origin}/health.json`);
+  assert(healthResponse.ok, "/health.json should be present");
+  const healthBody = await healthResponse.json();
+  assert.equal(healthBody.ok, true, "healthcheck ok flag should be true");
+  const healthCacheControl =
+    healthResponse.headers.get("cache-control") || "";
+  assert(
+    /no-store/i.test(healthCacheControl),
+    "health.json should be marked as no-store",
   );
 
   console.log("[smoke] All checks passed");

@@ -25,6 +25,12 @@ test.describe("Archive deep links", () => {
       '<meta name="twitter:card" content="summary_large_image" />',
     );
     expect(html).toContain(
+      '<meta property="og:image" content="https://fromtheriver.org/og/al-birwa.svg" />',
+    );
+    expect(html).toContain(
+      '<meta name="twitter:image" content="https://fromtheriver.org/og/al-birwa.svg" />',
+    );
+    expect(html).toContain(
       '<link rel="canonical" href="https://fromtheriver.org/archive/al-birwa"',
     );
   });
@@ -103,5 +109,21 @@ test.describe("Archive deep links", () => {
   test("archive slug responds to HEAD requests", async ({ request }) => {
     const response = await request.head("/archive/al-birwa");
     expect(response.status()).toBe(200);
+  });
+
+  test("archive page loads without CSP console violations", async ({ page }) => {
+    const consoleMessages: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleMessages.push(message.text());
+      }
+    });
+
+    await page.goto("/archive/al-birwa");
+
+    const cspErrors = consoleMessages.filter((text) =>
+      /content security policy/i.test(text),
+    );
+    expect(cspErrors).toHaveLength(0);
   });
 });
