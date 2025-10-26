@@ -87,6 +87,10 @@ const App: React.FC = () => {
   const [isExternalUpdatesLoading, setExternalUpdatesLoading] = useState(false);
   const { t, i18n } = useTranslation(["common", "app"]);
   const deepLinkOriginRef = useRef(false);
+  // holds the latest open-by-slug callback to avoid TDZ and stale closures
+  const openBySlugRef = useRef<
+    (slug: string, options?: OpenVillageOptions) => Village | null
+  >(() => null);
   const activeLocale = i18n.resolvedLanguage ?? i18n.language;
   const generatedDate = useMemo(
     () =>
@@ -490,7 +494,7 @@ const App: React.FC = () => {
         return;
       }
 
-      const result = handleVillageOpenBySlug(slug, {
+      const result = openBySlugRef.current(slug, {
         replace: true,
         fromDeepLink: true,
         preserveLocation: false,
@@ -508,7 +512,8 @@ const App: React.FC = () => {
     return () => {
       stop();
     };
-  }, [handleVillageOpenBySlug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -522,14 +527,17 @@ const App: React.FC = () => {
         return;
       }
 
-      handleVillageOpenBySlug(slug);
+      // call the latest function without reading a TDZ variable during render
+      openBySlugRef.current(slug);
     };
 
     window.addEventListener("codex:open", onOpen as EventListener);
     return () => {
       window.removeEventListener("codex:open", onOpen as EventListener);
     };
-  }, [handleVillageOpenBySlug]);
+    // no deps: we use the ref on runtime
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleVillageOpenBySlug = useCallback(
     (slug: string, options: OpenVillageOptions = {}) => {
@@ -549,6 +557,10 @@ const App: React.FC = () => {
     },
     [openVillage, villagesBySlug],
   );
+
+  useEffect(() => {
+    openBySlugRef.current = handleVillageOpenBySlug;
+  }, [handleVillageOpenBySlug]);
 
   const handleVillageOpen = useCallback(
     (village: Village) => {
