@@ -25,7 +25,7 @@ import type { ExternalArchivePayload } from "./data/external";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { Trans, useTranslation } from "react-i18next";
 import Meta from "./seo/meta";
-import { initArchiveDeepLink, updateArchiveDeepLink } from "./lib/deeplink";
+import { initArchiveDeepLink } from "./lib/deeplink";
 
 const ArchiveExplorerModal = React.lazy(
   () => import("./components/ArchiveExplorerModal"),
@@ -91,6 +91,10 @@ const App: React.FC = () => {
   const openBySlugRef = useRef<
     (slug: string, options?: OpenVillageOptions) => Village | null
   >(() => null);
+  const villagesRef = useRef<Village[]>(villages);
+  useEffect(() => {
+    villagesRef.current = villages;
+  }, [villages]);
   const activeLocale = i18n.resolvedLanguage ?? i18n.language;
   const generatedDate = useMemo(
     () =>
@@ -494,17 +498,24 @@ const App: React.FC = () => {
         return;
       }
 
-      const result = openBySlugRef.current(slug, {
+      const openOptions: OpenVillageOptions = {
         replace: true,
         fromDeepLink: true,
         preserveLocation: false,
-      });
+      };
+      const result = openBySlugRef.current(slug, openOptions);
 
       if (result) {
         return;
       }
 
-      updateArchiveDeepLink(null, { replace: true });
+      if (villagesRef.current.length === 0) {
+        window.requestAnimationFrame(() => {
+          openBySlugRef.current(slug, openOptions);
+        });
+      }
+
+      console.warn(`Archive entry not found for slug: ${slug}`);
       setSelectedVillage(null);
       deepLinkOriginRef.current = false;
     });
