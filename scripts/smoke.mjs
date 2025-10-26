@@ -101,6 +101,46 @@ async function main() {
   const head = async (pathname) =>
     fetchImpl(`${origin}${pathname}`, { method: "HEAD" });
 
+  const get = async (pathname) => fetchImpl(`${origin}${pathname}`);
+
+  const villagesHead = await head("/villages.json");
+  if (villagesHead.status !== 200) {
+    throw new Error("/villages.json must return 200");
+  }
+
+  const villagesResponse = await get("/villages.json");
+  if (!villagesResponse.ok) {
+    throw new Error("/villages.json must be readable");
+  }
+
+  const villagesJson = await villagesResponse.json();
+  if (!Array.isArray(villagesJson) || villagesJson.length < 50) {
+    throw new Error("villages.json should be an array with many entries");
+  }
+
+  const invalidVillage = villagesJson.find((village) => {
+    const lat = Number(
+      village?.lat ??
+        village?.latitude ??
+        village?.lat_deg ??
+        village?.latDeg ??
+        village?.coordinates?.lat,
+    );
+    const lng = Number(
+      village?.lng ??
+        village?.lon ??
+        village?.longitude ??
+        village?.lng_deg ??
+        village?.lonDeg ??
+        village?.coordinates?.lng ??
+        village?.coordinates?.lon,
+    );
+    return !(Number.isFinite(lat) && Number.isFinite(lng));
+  });
+  if (invalidVillage) {
+    throw new Error("villages.json contains entries without numeric lat/lng");
+  }
+
   const atlasResponse = await fetchImpl(`${origin}/atlas`);
   assert(atlasResponse.ok, "GET /atlas should 200");
 
