@@ -184,6 +184,16 @@ async function main() {
     "Referrer-Policy should be strict-origin-when-cross-origin",
   );
 
+  // 404 page should exist with proper status and CSP
+  const fourOhFourHead = await head("/404");
+  assert.equal(fourOhFourHead.status, 404, "/404 should return 404");
+  const fourOhFourCsp =
+    fourOhFourHead.headers.get("content-security-policy") || "";
+  assert(
+    fourOhFourCsp.includes("default-src 'self'"),
+    "404 should include our CSP header",
+  );
+
   const feedJsonContentType = feedJsonHead.headers.get("content-type") || "";
   assert(
     /application\/json/i.test(feedJsonContentType),
