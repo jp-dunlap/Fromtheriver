@@ -25,7 +25,7 @@ import type { ExternalArchivePayload } from "./data/external";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { Trans, useTranslation } from "react-i18next";
 import Meta from "./seo/meta";
-import { initArchiveDeepLink } from "./lib/deeplink";
+import { initArchiveDeepLink, updateArchiveDeepLink } from "./lib/deeplink";
 
 const ArchiveExplorerModal = React.lazy(
   () => import("./components/ArchiveExplorerModal"),
@@ -509,15 +509,15 @@ const App: React.FC = () => {
         return;
       }
 
-      if (villagesRef.current.length === 0) {
-        window.requestAnimationFrame(() => {
-          openBySlugRef.current(slug, openOptions);
-        });
-      }
-
       console.warn(`Archive entry not found for slug: ${slug}`);
       setSelectedVillage(null);
       deepLinkOriginRef.current = false;
+
+      if (villagesRef.current.length === 0) {
+        setTimeout(() => {
+          openBySlugRef.current(slug, openOptions);
+        }, 0);
+      }
     });
 
     return () => {
