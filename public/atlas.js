@@ -423,7 +423,10 @@ export async function initializeAtlas(L) {
 
     if (!codexRoot && !hasReactApp) {
       const encoded = encodeURIComponent(slug);
-      window.location.href = `/archive/${encoded}`;
+      const targetPath = `/archive/${encoded}`;
+      if (window.location.pathname !== targetPath) {
+        window.location.href = targetPath;
+      }
     }
   }
 
