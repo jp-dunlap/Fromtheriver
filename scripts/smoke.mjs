@@ -62,6 +62,26 @@ async function main() {
     throw new Error("sitemap.xml must contain a urlset");
   }
 
+  if (/https?:\/\/.+--fromtheriver\.netlify\.app\//i.test(sitemapXml)) {
+    throw new Error("sitemap.xml must not contain Netlify preview URLs");
+  }
+
+  if (!/https:\/\/fromtheriver\.org\//i.test(sitemapXml)) {
+    throw new Error(
+      "sitemap.xml must contain production URLs (fromtheriver.org)",
+    );
+  }
+
+  const robotsTxt = await readFile(
+    path.resolve(ROOT, "public/robots.txt"),
+    "utf8",
+  );
+  if (!/Sitemap:\s*https:\/\/fromtheriver\.org\/sitemap\.xml/i.test(robotsTxt)) {
+    throw new Error(
+      "robots.txt must point to https://fromtheriver.org/sitemap.xml",
+    );
+  }
+
   if (encodedSlug) {
     assert(
       sitemapXml.includes(`/archive/${encodedSlug}`),
