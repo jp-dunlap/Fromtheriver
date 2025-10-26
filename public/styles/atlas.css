@@ -24,6 +24,15 @@
   border: none;
 }
 
+.leaflet-interactive.village-pin {
+  transition: transform 0.05s ease-in-out, opacity 0.15s;
+}
+
+.leaflet-interactive.village-pin:focus {
+  outline: 2px solid #8bd5ff;
+  outline-offset: 2px;
+}
+
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {

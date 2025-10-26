@@ -127,6 +127,104 @@ const getVillagesArray = (payload) => {
   return [];
 };
 
+async function loadVillages() {
+  const candidates = [
+    '/villages.json',
+    '/data/villages.json',
+    'villages.json',
+    'data/villages.json',
+  ];
+  let lastErr = null;
+
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const payload = await response.json();
+      const rawVillages = getVillagesArray(payload);
+      if (!Array.isArray(rawVillages)) {
+        throw new Error('Villages payload not an array');
+      }
+
+      const normalized = rawVillages
+        .map((village, index) => {
+          const lat = Number(
+            village.lat ??
+              village.latitude ??
+              village.lat_deg ??
+              village.latDeg ??
+              village?.coordinates?.lat,
+          );
+          const lng = Number(
+            village.lng ??
+              village.lon ??
+              village.longitude ??
+              village.lng_deg ??
+              village.lonDeg ??
+              village?.coordinates?.lng ??
+              village?.coordinates?.lon,
+          );
+
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return null;
+          }
+
+          const slugSource =
+            village.slug ??
+            village.id ??
+            village.names?.slug ??
+            village.name ??
+            village.names?.en ??
+            village.title ??
+            `village-${index}`;
+          const fallbackSlug = slugifyFallback(slugSource) || `village-${index}`;
+          const slug = normalizeSlug(slugSource) || fallbackSlug;
+          const nameSource =
+            village.name ??
+            village.title ??
+            village.names?.en ??
+            village.names?.primary ??
+            slugSource ??
+            fallbackSlug;
+          const name = typeof nameSource === 'string' && nameSource.trim() !== ''
+            ? nameSource
+            : fallbackSlug;
+          const districtSource = village.district ?? village.region ?? village.governorate ?? '';
+          const district = typeof districtSource === 'string' ? districtSource : '';
+
+          return {
+            ...village,
+            slug,
+            name,
+            lat,
+            lon: lng,
+            lng,
+            latitude: lat,
+            longitude: lng,
+            district,
+            __normalized: { slug, name, lat, lng, district },
+          };
+        })
+        .filter(Boolean);
+
+      if (normalized.length > 0) {
+        return normalized;
+      }
+
+      lastErr = new Error('Normalized list empty');
+    } catch (error) {
+      lastErr = error;
+    }
+  }
+
+  throw lastErr ?? new Error('No villages dataset found');
+}
+
 export async function initializeAtlas(L) {
   const mapContainer = document.getElementById('map-atlas');
   if (!mapContainer) {
@@ -183,7 +281,7 @@ export async function initializeAtlas(L) {
   const districtLayer = L.layerGroup();
 
   const villageIcon = L.divIcon({
-    className: 'village-dot',
+    className: 'village-dot village-pin',
     html: '',
     iconSize: [14, 14],
     iconAnchor: [7, 7]
@@ -198,30 +296,23 @@ export async function initializeAtlas(L) {
 
   const pendingSlug = normalizeSlug(new URLSearchParams(window.location.search).get('slug') ?? '');
 
-  const fetchVillages = async () => {
-    const response = await fetch('villages.json', { credentials: 'same-origin' });
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
-    const payload = await response.json();
-    return getVillagesArray(payload);
-  };
-
   try {
-    allVillages = await fetchVillages();
+    allVillages = await loadVillages();
   } catch (error) {
     console.error('Atlas initialization failed to load villages.', error);
     if (statusRegion) {
-      statusRegion.textContent = 'Error loading atlas data.';
+      statusRegion.textContent = 'Unable to load village data.';
     }
     mapContainer.innerHTML = '<div class="atlas-error"><p>Error: Could not load the Atlas data. Please check your connection and try again.</p></div>';
     mapContainer.setAttribute('aria-busy', 'false');
     throw error;
   }
 
+  console.info('atlas: villages loaded =', allVillages.length);
+
   if (!allVillages.length) {
     if (statusRegion) {
-      statusRegion.textContent = 'No villages available for display.';
+      statusRegion.textContent = 'No villages found.';
     }
     mapContainer.setAttribute('aria-busy', 'false');
     return;
@@ -903,3 +994,34 @@ export async function initializeAtlas(L) {
     });
   }
 }
+
+(function debugCounter() {
+  try {
+    const params = new URL(window.location.href).searchParams;
+    if (params.get('debug') !== '1') {
+      return;
+    }
+  } catch (error) {
+    console.warn('atlas debug overlay unavailable', error);
+    return;
+  }
+
+  const box = document.createElement('div');
+  box.style.cssText =
+    'position:fixed;right:10px;bottom:10px;background:#0b1321;color:#bfe3ff;border:1px solid #16305a;padding:6px 10px;border-radius:8px;font:12px/1.4 system-ui;z-index:9999';
+  box.id = 'atlas-debug';
+  box.textContent = 'atlas: loading…';
+  document.body.appendChild(box);
+
+  const originalInfo = console.info;
+  console.info = function patchedConsoleInfo(...args) {
+    try {
+      if (args[0] === 'atlas: villages loaded =') {
+        box.textContent = `atlas: pins=${args[1]}`;
+      }
+    } catch (error) {
+      console.warn('atlas debug overlay update failed', error);
+    }
+    return originalInfo.apply(this, args);
+  };
+})();
