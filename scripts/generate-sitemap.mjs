@@ -17,9 +17,13 @@ const requestedLimit = Number.parseInt(
 const SITEMAP_ARCHIVE_LIMIT = Number.isNaN(requestedLimit)
   ? DEFAULT_ARCHIVE_PAGE_LIMIT
   : requestedLimit;
-const BASE_URL = (process.env.DEPLOY_PRIME_URL || process.env.URL || SITE_URL)
-  .toString()
-  .replace(/\/+$/, "");
+const requestedBaseUrl =
+  process.env.DEPLOY_PRIME_URL || process.env.URL || SITE_URL;
+const normalizedBaseUrl = `${requestedBaseUrl}`.trim();
+const effectiveBaseUrl = /--fromtheriver\.netlify\.app/i.test(normalizedBaseUrl)
+  ? SITE_URL
+  : normalizedBaseUrl;
+const BASE_URL = effectiveBaseUrl.replace(/\/+$/, "");
 
 function escapeXml(value) {
   return value

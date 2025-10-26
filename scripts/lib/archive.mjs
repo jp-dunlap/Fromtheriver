@@ -3,7 +3,7 @@ import path from 'node:path';
 
 export const ROOT = path.resolve(new URL('../..', import.meta.url).pathname);
 export const FEED_PATH = path.resolve(ROOT, 'public/feed.json');
-export const SITE_URL = 'https://fromtheriver.org';
+export const SITE_URL = process.env.SITE_URL || 'https://fromtheriver.org';
 export const DEFAULT_ARCHIVE_PAGE_LIMIT = 100;
 
 const ARCHIVE_PATH_PATTERN = /^\/archive\/([^/?#]+)/i;
