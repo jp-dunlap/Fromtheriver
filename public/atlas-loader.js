@@ -1,3 +1,14 @@
+function waitForLeaflet(maxMs = 5000) {
+  const start = Date.now();
+  return new Promise((resolve, reject) => {
+    (function tick() {
+      if (window.L) return resolve(window.L);
+      if (Date.now() - start > maxMs) return reject(new Error('Leaflet not loaded'));
+      setTimeout(tick, 25);
+    })();
+  });
+}
+
 const mapContainer = document.getElementById('map-atlas');
 const statusRegion = document.getElementById('map-loading-status');
 
@@ -84,20 +95,13 @@ const loadAtlas = async () => {
     return;
   }
 
-  const L = window.L;
-  if (!L) {
-    console.error('Leaflet library did not initialize.');
-    if (statusRegion) {
-      statusRegion.textContent = 'Atlas unavailable. Map library failed to initialize.';
-    }
-    if (mapContainer) {
-      mapContainer.innerHTML = '<div class="atlas-error"><p>Atlas unavailable. Map library failed to initialize.</p></div>';
-      mapContainer.setAttribute('aria-busy', 'false');
-    }
-    return;
-  }
-
   try {
+    await waitForLeaflet();
+    const L = window.L;
+    if (!L) {
+      throw new Error('Leaflet library did not initialize.');
+    }
+
     const atlasModule = await import('./atlas.js');
     if (typeof atlasModule.initializeAtlas === 'function') {
       await atlasModule.initializeAtlas(L);
@@ -107,9 +111,9 @@ const loadAtlas = async () => {
       statusRegion.textContent = 'Interactive atlas ready. Focus the map to begin exploring.';
     }
   } catch (error) {
-    console.error('Failed to load atlas resources', error);
+    console.error('Atlas boot failed:', error);
     if (statusRegion) {
-      statusRegion.textContent = 'Unable to load the interactive atlas.';
+      statusRegion.textContent = 'Unable to load the interactive atlas. Please refresh and try again.';
     }
     if (mapContainer) {
       mapContainer.innerHTML = '<div class="atlas-error"><p>Unable to load the interactive atlas. Please refresh and try again.</p></div>';
