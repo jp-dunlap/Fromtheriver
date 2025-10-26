@@ -90,12 +90,6 @@ export function initArchiveDeepLink(listener: ArchiveSlugListener): () => void {
 
     if (slug && canonicalPath && needsCanonical) {
       updateArchiveDeepLink(slug, { replace: true });
-    } else if (
-      !slug &&
-      (window.location.search.includes(`${LEGACY_QUERY_KEY}=`) ||
-        window.location.pathname.startsWith("/archive/"))
-    ) {
-      updateArchiveDeepLink(null, { replace: true });
     }
 
     lastKnownSlug = slug;
