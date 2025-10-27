@@ -173,6 +173,14 @@ async function main() {
   const archiveResponse = await fetchImpl(`${origin}${archivePath}`);
   assert(archiveResponse.ok, `${archivePath} should return HTML`);
   const archiveHtml = await archiveResponse.text();
+  assert(
+    archiveResponse.url.endsWith(archivePath),
+    `${archivePath} should not redirect to another pathname`,
+  );
+  assert(
+    archiveHtml.includes("data-codex-modal-root"),
+    `${archivePath} HTML should include the codex modal root marker`,
+  );
   if (firstTitle) {
     const escapedTitle = escapeHtml(firstTitle);
     assert(

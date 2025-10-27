@@ -79,6 +79,7 @@ function buildDocument({
     </script>
   </head>
   <body>
+    <div data-codex-modal-root hidden></div>
     <noscript>
       <main>
         <h1>${safeTitle}</h1>
