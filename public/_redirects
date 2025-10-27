@@ -1,4 +1,6 @@
 /404          /404.html     404
 /atlas.html   /atlas        301
 /atlas        /atlas.html   200
+/manifest.json /manifest.json 200
+/.vite/manifest.json /.vite/manifest.json 200
 /*            /index.html   200

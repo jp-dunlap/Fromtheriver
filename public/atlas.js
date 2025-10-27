@@ -127,6 +127,27 @@ const getVillagesArray = (payload) => {
   return [];
 };
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function waitForElement(selector, timeoutMs = 4000, pollMs = 50) {
+  const deadline = Date.now() + timeoutMs;
+  let element = document.querySelector(selector);
+  while (!element && Date.now() < deadline) {
+    await sleep(pollMs);
+    element = document.querySelector(selector);
+  }
+  return element ?? null;
+}
+
+const nextFrame = () =>
+  new Promise((resolve) => {
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => resolve());
+    } else {
+      setTimeout(resolve, 16);
+    }
+  });
+
 async function loadVillages() {
   const candidates = [
     '/villages.json',
@@ -294,7 +315,10 @@ export async function initializeAtlas(L) {
   const slugToVillage = new Map();
   let keyboardIndex = -1;
 
-  const pendingSlug = normalizeSlug(new URLSearchParams(window.location.search).get('slug') ?? '');
+  const initialParams = new URLSearchParams(window.location.search);
+  let pendingSlug = normalizeSlug(initialParams.get('slug') ?? '');
+  const pendingVillageRaw = initialParams.get('village') ?? '';
+  const pendingVillageTerm = normalizeText(pendingVillageRaw);
 
   try {
     allVillages = await loadVillages();
@@ -324,6 +348,23 @@ export async function initializeAtlas(L) {
       slugToVillage.set(slug, village);
     }
   });
+
+  if (!pendingSlug && pendingVillageTerm) {
+    const matchByName = allVillages.find((village) => {
+      const names = getSearchableNames(village);
+      return names.includes(pendingVillageTerm);
+    });
+    if (matchByName) {
+      pendingSlug = getVillageSlug(matchByName);
+    }
+  }
+
+  if (!pendingSlug && pendingVillageRaw) {
+    const fallbackSlug = slugifyFallback(pendingVillageRaw);
+    if (fallbackSlug && slugToVillage.has(fallbackSlug)) {
+      pendingSlug = fallbackSlug;
+    }
+  }
 
   setupDistrictAnchors(allVillages);
   setupFilterControls(allVillages);
@@ -402,31 +443,45 @@ export async function initializeAtlas(L) {
     }
   }
 
-  function openCodexModal(slug) {
+  async function openCodexModal(slug) {
     if (!slug) {
       return;
     }
 
-    try {
-      window.dispatchEvent(
-        new CustomEvent('codex:open', {
-          detail: { slug }
-        }),
-      );
-    } catch (error) {
-      // Silently ignore environments that restrict CustomEvent constructors.
-    }
-
-    const codexRoot = document.querySelector('[data-codex-modal-root]');
+    let codexRoot = document.querySelector('[data-codex-modal-root]');
     const reactRoot = document.getElementById('root');
     const hasReactApp = Boolean(reactRoot && reactRoot.childElementCount > 0);
 
-    if (!codexRoot && !hasReactApp) {
-      const encoded = encodeURIComponent(slug);
-      const targetPath = `/archive/${encoded}`;
-      if (window.location.pathname !== targetPath) {
-        window.location.href = targetPath;
+    if (!codexRoot && !hasReactApp && window.appLoader?.boot) {
+      try {
+        await window.appLoader.boot();
+      } catch (error) {
+        console.warn('atlas: React app boot failed via appLoader', error);
       }
+      codexRoot = await waitForElement('[data-codex-modal-root]', 5000);
+    } else if (!codexRoot) {
+      codexRoot = await waitForElement('[data-codex-modal-root]', 5000);
+    }
+
+    if (codexRoot) {
+      await nextFrame();
+      try {
+        window.dispatchEvent(
+          new CustomEvent('codex:open', {
+            detail: { slug }
+          }),
+        );
+      } catch (error) {
+        // Silently ignore environments that restrict CustomEvent constructors.
+      }
+      return;
+    }
+
+    const encoded = encodeURIComponent(slug);
+    const targetPath = `/archive/${encoded}`;
+    if (window.location.pathname !== targetPath) {
+      const origin = window.location.origin ?? '';
+      window.location.href = `${origin}${targetPath}`;
     }
   }
 
@@ -462,7 +517,7 @@ export async function initializeAtlas(L) {
       if (slug) {
         updateHistorySlug(slug);
         if (openModal) {
-          openCodexModal(slug);
+          void openCodexModal(slug);
         }
       }
     };
@@ -510,6 +565,7 @@ export async function initializeAtlas(L) {
     } else {
       url.searchParams.delete('slug');
     }
+    url.searchParams.delete('village');
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
   }
 
