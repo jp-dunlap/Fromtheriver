@@ -10,7 +10,8 @@ export default defineConfig({
     // "Cannot access 'jt' before initialization" regressions.
     minify: false,
     sourcemap: true,
-    target: 'es2019'
+    target: 'es2019',
+    manifest: true
   },
   esbuild: {
     // Preserve function/class names to keep stacks readable
