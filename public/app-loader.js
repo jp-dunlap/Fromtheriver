@@ -39,7 +39,8 @@
     const node = manifest[key];
     if (!node) return out;
     if (Array.isArray(node.css)) out.push(...node.css);
-    if (Array.isArray(node.assets)) out.push(...node.assets.filter((asset) => /\.css($|\?)/.test(asset)));
+    if (Array.isArray(node.assets))
+      out.push(...node.assets.filter((asset) => /\.css($|\?)/i.test(asset)));
     if (Array.isArray(node.imports)) {
       for (const dep of node.imports) collectCssFromManifest(manifest, dep, seen, out);
     }
@@ -108,7 +109,7 @@
     const probes = ['/assets/index.js', '/assets/main.js'];
     for (const probe of probes) {
       try {
-        const guessCss = probe.replace(/\.js(\?.*)?$/, '.css');
+        const guessCss = probe.replace(/\.js(\?.*)?$/i, '.css');
         try {
           const cssHead = await fetch(guessCss, { method: 'HEAD', credentials: 'same-origin' });
           if (cssHead.ok) ensureStylesheet(guessCss);
