@@ -139,15 +139,6 @@ async function waitForElement(selector, timeoutMs = 4000, pollMs = 50) {
   return element ?? null;
 }
 
-const nextFrame = () =>
-  new Promise((resolve) => {
-    if (typeof requestAnimationFrame === 'function') {
-      requestAnimationFrame(() => resolve());
-    } else {
-      setTimeout(resolve, 16);
-    }
-  });
-
 async function loadVillages() {
   const candidates = [
     '/villages.json',
@@ -460,17 +451,12 @@ export async function initializeAtlas(L) {
 
     const codexRoot = document.querySelector('[data-codex-modal-root]');
     if (codexRoot) {
-      await nextFrame();
-      try {
-        window.dispatchEvent(
-          new CustomEvent('codex:open', {
-            detail: { slug: normalized }
-          }),
-        );
-        return;
-      } catch (error) {
-        console.warn('atlas: unable to dispatch codex:open event', error);
-      }
+      window.dispatchEvent(
+        new CustomEvent('codex:open', {
+          detail: { slug: normalized }
+        }),
+      );
+      return;
     }
 
     const encoded = encodeURIComponent(normalized);

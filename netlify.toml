@@ -7,3 +7,20 @@
 
 [functions."refresh-external-archive"]
   schedule = "0 */6 * * *"
+
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/.vite/manifest.json"
+  to = "/.vite/manifest.json"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
