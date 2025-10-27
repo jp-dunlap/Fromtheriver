@@ -16,6 +16,30 @@ test.describe("Atlas Codex modal", () => {
     });
   });
 
+  test("openCodexModal boots Codex inline without redirect and injects CSS", async ({
+    page,
+  }) => {
+    await page.goto("/atlas");
+
+    await page.evaluate(() => {
+      (window as typeof window & {
+        openCodexModal?: (slug: string) => void;
+      }).openCodexModal?.("bayt-mahsir");
+    });
+
+    await page.waitForSelector("[data-codex-modal-root]", { state: "attached" });
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    const url = new URL(page.url());
+    expect(url.pathname).toBe("/atlas");
+
+    const stylesheetCount = await page
+      .locator('link[rel="stylesheet"][data-codex-css]')
+      .count();
+    expect(stylesheetCount).toBeGreaterThan(0);
+  });
+
   test("deep-link slug opens the Codex modal on /atlas", async ({ page }) => {
     await page.goto("/atlas?slug=al-birwa");
     await page.waitForSelector("[data-codex-modal-root]", { state: "attached" });
@@ -97,13 +121,4 @@ test.describe("Atlas Codex modal", () => {
     expect(url.searchParams.get("slug")).toBe("al-birwa");
   });
 
-  test("injects Codex stylesheets when booting", async ({ page }) => {
-    await page.goto("/atlas?slug=al-birwa");
-    await page.waitForSelector("[data-codex-modal-root]", { state: "attached" });
-
-    const stylesheetCount = await page
-      .locator('link[rel="stylesheet"][data-codex-css]')
-      .count();
-    expect(stylesheetCount).toBeGreaterThan(0);
-  });
 });
