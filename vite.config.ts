@@ -11,7 +11,9 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
     target: 'es2019',
-    manifest: true
+    outDir: 'dist',
+    assetsDir: 'assets',
+    manifest: true,
   },
   esbuild: {
     // Preserve function/class names to keep stacks readable
