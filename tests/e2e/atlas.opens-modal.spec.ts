@@ -96,4 +96,14 @@ test.describe("Atlas Codex modal", () => {
     expect(url.pathname).toBe("/atlas");
     expect(url.searchParams.get("slug")).toBe("al-birwa");
   });
+
+  test("injects Codex stylesheets when booting", async ({ page }) => {
+    await page.goto("/atlas?slug=al-birwa");
+    await page.waitForSelector("[data-codex-modal-root]", { state: "attached" });
+
+    const stylesheetCount = await page
+      .locator('link[rel="stylesheet"][data-codex-css]')
+      .count();
+    expect(stylesheetCount).toBeGreaterThan(0);
+  });
 });

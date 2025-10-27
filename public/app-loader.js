@@ -6,6 +6,61 @@
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  function norm(path) {
+    if (!path) return null;
+    return path.startsWith('/') ? path : `/${path}`;
+  }
+
+  function resolvedHref(href) {
+    try {
+      return new URL(href, window.location.origin).href;
+    } catch (error) {
+      return href;
+    }
+  }
+
+  // --- stylesheet helpers -------------------------------------------------
+  function hasStylesheet(href) {
+    const full = resolvedHref(href);
+    return Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(
+      (link) => link.href === full,
+    );
+  }
+
+  function ensureStylesheet(href) {
+    const src = norm(href);
+    if (!src || hasStylesheet(src)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = src;
+    link.setAttribute('data-codex-css', '1');
+    document.head.appendChild(link);
+  }
+
+  function collectCssFromManifest(manifest, key, seen = new Set(), out = []) {
+    if (!key || seen.has(key)) return out;
+    seen.add(key);
+    const node = manifest[key];
+    if (!node) return out;
+
+    if (Array.isArray(node.css)) {
+      out.push(...node.css);
+    }
+
+    if (Array.isArray(node.assets)) {
+      out.push(...node.assets.filter((asset) => /\.css($|\?)/.test(asset)));
+    }
+
+    if (Array.isArray(node.imports)) {
+      for (const dep of node.imports) {
+        collectCssFromManifest(manifest, dep, seen, out);
+      }
+    }
+
+    return out;
+  }
+  // ------------------------------------------------------------------------
+
   async function importViaScript(src) {
     await new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -22,19 +77,10 @@
       headers: { accept: 'application/json' },
       credentials: 'same-origin',
     });
-    if (!response.ok) {
-      return null;
-    }
+    if (!response.ok) return null;
     const contentType = (response.headers.get('content-type') || '').toLowerCase();
-    if (!contentType.includes('application/json')) {
-      return null;
-    }
+    if (!contentType.includes('application/json')) return null;
     return response.json();
-  }
-
-  function normalizePath(path) {
-    if (!path) return null;
-    return path.startsWith('/') ? path : `/${path}`;
   }
 
   async function loadFromManifest() {
@@ -42,22 +88,32 @@
     for (const candidate of candidates) {
       try {
         const manifest = await tryManifest(candidate);
-        if (!manifest) {
-          continue;
+        if (!manifest) continue;
+
+        const entryKey = manifest['src/main.tsx']
+          ? 'src/main.tsx'
+          : manifest['src/main.ts']
+          ? 'src/main.ts'
+          : manifest['index.html']
+          ? 'index.html'
+          : null;
+
+        if (!entryKey) continue;
+        const entry = manifest[entryKey];
+        const entryJs = entry?.file && norm(entry.file);
+        if (!entryJs) continue;
+
+        const cssFiles = Array.from(
+          new Set(collectCssFromManifest(manifest, entryKey)),
+        ).filter(Boolean);
+        for (const css of cssFiles) {
+          ensureStylesheet(css);
         }
 
-        const entryFile = manifest['src/main.tsx']?.file
-          || manifest['src/main.ts']?.file
-          || manifest['index.html']?.file
-          || Object.values(manifest).find((value) => value && typeof value === 'object' && value.isEntry)?.file;
-
-        if (entryFile) {
-          const src = normalizePath(entryFile);
-          await importViaScript(src);
-          return true;
-        }
+        await importViaScript(entryJs);
+        return true;
       } catch (error) {
-        console.warn('[app-loader] manifest load failed', error);
+        // try next candidate
       }
     }
     return false;
@@ -67,74 +123,54 @@
     const probes = ['/assets/index.js', '/assets/main.js'];
     for (const probe of probes) {
       try {
-        const response = await fetch(probe, {
+        const guessCss = probe.replace(/\.js(\?.*)?$/, '.css');
+        try {
+          const cssHead = await fetch(guessCss, {
+            method: 'HEAD',
+            credentials: 'same-origin',
+          });
+          if (cssHead.ok) {
+            ensureStylesheet(guessCss);
+          }
+        } catch (error) {
+          // ignore css fetch errors
+        }
+
+        const headResponse = await fetch(probe, {
           method: 'HEAD',
           credentials: 'same-origin',
         });
-        if (!response.ok) {
+        if (!headResponse.ok) {
           continue;
         }
         await importViaScript(probe);
         return true;
       } catch (error) {
-        console.warn('[app-loader] fallback probe failed', error);
+        // try next fallback
       }
-    }
-    return false;
-  }
-
-  function shouldTryDevEntry() {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-    const host = window.location.hostname;
-    return host === 'localhost' || host === '127.0.0.1' || host === '::1';
-  }
-
-  async function tryDevEntry() {
-    if (!shouldTryDevEntry()) {
-      return false;
-    }
-    try {
-      await importViaScript('/src/main.tsx');
-      return true;
-    } catch (error) {
-      console.warn('[app-loader] dev import failed', error);
-      return false;
-    }
-  }
-
-  async function waitForCodexRoot() {
-    for (let i = 0; i < 40; i += 1) {
-      if (document.querySelector('[data-codex-modal-root]')) {
-        return true;
-      }
-      await sleep(50);
     }
     return false;
   }
 
   async function boot() {
-    if (bootPromise) {
-      return bootPromise;
-    }
+    if (bootPromise) return bootPromise;
 
     bootPromise = (async () => {
       if (document.querySelector('[data-codex-modal-root]')) {
-        return true;
+        return;
       }
 
-      const loaded = (await tryDevEntry()) || (await loadFromManifest()) || (await probeFallbacks());
-      if (!loaded) {
+      const ok = (await loadFromManifest()) || (await probeFallbacks());
+      if (!ok) {
         throw new Error('Codex boot failed: no manifest or entry script');
       }
 
-      const mounted = await waitForCodexRoot();
-      if (!mounted) {
-        throw new Error('Codex boot failed: modal root missing after load');
+      for (let i = 0; i < 40; i += 1) {
+        if (document.querySelector('[data-codex-modal-root]')) {
+          return;
+        }
+        await sleep(50);
       }
-
-      return true;
     })();
 
     return bootPromise;
