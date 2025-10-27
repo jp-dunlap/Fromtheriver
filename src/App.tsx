@@ -512,12 +512,9 @@ const App: React.FC = () => {
       console.warn(`Archive entry not found for slug: ${slug}`);
       setSelectedVillage(null);
       deepLinkOriginRef.current = false;
-
-      if (villagesRef.current.length === 0) {
-        setTimeout(() => {
-          openBySlugRef.current(slug, openOptions);
-        }, 0);
-      }
+      setTimeout(() => {
+        openBySlugRef.current(slug, openOptions);
+      }, 0);
     });
 
     return () => {
@@ -629,7 +626,7 @@ const App: React.FC = () => {
   );
 
   const renderModals = () => (
-    <>
+    <div data-codex-modal-root style={{ display: "contents" }}>
       <Suspense fallback={null}>
         {isArchiveExplorerOpen ? (
           <ArchiveExplorerModal
@@ -816,7 +813,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 
   if (isPrototypeMode) {
