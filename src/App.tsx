@@ -27,6 +27,12 @@ import { Trans, useTranslation } from "react-i18next";
 import Meta from "./seo/meta";
 import { initArchiveDeepLink, updateArchiveDeepLink } from "./lib/deeplink";
 
+// Helper: detect atlas page (local preview may serve /atlas.html)
+const isAtlasPage = () => {
+  if (typeof window === "undefined") return false;
+  const p = window.location.pathname || "";
+  return p.startsWith("/atlas") || p.endsWith("/atlas.html");
+};
 const ArchiveExplorerModal = React.lazy(
   () => import("./components/ArchiveExplorerModal"),
 );
@@ -535,12 +541,8 @@ const App: React.FC = () => {
         return;
       }
 
-      // On /atlas keep the user on the same page and write ?slug=...
-      // (Preview may serve /atlas.html; handle both.)
-      const pathname = window.location.pathname || "";
-      const onAtlas =
-        pathname.startsWith("/atlas") || pathname.endsWith("/atlas.html");
-      openBySlugRef.current(slug, { preserveLocation: onAtlas });
+      // Keep users on the atlas when opening from /atlas by preserving location
+      openBySlugRef.current(slug, { preserveLocation: isAtlasPage() });
     };
 
     window.addEventListener("codex:open", onOpen as EventListener);
@@ -600,6 +602,8 @@ const App: React.FC = () => {
     setSelectedVillage(null);
     syncDeepLink(null, {
       replace: deepLinkOriginRef.current,
+      // When closing from /atlas, clear ?slug without changing pathname
+      preserveLocation: isAtlasPage(),
     });
     deepLinkOriginRef.current = false;
   }, [syncDeepLink]);
@@ -885,7 +889,8 @@ const App: React.FC = () => {
           villages={activeSceneVillages}
           onSelectVillage={handleVillageOpen}
           isVisible={
-            allowOverlay && Boolean(activeScene && activeSceneVillages.length > 0)
+            allowOverlay &&
+            Boolean(activeScene && activeSceneVillages.length > 0)
           }
         />
 
@@ -1358,9 +1363,7 @@ const App: React.FC = () => {
               <h2 className="font-serif text-4xl text-white mb-4">
                 {t("common:nav.sections.action")}
               </h2>
-              <p className="text-text-secondary mb-8">
-                {t("app:action.p1")}
-              </p>
+              <p className="text-text-secondary mb-8">{t("app:action.p1")}</p>
 
               <div className="space-y-4 border-t border-border pt-6">
                 <AccordionItem title="Donate: Vetted Aid & Solidarity Funds">
