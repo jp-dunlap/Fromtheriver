@@ -93,7 +93,7 @@
 
         // NEW: inject CSS for entry + imported chunks BEFORE JS import
         const cssFiles = Array.from(new Set(collectCssFromManifest(manifest, entryKey)));
-        for (const css of cssFiles) ensureStylesheet(norm(css));
+        for (const css of cssFiles) ensureStylesheet(css);
 
         await importViaScript(entryJs);
         return true;
