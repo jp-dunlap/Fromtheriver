@@ -129,7 +129,7 @@ const getVillagesArray = (payload) => {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function waitForElement(selector, timeoutMs = 4000, pollMs = 50) {
+async function waitForElement(selector, timeoutMs = 10000, pollMs = 50) {
   const deadline = Date.now() + timeoutMs;
   let element = document.querySelector(selector);
   while (!element && Date.now() < deadline) {
@@ -138,6 +138,39 @@ async function waitForElement(selector, timeoutMs = 4000, pollMs = 50) {
   }
   return element ?? null;
 }
+
+function showInlineNotice(slug) {
+  if (document.getElementById('codex-inline-notice')) {
+    return;
+  }
+
+  const div = document.createElement('div');
+  div.id = 'codex-inline-notice';
+  div.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99999;background:#111;color:#fff;padding:10px 14px;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px/1.2 system-ui';
+  const encodedSlug = encodeURIComponent(slug);
+  div.innerHTML = `Loading took too long. You can retry or <a href="/archive/${encodedSlug}" style="color:#7fdfff;text-decoration:underline">open in Archive</a>.`;
+  document.body.appendChild(div);
+  setTimeout(() => {
+    if (div.parentNode) {
+      div.remove();
+    }
+  }, 8000);
+}
+
+let pendingSlug = null;
+let mountedOnce = !!document.querySelector('[data-codex-modal-root]');
+
+window.addEventListener('codex:mounted', () => {
+  mountedOnce = true;
+  if (pendingSlug) {
+    window.dispatchEvent(
+      new CustomEvent('codex:open', {
+        detail: { slug: pendingSlug },
+      }),
+    );
+    pendingSlug = null;
+  }
+});
 
 async function loadVillages() {
   const candidates = [
@@ -440,31 +473,47 @@ export async function initializeAtlas(L) {
       return;
     }
 
-    try {
-      if (!document.querySelector('[data-codex-modal-root]') && window.appLoader?.boot) {
-        await window.appLoader.boot();
-        await waitForElement('[data-codex-modal-root]', 4000);
-      }
-    } catch (error) {
-      console.warn('atlas: React app boot failed via appLoader', error);
-    }
-
-    const codexRoot = document.querySelector('[data-codex-modal-root]');
-    if (codexRoot) {
+    const existingRoot = document.querySelector('[data-codex-modal-root]');
+    if (existingRoot) {
       window.dispatchEvent(
         new CustomEvent('codex:open', {
-          detail: { slug: normalized }
+          detail: { slug: normalized },
         }),
       );
       return;
     }
 
-    const encoded = encodeURIComponent(normalized);
-    const targetPath = `/archive/${encoded}`;
-    if (window.location.pathname !== targetPath) {
-      const origin = window.location.origin ?? '';
-      window.location.href = `${origin}${targetPath}`;
+    pendingSlug = normalized;
+
+    if (!mountedOnce) {
+      try {
+        if (window.appLoader?.boot) {
+          void window.appLoader.boot();
+        }
+      } catch (_) {
+        // ignore boot errors here; we'll fall back to inline notice if needed
+      }
     }
+
+    const root = await waitForElement('[data-codex-modal-root]', 10000);
+    if (root) {
+      mountedOnce = true;
+      if (pendingSlug) {
+        window.dispatchEvent(
+          new CustomEvent('codex:open', {
+            detail: { slug: pendingSlug },
+          }),
+        );
+        pendingSlug = null;
+      }
+      return;
+    }
+
+    if (pendingSlug === normalized) {
+      pendingSlug = null;
+    }
+
+    showInlineNotice(normalized);
   }
 
   if (typeof window !== 'undefined') {

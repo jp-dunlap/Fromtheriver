@@ -120,7 +120,7 @@
     return false;
   }
 
-  async function waitFor(selector, timeoutMs = 4000, pollMs = 50) {
+  async function waitFor(selector, timeoutMs = 10000, pollMs = 50) {
     const t0 = Date.now();
     while (Date.now() - t0 < timeoutMs) {
       const el = document.querySelector(selector);
@@ -134,13 +134,23 @@
     if (bootPromise) return bootPromise;
     bootPromise = (async () => {
       // If already mounted, bail
-      if (document.querySelector('[data-codex-modal-root]')) return;
+      const existingRoot = document.querySelector('[data-codex-modal-root]');
+      if (existingRoot) {
+        window.dispatchEvent(new Event('codex:mounted'));
+        return;
+      }
 
       const ok = (await loadFromManifest()) || (await probeFallbacks());
       if (!ok) throw new Error('Codex boot failed: no manifest or entry script');
 
-      // allow time for React to mount modal root
-      await waitFor('[data-codex-modal-root]', 4000);
+      // wait for React to mount modal root (longer patience)
+      const root = await waitFor('[data-codex-modal-root]', 10000);
+      if (root) {
+        // Signal to the page that Codex is mounted and can accept codex:open
+        window.dispatchEvent(new Event('codex:mounted'));
+      } else {
+        throw new Error('Codex booted but modal root did not appear in time');
+      }
     })();
     return bootPromise;
   }
