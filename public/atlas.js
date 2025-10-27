@@ -444,45 +444,45 @@ export async function initializeAtlas(L) {
   }
 
   async function openCodexModal(slug) {
-    if (!slug) {
+    const normalized = normalizeSlug(slug);
+    if (!normalized) {
       return;
     }
 
-    let codexRoot = document.querySelector('[data-codex-modal-root]');
-    const reactRoot = document.getElementById('root');
-    const hasReactApp = Boolean(reactRoot && reactRoot.childElementCount > 0);
-
-    if (!codexRoot && !hasReactApp && window.appLoader?.boot) {
-      try {
+    try {
+      if (!document.querySelector('[data-codex-modal-root]') && window.appLoader?.boot) {
         await window.appLoader.boot();
-      } catch (error) {
-        console.warn('atlas: React app boot failed via appLoader', error);
+        await waitForElement('[data-codex-modal-root]', 4000);
       }
-      codexRoot = await waitForElement('[data-codex-modal-root]', 5000);
-    } else if (!codexRoot) {
-      codexRoot = await waitForElement('[data-codex-modal-root]', 5000);
+    } catch (error) {
+      console.warn('atlas: React app boot failed via appLoader', error);
     }
 
+    const codexRoot = document.querySelector('[data-codex-modal-root]');
     if (codexRoot) {
       await nextFrame();
       try {
         window.dispatchEvent(
           new CustomEvent('codex:open', {
-            detail: { slug }
+            detail: { slug: normalized }
           }),
         );
+        return;
       } catch (error) {
-        // Silently ignore environments that restrict CustomEvent constructors.
+        console.warn('atlas: unable to dispatch codex:open event', error);
       }
-      return;
     }
 
-    const encoded = encodeURIComponent(slug);
+    const encoded = encodeURIComponent(normalized);
     const targetPath = `/archive/${encoded}`;
     if (window.location.pathname !== targetPath) {
       const origin = window.location.origin ?? '';
       window.location.href = `${origin}${targetPath}`;
     }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.openCodexModal = openCodexModal;
   }
 
   function ensureMarkerVisible(marker, callback) {
