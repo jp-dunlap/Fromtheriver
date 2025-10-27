@@ -27,5 +27,10 @@ test.describe('Atlas Codex modal', () => {
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
     await expect(dialog.locator('h3')).toHaveText(/.+/);
+
+    // New: ensure we did NOT navigate to /archive/:slug
+    const url = new URL(page.url());
+    expect(url.pathname).toBe('/atlas');
+    expect(url.search).toMatch(/(^$|^\?(.+&)?slug=al-birwa(&.+)?$)/);
   });
 });

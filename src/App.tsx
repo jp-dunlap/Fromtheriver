@@ -535,8 +535,12 @@ const App: React.FC = () => {
         return;
       }
 
-      // call the latest function without reading a TDZ variable during render
-      openBySlugRef.current(slug);
+      // On /atlas keep the user on the same page and write ?slug=...
+      // (Preview may serve /atlas.html; handle both.)
+      const pathname = window.location.pathname || "";
+      const onAtlas =
+        pathname.startsWith("/atlas") || pathname.endsWith("/atlas.html");
+      openBySlugRef.current(slug, { preserveLocation: onAtlas });
     };
 
     window.addEventListener("codex:open", onOpen as EventListener);
