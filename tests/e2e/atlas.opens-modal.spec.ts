@@ -16,7 +16,7 @@ test.describe("Atlas Codex modal", () => {
 
     await page.goto("/atlas");
     await page.waitForLoadState("networkidle");
-    await page.waitForSelector("[data-codex-modal-root]");
+    await page.waitForSelector("[data-codex-modal-root]", { state: "attached" });
 
     await page.evaluate(() => {
       window.dispatchEvent(
@@ -50,7 +50,7 @@ test.describe("Atlas Codex modal", () => {
 
     await page.goto("/atlas");
     await page.waitForLoadState("networkidle");
-    await page.waitForSelector("[data-codex-modal-root]");
+    await page.waitForSelector("[data-codex-modal-root]", { state: "attached" });
 
     // Open modal
     await page.evaluate(() => {
@@ -61,8 +61,8 @@ test.describe("Atlas Codex modal", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
 
-    // Close via overlay (Modal wires overlay click to onClose)
-    await page.locator(".fixed.inset-0 .absolute.inset-0").click();
+    // Close via close button
+    await page.getByRole("button", { name: /close modal/i }).click();
 
     await expect(dialog).toBeHidden();
     const url = new URL(page.url());

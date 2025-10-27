@@ -6,9 +6,9 @@
   "scripts": {
     "prebuild": "node scripts/build-villages.mjs && node scripts/generate-feeds.mjs && node scripts/generate-archive-pages.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-robots.mjs && node scripts/generate-og-svg.mjs || true",
     "build": "vite build",
-    "dev": "netlify dev -p 8888",
+    "dev": "vite",
     "preview": "vite preview",
-    "preview:ci": "vite preview --host 127.0.0.1 --port 4173",
+    "preview:ci": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
     "generate:feeds": "node scripts/generate-feeds.mjs",
     "generate:og-svg": "node scripts/generate-og-svg.mjs",
     "lint": "eslint .",
@@ -16,10 +16,12 @@
     "smoke": "node scripts/smoke.mjs",
     "test:unit": "jest --passWithNoTests=false",
     "test:visual": "playwright test",
+    "test:e2e": "playwright test",
     "test:a11y": "cypress run",
     "test": "npm run test:visual && npm run test:a11y",
     "ci:test": "start-server-and-test preview:ci http://127.0.0.1:4173 \"npm run test:visual && npm run test:a11y\"",
-    "test:lighthouse": "npx @lhci/cli@0.13.0 autorun"
+    "test:lighthouse": "npx @lhci/cli@0.13.0 autorun",
+    "postinstall": "playwright install --with-deps chromium || true"
   },
   "dependencies": {
     "i18next": "^23.11.5",

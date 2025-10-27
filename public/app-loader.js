@@ -1,26 +1,37 @@
-// public/app-loader.js
 let __APP_BOOTED__ = false;
 
 async function boot() {
   if (__APP_BOOTED__) return;
+  // Dev: Vite serves /src/* directly
   try {
-    // Dev: Vite serves /src/* as modules
     await import('/src/main.tsx');
     __APP_BOOTED__ = true;
     return;
-  } catch {
-    // Prod: no /src — fall through to manifest lookup
+  } catch { /* fallthrough to prod */ }
+
+  // Prod: import from manifest
+  const manifestCandidates = ['/manifest.json', '/.vite/manifest.json'];
+  let manifest = null;
+
+  for (const href of manifestCandidates) {
+    try {
+      const res = await fetch(href, { credentials: 'same-origin' });
+      if (!res.ok) continue;
+      manifest = await res.json();
+      break;
+    } catch {
+      // try next candidate
+    }
   }
 
-  const res = await fetch('/manifest.json', { credentials: 'same-origin' });
-  if (!res.ok) throw new Error(`Failed to fetch manifest.json: ${res.status}`);
-  const manifest = await res.json();
+  if (!manifest) {
+    throw new Error('Failed to fetch manifest.json from known locations');
+  }
 
-  // Prefer explicit key; otherwise pick the first isEntry
   const entry = manifest['src/main.tsx'] || Object.values(manifest).find(v => v && v.isEntry);
   if (!entry || !entry.file) throw new Error('No entry for src/main.tsx in manifest');
 
-  // Preload CSS (if present)
+  // Preload CSS
   (entry.css || []).forEach(href => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -28,10 +39,10 @@ async function boot() {
     document.head.appendChild(link);
   });
 
-  // Optionally preload dependent chunks
+  // Preload dependent chunks
   (entry.imports || []).forEach(key => {
     const dep = manifest[key];
-    if (dep && dep.file) {
+    if (dep?.file) {
       const link = document.createElement('link');
       link.rel = 'modulepreload';
       link.href = `/${dep.file}`;
@@ -39,11 +50,8 @@ async function boot() {
     }
   });
 
-  // Import the built entry (executes side effects in main.tsx)
   await import(`/${entry.file}`);
   __APP_BOOTED__ = true;
 }
 
-boot().catch(err => {
-  console.error('[app-loader] failed to bootstrap React app on /atlas', err);
-});
+boot().catch(err => console.error('[app-loader] failed to bootstrap React app on /atlas', err));
