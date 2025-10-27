@@ -24,6 +24,12 @@
 
     <div id="map-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
+    <!-- Hidden React root so the Codex modal and event listeners are available on /atlas -->
+    <div id="root" hidden></div>
+
+    <!-- Mount the main app so it can listen for `codex:open` and render modals -->
+    <script type="module" src="/src/main.tsx"></script>
+
     <!-- Main Information & Filter Panel -->
     <div class="absolute top-0 left-0 p-4 md:p-6 max-w-sm w-full z-[1000] pointer-events-none">
 
@@ -104,7 +110,7 @@
             </div>
         </div>
     </div>
-    
+
     <script type="module" src="./atlas-loader.js"></script>
 
 </body>
