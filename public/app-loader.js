@@ -76,7 +76,13 @@
         if (!entryJs) continue;
 
         // Inject CSS for entry + all recursive imports BEFORE JS import
-        const cssFiles = Array.from(new Set(collectCssFromManifest(manifest, entryKey)));
+        const cssFiles = Array.from(
+          new Set(
+            collectCssFromManifest(manifest, entryKey)
+              .map(norm)
+              .filter(Boolean)
+          )
+        );
         for (const css of cssFiles) ensureStylesheet(css);
 
         await importViaScript(entryJs);
@@ -91,7 +97,7 @@
     for (const p of probes) {
       try {
         // Best-effort: inject sibling CSS if present (index.css/main.css)
-        const guessCss = p.replace(/\.js(\?.*)?$/i, '.css');
+        const guessCss = norm(p.replace(/\.js(\?.*)?$/i, '.css'));
         try {
           const head = await fetch(guessCss, { method: 'HEAD', credentials: 'same-origin' });
           if (head.ok) ensureStylesheet(guessCss);
