@@ -2,10 +2,7 @@
 (function () {
   let bootPromise = null;
 
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
+  // --- CSS helpers ---------------------------------------------------------
   function norm(path) {
     if (!path) return null;
     return path.startsWith('/') ? path : `/${path}`;
@@ -14,12 +11,11 @@
   function resolvedHref(href) {
     try {
       return new URL(href, window.location.origin).href;
-    } catch (error) {
+    } catch {
       return href;
     }
   }
 
-  // --- stylesheet helpers -------------------------------------------------
   function hasStylesheet(href) {
     const full = resolvedHref(href);
     return Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(
@@ -42,24 +38,18 @@
     seen.add(key);
     const node = manifest[key];
     if (!node) return out;
-
-    if (Array.isArray(node.css)) {
-      out.push(...node.css);
-    }
-
-    if (Array.isArray(node.assets)) {
-      out.push(...node.assets.filter((asset) => /\.css($|\?)/.test(asset)));
-    }
-
+    if (Array.isArray(node.css)) out.push(...node.css);
+    if (Array.isArray(node.assets)) out.push(...node.assets.filter((asset) => /\.css($|\?)/.test(asset)));
     if (Array.isArray(node.imports)) {
-      for (const dep of node.imports) {
-        collectCssFromManifest(manifest, dep, seen, out);
-      }
+      for (const dep of node.imports) collectCssFromManifest(manifest, dep, seen, out);
     }
-
     return out;
   }
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   async function importViaScript(src) {
     await new Promise((resolve, reject) => {
@@ -89,7 +79,6 @@
       try {
         const manifest = await tryManifest(candidate);
         if (!manifest) continue;
-
         const entryKey = manifest['src/main.tsx']
           ? 'src/main.tsx'
           : manifest['src/main.ts']
@@ -97,23 +86,19 @@
           : manifest['index.html']
           ? 'index.html'
           : null;
-
         if (!entryKey) continue;
-        const entry = manifest[entryKey];
-        const entryJs = entry?.file && norm(entry.file);
+        const entryNode = manifest[entryKey];
+        const entryJs = entryNode?.file && norm(entryNode.file);
         if (!entryJs) continue;
 
-        const cssFiles = Array.from(
-          new Set(collectCssFromManifest(manifest, entryKey)),
-        ).filter(Boolean);
-        for (const css of cssFiles) {
-          ensureStylesheet(css);
-        }
+        // NEW: inject CSS for entry + imported chunks BEFORE JS import
+        const cssFiles = Array.from(new Set(collectCssFromManifest(manifest, entryKey)));
+        for (const css of cssFiles) ensureStylesheet(norm(css));
 
         await importViaScript(entryJs);
         return true;
-      } catch (error) {
-        // try next candidate
+      } catch (_) {
+        /* try next candidate */
       }
     }
     return false;
@@ -125,28 +110,18 @@
       try {
         const guessCss = probe.replace(/\.js(\?.*)?$/, '.css');
         try {
-          const cssHead = await fetch(guessCss, {
-            method: 'HEAD',
-            credentials: 'same-origin',
-          });
-          if (cssHead.ok) {
-            ensureStylesheet(guessCss);
-          }
-        } catch (error) {
-          // ignore css fetch errors
+          const cssHead = await fetch(guessCss, { method: 'HEAD', credentials: 'same-origin' });
+          if (cssHead.ok) ensureStylesheet(guessCss);
+        } catch (_) {
+          /* ignore css fetch errors */
         }
 
-        const headResponse = await fetch(probe, {
-          method: 'HEAD',
-          credentials: 'same-origin',
-        });
-        if (!headResponse.ok) {
-          continue;
-        }
+        const headResponse = await fetch(probe, { method: 'HEAD', credentials: 'same-origin' });
+        if (!headResponse.ok) continue;
         await importViaScript(probe);
         return true;
-      } catch (error) {
-        // try next fallback
+      } catch (_) {
+        /* try next fallback */
       }
     }
     return false;
