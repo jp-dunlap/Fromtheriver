@@ -165,12 +165,26 @@ async function main() {
     200,
     "/codex-modal-host.iife.js should return 200",
   );
+  {
+    const ct = (modalJsHead.headers.get("content-type") || "").toLowerCase();
+    assert(
+      /javascript|ecmascript/.test(ct) && !/text\/html/.test(ct),
+      "codex-modal-host.iife.js must be served as JavaScript (not HTML)",
+    );
+  }
   const modalCssHead = await head("/codex-modal-host.css");
   assert.equal(
     modalCssHead.status,
     200,
     "/codex-modal-host.css should return 200",
   );
+  {
+    const ct = (modalCssHead.headers.get("content-type") || "").toLowerCase();
+    assert(
+      /text\/css/.test(ct) && !/text\/html/.test(ct),
+      "codex-modal-host.css must be served as CSS (not HTML)",
+    );
+  }
 
   const ogHead = await head(ogPath);
   assert(ogHead.ok, `${ogPath} should be present`);
