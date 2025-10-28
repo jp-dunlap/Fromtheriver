@@ -64,6 +64,80 @@ const loadScript = (src) => {
   return promise;
 };
 
+let codexHostLoading = null;
+
+const dispatchDebug = (message) => {
+  try {
+    window.dispatchEvent(
+      new CustomEvent('atlas:debug', {
+        detail: { source: 'codex-host', message }
+      })
+    );
+  } catch (error) {
+    console.debug('atlas codex debug dispatch failed', error);
+  }
+};
+
+const ensureCodexHostLoaded = () => {
+  if (window.CodexModal?.open) {
+    dispatchDebug('host: ready');
+    return Promise.resolve();
+  }
+
+  if (codexHostLoading) {
+    return codexHostLoading;
+  }
+
+  dispatchDebug('host: injecting');
+
+  codexHostLoading = new Promise((resolve, reject) => {
+    const cssSelector = 'link[rel="stylesheet"][href="/codex-modal-host.css"]';
+    if (!document.querySelector(cssSelector)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/codex-modal-host.css';
+      link.setAttribute('data-codex-css', '1');
+      document.head.appendChild(link);
+    }
+
+    const jsSelector = 'script[src="/codex-modal-host.iife.js"]';
+    if (!document.querySelector(jsSelector)) {
+      const script = document.createElement('script');
+      script.src = '/codex-modal-host.iife.js';
+      script.defer = true;
+      script.setAttribute('data-codex-host', '1');
+      document.head.appendChild(script);
+    }
+
+    const started = Date.now();
+    const poll = () => {
+      if (window.CodexModal?.open) {
+        dispatchDebug('host: ready');
+        resolve();
+        return;
+      }
+      if (Date.now() - started > 2000) {
+        dispatchDebug('host: timeout');
+        reject(new Error('Codex host not ready after 2s'));
+        return;
+      }
+      setTimeout(poll, 100);
+    };
+
+    setTimeout(poll, 100);
+  });
+
+  codexHostLoading.finally(() => {
+    codexHostLoading = null;
+  });
+
+  return codexHostLoading;
+};
+
+if (typeof window !== 'undefined') {
+  window.ensureCodexHostLoaded = ensureCodexHostLoaded;
+}
+
 let hasLoaded = false;
 
 const loadAtlas = async () => {

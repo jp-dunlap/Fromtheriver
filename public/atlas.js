@@ -450,31 +450,47 @@ export async function initializeAtlas(L) {
     }
   }
 
-  function openCodexModal(slug) {
+  async function openCodexModal(slug) {
     const normalized = normalizeSlug(slug);
     if (!normalized) {
       return;
     }
 
-    const attemptOpen = () => {
-      if (!window.CodexModal?.open) {
-        pendingCodexSlug = normalized;
-        return false;
-      }
-
+    const tryOpen = () => {
       try {
+        if (!window.CodexModal?.open) {
+          return false;
+        }
         window.CodexModal.open(normalized);
         pendingCodexSlug = null;
         return true;
       } catch (error) {
         console.error('Failed to open Codex modal:', error);
-        pendingCodexSlug = normalized;
         return false;
       }
     };
 
-    if (!attemptOpen()) {
-      pendingCodexSlug = normalized;
+    if (tryOpen()) {
+      return;
+    }
+
+    pendingCodexSlug = normalized;
+
+    let loader = null;
+    if (typeof window.ensureCodexHostLoaded === 'function') {
+      loader = window.ensureCodexHostLoaded();
+    } else {
+      console.warn('ensureCodexHostLoaded unavailable; waiting for codex:host:ready.');
+      return;
+    }
+
+    try {
+      await loader;
+      if (!tryOpen()) {
+        console.warn('Codex host loaded but open() still not available yet.');
+      }
+    } catch (error) {
+      console.warn('ensureCodexHostLoaded failed:', error?.message || error);
     }
   }
 
@@ -1072,18 +1088,43 @@ export async function initializeAtlas(L) {
   box.style.cssText =
     'position:fixed;right:10px;bottom:10px;background:#0b1321;color:#bfe3ff;border:1px solid #16305a;padding:6px 10px;border-radius:8px;font:12px/1.4 system-ui;z-index:9999';
   box.id = 'atlas-debug';
-  box.textContent = 'atlas: loading…';
   document.body.appendChild(box);
+
+  const debugState = { pins: null, host: '' };
+  const render = () => {
+    const segments = [];
+    if (debugState.pins !== null) {
+      segments.push(`pins=${debugState.pins}`);
+    }
+    if (debugState.host) {
+      segments.push(debugState.host);
+    }
+    box.textContent = `atlas: ${segments.join(' | ') || 'loading…'}`;
+  };
+
+  render();
 
   const originalInfo = console.info;
   console.info = function patchedConsoleInfo(...args) {
     try {
       if (args[0] === 'atlas: villages loaded =') {
-        box.textContent = `atlas: pins=${args[1]}`;
+        debugState.pins = args[1];
+        render();
       }
     } catch (error) {
       console.warn('atlas debug overlay update failed', error);
     }
     return originalInfo.apply(this, args);
   };
+
+  window.addEventListener('atlas:debug', (event) => {
+    try {
+      if (event.detail?.source === 'codex-host') {
+        debugState.host = event.detail?.message ?? '';
+        render();
+      }
+    } catch (error) {
+      console.warn('atlas debug overlay update failed', error);
+    }
+  });
 })();
