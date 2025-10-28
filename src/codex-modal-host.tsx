@@ -166,10 +166,14 @@ declare global {
   }
 }
 
-(window as Window & typeof globalThis).CodexModal = api;
+try {
+  (window as Window & typeof globalThis).CodexModal = api;
 
-if (typeof window !== 'undefined') {
-  window.dispatchEvent(new Event('codex:host:ready'));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('codex:host:ready'));
+  }
+} catch (err) {
+  console.error('[CodexModalHost] failed to attach', err);
 }
 
 export default api;
