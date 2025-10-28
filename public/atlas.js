@@ -450,48 +450,44 @@ export async function initializeAtlas(L) {
     }
   }
 
-  async function openCodexModal(slug) {
+  function openCodexModal(slug) {
     const normalized = normalizeSlug(slug);
     if (!normalized) {
       return;
     }
 
+    const ensureHost =
+      typeof window.ensureCodexHostLoaded === 'function'
+        ? window.ensureCodexHostLoaded
+        : () => Promise.resolve();
+
     const tryOpen = () => {
+      if (!window.CodexModal?.open) return false;
       try {
-        if (!window.CodexModal?.open) {
-          return false;
-        }
         window.CodexModal.open(normalized);
         pendingCodexSlug = null;
         return true;
       } catch (error) {
         console.error('Failed to open Codex modal:', error);
+        pendingCodexSlug = normalized;
         return false;
       }
     };
 
-    if (tryOpen()) {
-      return;
-    }
+    // Fast path: open immediately if host is ready.
+    if (tryOpen()) return;
 
+    // Otherwise: remember the slug, force-load the host, and try again on readiness.
     pendingCodexSlug = normalized;
-
-    let loader = null;
-    if (typeof window.ensureCodexHostLoaded === 'function') {
-      loader = window.ensureCodexHostLoaded();
-    } else {
-      console.warn('ensureCodexHostLoaded unavailable; waiting for codex:host:ready.');
-      return;
-    }
-
-    try {
-      await loader;
-      if (!tryOpen()) {
-        console.warn('Codex host loaded but open() still not available yet.');
-      }
-    } catch (error) {
-      console.warn('ensureCodexHostLoaded failed:', error?.message || error);
-    }
+    ensureHost()
+      .then(() => {
+        if (!tryOpen()) {
+          // Loader didn’t attach in its window; rely on 'codex:host:ready' listener to flush pending.
+        }
+      })
+      .catch((err) => {
+        console.warn('[atlas] ensureCodexHostLoaded failed:', err?.message || err);
+      });
   }
 
   if (typeof window !== 'undefined') {
