@@ -482,7 +482,10 @@ export async function initializeAtlas(L) {
     ensureHost()
       .then(() => {
         if (!tryOpen()) {
-          // Loader didn’t attach in its window; rely on 'codex:host:ready' listener to flush pending.
+          const once = () => {
+            tryOpen();
+          };
+          window.addEventListener('codex:host:ready', once, { once: true });
         }
       })
       .catch((err) => {
