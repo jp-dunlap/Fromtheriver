@@ -146,6 +146,12 @@ const loadAtlas = async () => {
   }
   hasLoaded = true;
 
+  // Begin loading the Codex modal host in the background so it’s ready by first click.
+  if (typeof ensureCodexHostLoaded === 'function') {
+    // Fire-and-forget; the click path will retry if needed.
+    ensureCodexHostLoaded().catch(() => {});
+  }
+
   if (statusRegion) {
     statusRegion.textContent = 'Loading interactive atlas…';
   }
