@@ -33,3 +33,21 @@ Content
 All original written content, analysis, and the curated structure of resources presented on the website are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 This means you are free to share and adapt the content for non-commercial purposes, as long as you provide appropriate attribution and share your adaptations under the same license. This protects the work from commercial co-optation and ensures it remains a permanent part of the commons.
 From The River To The Sea, Palestine Will Be Free.
+
+## Verifying the Atlas Codex modal locally
+
+```bash
+npm ci
+npm run build
+npm run preview:ci  # serves ./dist on http://127.0.0.1:4173
+```
+
+Now open:
+
+- `http://127.0.0.1:4173/atlas` → click any red pin → the frost Codex modal opens **inline**; URL may add `?slug=…`.
+- `http://127.0.0.1:4173/atlas?slug=lydda` → auto-opens the modal after pins render.
+- Press **Esc** to close; focus returns to the last element and `?slug=` is removed.
+
+If modal does not appear:
+- Check the console for `[atlas]` and `[CodexModalHost]` messages.
+- Verify `/codex-modal-host.iife.js` and `/codex-modal-host.css` return **200** and correct MIME.

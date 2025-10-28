@@ -172,6 +172,14 @@ async function main() {
       "codex-modal-host.iife.js must be served as JavaScript (not HTML)",
     );
   }
+  {
+    const jsRes = await get("/codex-modal-host.iife.js");
+    const text = await jsRes.text();
+    assert(
+      text && text.length > 1024,
+      "codex-modal-host.iife.js appears too small; ensure Netlify did not rewrite it to HTML",
+    );
+  }
   const modalCssHead = await head("/codex-modal-host.css");
   assert.equal(
     modalCssHead.status,
@@ -183,6 +191,14 @@ async function main() {
     assert(
       /text\/css/.test(ct) && !/text\/html/.test(ct),
       "codex-modal-host.css must be served as CSS (not HTML)",
+    );
+  }
+  {
+    const cssRes = await get("/codex-modal-host.css");
+    const text = await cssRes.text();
+    assert(
+      text && text.length > 256,
+      "codex-modal-host.css appears too small; ensure Netlify did not rewrite it to HTML",
     );
   }
 
