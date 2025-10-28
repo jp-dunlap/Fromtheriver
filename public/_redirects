@@ -3,4 +3,6 @@
 /atlas        /atlas.html   200
 /manifest.json /manifest.json 200
 /.vite/manifest.json /.vite/manifest.json 200
+/codex-modal-host.iife.js  /codex-modal-host.iife.js  200
+/codex-modal-host.css      /codex-modal-host.css      200
 /*            /index.html   200
