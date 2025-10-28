@@ -16,8 +16,9 @@
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="/vendor/leaflet/MarkerCluster.css">
     <link rel="stylesheet" href="/vendor/leaflet/MarkerCluster.Default.css">
+    <link rel="preload" href="/codex-modal-host.css" as="style">
     <link rel="stylesheet" href="/codex-modal-host.css">
-    <!-- The host dispatches 'codex:host:ready' from JS after attaching window.CodexModal -->
+    <!-- The host bundle self-dispatches 'codex:host:ready' after attaching window.CodexModal. -->
     <script defer src="/codex-modal-host.iife.js"></script>
 </head>
 <body class="bg-bg-color text-text-primary overflow-hidden">

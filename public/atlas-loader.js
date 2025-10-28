@@ -66,20 +66,15 @@ const loadScript = (src) => {
 
 let codexHostLoading = null;
 
-// Wait for the modal host to attach (uses event, onload, and polling so we can’t miss readiness)
 function waitForCodexHost({ timeoutMs = 5000, pollMs = 50 } = {}) {
   return new Promise((resolve, reject) => {
     const deadline = Date.now() + timeoutMs;
     const onReady = () => {
       if (window.CodexModal?.open) {
-        cleanup();
-        resolve();
+        cleanup(); resolve();
       }
     };
-    const onError = (err) => {
-      cleanup();
-      reject(err || new Error('Failed to load Codex host'));
-    };
+    const onError = (err) => { cleanup(); reject(err || new Error('Failed to load Codex host')); };
     const onEvent = () => onReady();
     let script = document.querySelector('script[src="/codex-modal-host.iife.js"]');
     const cleanup = () => {
@@ -89,7 +84,7 @@ function waitForCodexHost({ timeoutMs = 5000, pollMs = 50 } = {}) {
         script.removeEventListener('error', onError);
       }
     };
-    // Listen before injecting, so a fast host can’t race past us
+    // Listen before injecting, so a fast load can't race past us.
     window.addEventListener('codex:host:ready', onEvent, { once: true });
     const tick = () => {
       if (window.CodexModal?.open) return onReady();
@@ -100,15 +95,12 @@ function waitForCodexHost({ timeoutMs = 5000, pollMs = 50 } = {}) {
     if (!script) {
       script = document.createElement('script');
       script.src = '/codex-modal-host.iife.js';
-      script.async = true; // dynamic scripts execute when loaded
-      script.defer = false; // for clarity; defer is ignored for dynamic scripts
+      script.async = true;      // dynamic scripts execute on load
+      script.defer = false;     // make intent explicit
       script.setAttribute('data-codex-host', '1');
       script.addEventListener('load', onReady, { once: true });
       script.addEventListener('error', onError, { once: true });
       document.head.appendChild(script);
-    } else {
-      script.addEventListener('load', onReady, { once: true });
-      script.addEventListener('error', onError, { once: true });
     }
   });
 }
@@ -137,16 +129,15 @@ const ensureCodexHostLoaded = () => {
 
   dispatchDebug('host: injecting');
 
-  const cssSelector = 'link[rel="stylesheet"][href="/codex-modal-host.css"]';
-  if (!document.querySelector(cssSelector)) {
+  // Ensure CSS exists before JS for visual stability.
+  if (!document.querySelector('link[rel="stylesheet"][href="/codex-modal-host.css"]')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = '/codex-modal-host.css';
     link.setAttribute('data-codex-css', '1');
     document.head.appendChild(link);
   }
-
-  codexHostLoading = waitForCodexHost()
+  codexHostLoading = waitForCodexHost({ timeoutMs: 5000, pollMs: 50 })
     .then(() => {
       dispatchDebug('host: ready');
     })

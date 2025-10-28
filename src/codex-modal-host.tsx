@@ -19,6 +19,7 @@ villages.forEach((village) => {
 let root: ReturnType<typeof createRoot> | null = null;
 let hostEl: HTMLElement | null = null;
 let isMounted = false;
+let lastFocused: Element | null = null;
 
 function normalize(value: string | null | undefined) {
   return value?.trim().toLowerCase() ?? '';
@@ -90,6 +91,12 @@ function render(village: Village | null) {
     if (isMounted) {
       isMounted = false;
       window.dispatchEvent(new Event('codex:close'));
+      try {
+        (lastFocused as HTMLElement | null)?.focus?.();
+      } catch {}
+      try {
+        document.body.style.overflow = '';
+      } catch {}
     }
   };
 
@@ -100,8 +107,34 @@ function render(village: Village | null) {
 
   const ModalPortal: React.FC = () => {
     const currentVillage = useMemo(() => village, [village]);
+    const dialogRef = React.useRef<HTMLDivElement | null>(null);
+    React.useEffect(() => {
+      try {
+        document.body.style.overflow = 'hidden';
+        dialogRef.current?.focus?.();
+      } catch {}
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          handleClose();
+        }
+      };
+      window.addEventListener('keydown', onKeyDown);
+      return () => {
+        window.removeEventListener('keydown', onKeyDown);
+      };
+    }, []);
     return (
-      <div data-codex-modal-root data-codex-standalone style={{ pointerEvents: 'auto' }}>
+      <div
+        ref={dialogRef}
+        data-codex-modal-root
+        data-codex-standalone
+        role="dialog"
+        aria-modal="true"
+        aria-label={currentVillage?.names?.en || currentVillage?.slug}
+        tabIndex={-1}
+        style={{ pointerEvents: 'auto' }}
+      >
         <CodexModal village={currentVillage} onClose={handleClose} />
       </div>
     );
@@ -147,6 +180,11 @@ function resolveVillage(slug: string): Village | null {
 
 const api: CodexModalAPI = {
   open: (slug: string) => {
+    try {
+      lastFocused = document.activeElement;
+    } catch {
+      lastFocused = null;
+    }
     const village = resolveVillage(slug);
     if (!village) {
       console.warn(`[CodexModal] Unknown village slug: ${slug}`);
