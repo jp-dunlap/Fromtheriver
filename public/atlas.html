@@ -11,11 +11,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="/styles/atlas.css">
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="/vendor/leaflet/MarkerCluster.css">
     <link rel="stylesheet" href="/vendor/leaflet/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="/codex-modal-host.css">
+    <script defer src="/codex-modal-host.iife.js" onload="window.dispatchEvent(new Event('codex:host:ready'))"></script>
 </head>
 <body class="bg-bg-color text-text-primary overflow-hidden">
 
@@ -23,11 +25,6 @@
     <div id="map-atlas"></div>
 
     <div id="map-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-
-    <!-- Hidden React root to host the Codex modal -->
-    <div id="root" hidden></div>
-    <!-- Boot React app: ensure loader is ready before atlas scripts -->
-    <script src="/public/app-loader.js"></script>
 
     <!-- Main Information & Filter Panel -->
     <div class="absolute top-0 left-0 p-4 md:p-6 max-w-sm w-full z-[1000] pointer-events-none">

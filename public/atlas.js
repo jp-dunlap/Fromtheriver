@@ -127,64 +127,23 @@ const getVillagesArray = (payload) => {
   return [];
 };
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+let pendingCodexSlug = null;
 
-async function waitForElement(selector, timeoutMs = 12000, pollMs = 50) {
-  const deadline = Date.now() + timeoutMs;
-  let element = document.querySelector(selector);
-  while (!element && Date.now() < deadline) {
-    await sleep(pollMs);
-    element = document.querySelector(selector);
-  }
-  return element ?? null;
-}
-
-function showInlineNotice(slug) {
-  if (document.getElementById('codex-inline-notice')) {
-    return;
-  }
-
-  const div = document.createElement('div');
-  div.id = 'codex-inline-notice';
-  div.style.cssText =
-    'position:fixed;left:50%;top:16px;transform:translateX(-50%);' +
-    'z-index:99999;background:#111;color:#fff;padding:10px 14px;' +
-    'border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px system-ui';
-  const encodedSlug = encodeURIComponent(slug);
-  div.innerHTML = `Loading took too long. You can retry or <a href="/archive/${encodedSlug}" style="color:#7fdfff;text-decoration:underline">open in Archive</a>.`;
-  document.body.appendChild(div);
-  setTimeout(() => {
-    if (div.parentNode) {
-      div.remove();
+window.addEventListener('codex:host:ready', () => {
+  if (pendingCodexSlug && window.CodexModal?.open) {
+    const slug = pendingCodexSlug;
+    pendingCodexSlug = null;
+    try {
+      window.CodexModal.open(slug);
+    } catch (error) {
+      console.error('Failed to open Codex modal via host readiness.', error);
+      pendingCodexSlug = slug;
     }
-  }, 8000);
-}
-
-const pendingSlugs = [];
-let codexMounted = !!document.querySelector('[data-codex-modal-root]');
-
-function dispatchCodexOpen(slug) {
-  window.dispatchEvent(
-    new CustomEvent('codex:open', {
-      detail: { slug },
-    }),
-  );
-}
-
-function flushPending() {
-  if (!pendingSlugs.length) {
-    return;
   }
+});
 
-  while (pendingSlugs.length) {
-    const slug = pendingSlugs.shift();
-    dispatchCodexOpen(slug);
-  }
-}
-
-window.addEventListener('codex:mounted', () => {
-  codexMounted = true;
-  flushPending();
+window.addEventListener('codex:close', () => {
+  pendingCodexSlug = null;
 });
 
 async function loadVillages() {
@@ -482,39 +441,32 @@ export async function initializeAtlas(L) {
     }
   }
 
-  async function openCodexModal(slug) {
+  function openCodexModal(slug) {
     const normalized = normalizeSlug(slug);
     if (!normalized) {
       return;
     }
 
-    if (codexMounted || document.querySelector('[data-codex-modal-root]')) {
-      codexMounted = true;
-      dispatchCodexOpen(normalized);
-      return;
-    }
+    const attemptOpen = () => {
+      if (!window.CodexModal?.open) {
+        pendingCodexSlug = normalized;
+        return false;
+      }
 
-    if (!pendingSlugs.includes(normalized)) {
-      pendingSlugs.push(normalized);
-    }
+      try {
+        window.CodexModal.open(normalized);
+        pendingCodexSlug = null;
+        return true;
+      } catch (error) {
+        console.error('Failed to open Codex modal:', error);
+        pendingCodexSlug = normalized;
+        return false;
+      }
+    };
 
-    try {
-      window.appLoader?.boot?.();
-    } catch (_) {
-      // ignore boot errors here; inline notice will appear on timeout
+    if (!attemptOpen()) {
+      pendingCodexSlug = normalized;
     }
-
-    const root = await waitForElement('[data-codex-modal-root]', 12000);
-    if (root) {
-      return;
-    }
-
-    const index = pendingSlugs.indexOf(normalized);
-    if (index !== -1) {
-      pendingSlugs.splice(index, 1);
-    }
-
-    showInlineNotice(normalized);
   }
 
   if (typeof window !== 'undefined') {
@@ -604,6 +556,12 @@ export async function initializeAtlas(L) {
     url.searchParams.delete('village');
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
   }
+
+  const handleCodexClose = () => {
+    updateHistorySlug('');
+  };
+
+  window.addEventListener('codex:close', handleCodexClose);
 
   function announceSelection(village) {
     if (!announcementsRegion) {
