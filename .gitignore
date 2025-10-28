@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-modal/
 .ts-test/
 .vscode/
 .DS_Store

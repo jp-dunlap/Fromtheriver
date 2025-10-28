@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "prebuild": "node scripts/build-villages.mjs && node scripts/generate-feeds.mjs && node scripts/generate-archive-pages.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-robots.mjs && node scripts/generate-og-svg.mjs || true",
-    "build": "vite build",
+    "build": "npm run build:app && npm run build:modal",
+    "build:app": "node scripts/build-target.mjs app",
+    "build:modal": "node scripts/build-target.mjs modal",
     "dev": "vite",
     "preview": "vite preview",
     "preview:ci": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
