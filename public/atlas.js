@@ -129,7 +129,7 @@ const getVillagesArray = (payload) => {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function waitForElement(selector, timeoutMs = 10000, pollMs = 50) {
+async function waitForElement(selector, timeoutMs = 12000, pollMs = 50) {
   const deadline = Date.now() + timeoutMs;
   let element = document.querySelector(selector);
   while (!element && Date.now() < deadline) {
@@ -146,7 +146,10 @@ function showInlineNotice(slug) {
 
   const div = document.createElement('div');
   div.id = 'codex-inline-notice';
-  div.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99999;background:#111;color:#fff;padding:10px 14px;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px/1.2 system-ui';
+  div.style.cssText =
+    'position:fixed;left:50%;top:16px;transform:translateX(-50%);' +
+    'z-index:99999;background:#111;color:#fff;padding:10px 14px;' +
+    'border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px system-ui';
   const encodedSlug = encodeURIComponent(slug);
   div.innerHTML = `Loading took too long. You can retry or <a href="/archive/${encodedSlug}" style="color:#7fdfff;text-decoration:underline">open in Archive</a>.`;
   document.body.appendChild(div);
@@ -157,19 +160,31 @@ function showInlineNotice(slug) {
   }, 8000);
 }
 
-let pendingSlug = null;
-let mountedOnce = !!document.querySelector('[data-codex-modal-root]');
+const pendingSlugs = [];
+let codexMounted = !!document.querySelector('[data-codex-modal-root]');
+
+function dispatchCodexOpen(slug) {
+  window.dispatchEvent(
+    new CustomEvent('codex:open', {
+      detail: { slug },
+    }),
+  );
+}
+
+function flushPending() {
+  if (!pendingSlugs.length) {
+    return;
+  }
+
+  while (pendingSlugs.length) {
+    const slug = pendingSlugs.shift();
+    dispatchCodexOpen(slug);
+  }
+}
 
 window.addEventListener('codex:mounted', () => {
-  mountedOnce = true;
-  if (pendingSlug) {
-    window.dispatchEvent(
-      new CustomEvent('codex:open', {
-        detail: { slug: pendingSlug },
-      }),
-    );
-    pendingSlug = null;
-  }
+  codexMounted = true;
+  flushPending();
 });
 
 async function loadVillages() {
@@ -473,44 +488,30 @@ export async function initializeAtlas(L) {
       return;
     }
 
-    const existingRoot = document.querySelector('[data-codex-modal-root]');
-    if (existingRoot) {
-      window.dispatchEvent(
-        new CustomEvent('codex:open', {
-          detail: { slug: normalized },
-        }),
-      );
+    if (codexMounted || document.querySelector('[data-codex-modal-root]')) {
+      codexMounted = true;
+      dispatchCodexOpen(normalized);
       return;
     }
 
-    pendingSlug = normalized;
-
-    if (!mountedOnce) {
-      try {
-        if (window.appLoader?.boot) {
-          void window.appLoader.boot();
-        }
-      } catch (_) {
-        // ignore boot errors here; we'll fall back to inline notice if needed
-      }
+    if (!pendingSlugs.includes(normalized)) {
+      pendingSlugs.push(normalized);
     }
 
-    const root = await waitForElement('[data-codex-modal-root]', 10000);
+    try {
+      window.appLoader?.boot?.();
+    } catch (_) {
+      // ignore boot errors here; inline notice will appear on timeout
+    }
+
+    const root = await waitForElement('[data-codex-modal-root]', 12000);
     if (root) {
-      mountedOnce = true;
-      if (pendingSlug) {
-        window.dispatchEvent(
-          new CustomEvent('codex:open', {
-            detail: { slug: pendingSlug },
-          }),
-        );
-        pendingSlug = null;
-      }
       return;
     }
 
-    if (pendingSlug === normalized) {
-      pendingSlug = null;
+    const index = pendingSlugs.indexOf(normalized);
+    if (index !== -1) {
+      pendingSlugs.splice(index, 1);
     }
 
     showInlineNotice(normalized);
