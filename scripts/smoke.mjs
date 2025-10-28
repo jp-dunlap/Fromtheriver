@@ -159,6 +159,19 @@ async function main() {
   const rssHead = await head("/feed.xml");
   assert(rssHead.ok, "/feed.xml should be present");
 
+  const modalJsHead = await head("/codex-modal-host.iife.js");
+  assert.equal(
+    modalJsHead.status,
+    200,
+    "/codex-modal-host.iife.js should return 200",
+  );
+  const modalCssHead = await head("/codex-modal-host.css");
+  assert.equal(
+    modalCssHead.status,
+    200,
+    "/codex-modal-host.css should return 200",
+  );
+
   const ogHead = await head(ogPath);
   assert(ogHead.ok, `${ogPath} should be present`);
   const ogContentType = ogHead.headers.get("content-type") || "";
