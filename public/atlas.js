@@ -142,6 +142,15 @@ window.addEventListener('codex:host:ready', () => {
   }
 });
 
+// Warn if the Codex modal host never attached (helps catch 404 on /codex-modal-host.*)
+setTimeout(() => {
+  if (!window.CodexModal?.open) {
+    console.warn(
+      '[atlas] Codex modal host not detected. Expected /codex-modal-host.iife.js and /codex-modal-host.css at site root.'
+    );
+  }
+}, 4000);
+
 window.addEventListener('codex:close', () => {
   pendingCodexSlug = null;
 });
