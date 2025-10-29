@@ -12,6 +12,11 @@ function waitForLeaflet(maxMs = 5000) {
 const mapContainer = document.getElementById('map-atlas');
 const statusRegion = document.getElementById('map-loading-status');
 
+const getCodexVersion = () => {
+  const meta = document.querySelector('meta[name="codex:host-version"]');
+  return meta?.content || '';
+};
+
 const ensureStylesheet = (href) => {
   if (document.querySelector(`link[data-dynamic-style="${href}"]`)) {
     return;
@@ -76,7 +81,7 @@ function waitForCodexHost({ timeoutMs = 5000, pollMs = 50 } = {}) {
     };
     const onError = (err) => { cleanup(); reject(err || new Error('Failed to load Codex host')); };
     const onEvent = () => onReady();
-    let script = document.querySelector('script[src="/codex-modal-host.iife.js"]');
+    let script = document.querySelector('script[src^="/codex-modal-host.iife.js"]');
     const cleanup = () => {
       window.removeEventListener('codex:host:ready', onEvent);
       if (script) {
@@ -93,8 +98,11 @@ function waitForCodexHost({ timeoutMs = 5000, pollMs = 50 } = {}) {
     };
     setTimeout(tick, pollMs);
     if (!script) {
+      const ver = getCodexVersion();
       script = document.createElement('script');
-      script.src = '/codex-modal-host.iife.js';
+      script.src = ver
+        ? `/codex-modal-host.iife.js?v=${ver}`
+        : '/codex-modal-host.iife.js';
       script.async = true;      // dynamic scripts execute on load
       script.defer = false;     // make intent explicit
       script.setAttribute('data-codex-host', '1');
@@ -130,10 +138,13 @@ const ensureCodexHostLoaded = () => {
   dispatchDebug('host: injecting');
 
   // Ensure CSS exists before JS for visual stability.
-  if (!document.querySelector('link[rel="stylesheet"][href="/codex-modal-host.css"]')) {
+  if (!document.querySelector('link[rel="stylesheet"][href^="/codex-modal-host.css"]')) {
+    const ver = getCodexVersion();
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/codex-modal-host.css';
+    link.href = ver
+      ? `/codex-modal-host.css?v=${ver}`
+      : '/codex-modal-host.css';
     link.setAttribute('data-codex-css', '1');
     document.head.appendChild(link);
   }
