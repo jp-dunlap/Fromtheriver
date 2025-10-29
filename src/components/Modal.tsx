@@ -10,6 +10,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   const headingId = useId();
+  const descriptionId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousActiveElementRef = useRef<Element | null>(null);
 
@@ -54,6 +55,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         onClose();
         return;
       }
@@ -112,6 +114,24 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
   useEffect(() => {
     if (!isOpen) {
+      return undefined;
+    }
+
+    if (typeof document === "undefined") {
+      return undefined;
+    }
+
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
       const previous = previousActiveElementRef.current as HTMLElement | null;
       if (previous) {
         previous.focus();
@@ -144,6 +164,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
+        aria-describedby={descriptionId}
         tabIndex={-1}
       >
         <button
@@ -170,7 +191,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
         <h3 id={headingId} className="font-serif text-3xl text-white mb-4">
           {title}
         </h3>
-        {children}
+        <div id={descriptionId}>{children}</div>
       </div>
     </div>,
     document.body,
