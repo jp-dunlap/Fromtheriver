@@ -1,0 +1,26 @@
+/* Subtle pin fade/scale on first paint */
+.village-pin {
+  animation: pin-enter 260ms ease-out both;
+}
+@keyframes pin-enter {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+/* Modal content fade+lift */
+[data-codex-modal-root] > * {
+  animation: modal-enter 280ms ease-out both;
+}
+@keyframes modal-enter {
+  from { transform: translateY(6px) scale(0.985); opacity: 0; }
+  to   { transform: translateY(0)   scale(1);     opacity: 1; }
+}
+
+/* District label soft fade at low zoom */
+.district-anchor-label {
+  animation: district-fade 320ms ease-out both;
+}
+@keyframes district-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

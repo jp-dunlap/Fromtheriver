@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Codex Modal Host – Test Harness</title>
+    <link rel="stylesheet" href="/codex-modal-host.css">
+    <style>body{margin:2rem;color:#e5e7eb;background:#0b0f14;font:14px/1.4 system-ui}label,input,button{font:inherit}</style>
+  </head>
+  <body>
+    <h1>Codex Modal Host – Test</h1>
+    <p>Try a slug (e.g., <code>lydda</code>) and click Open.</p>
+    <label for="slug">Slug:</label>
+    <input id="slug" value="lydda"/>
+    <button id="open">Open</button>
+    <button id="close">Close</button>
+    <pre id="log" style="margin-top:1rem;background:#111827;padding:1rem;border-radius:8px"></pre>
+    <script src="/codex-modal-host.iife.js" defer></script>
+    <script>
+      const log = (m)=>{document.getElementById('log').textContent+=m+"\n";}
+      const openBtn = document.getElementById('open');
+      const closeBtn = document.getElementById('close');
+      const slugInput = document.getElementById('slug');
+      window.addEventListener('codex:host:ready', e => log('[ready] '+JSON.stringify(e.detail)));
+      window.addEventListener('codex:open', e => log('[open] '+JSON.stringify(e.detail)));
+      window.addEventListener('codex:close', () => log('[close]'));
+      openBtn?.addEventListener('click', () => {
+        if (slugInput instanceof HTMLInputElement) {
+          window.CodexModal?.open(slugInput.value);
+        }
+      });
+      closeBtn?.addEventListener('click', () => {
+        window.CodexModal?.close();
+      });
+    </script>
+  </body>
+</html>

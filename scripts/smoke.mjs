@@ -182,6 +182,9 @@ async function main() {
       text && text.length > 1024,
       "codex-modal-host.iife.js appears too small; ensure Netlify did not rewrite it to HTML",
     );
+    if (text.includes("<!DOCTYPE html")) {
+      throw new Error("Host JS served as HTML");
+    }
     assert(
       text.includes("atlas-host-v2") && text.includes("__debugResolve"),
       "codex-modal-host.iife.js does not include expected debug/version markers (atlas-host-v2, __debugResolve).",
@@ -212,6 +215,9 @@ async function main() {
       text && text.length > 256,
       "codex-modal-host.css appears too small; ensure Netlify did not rewrite it to HTML",
     );
+    if (text.includes("<!DOCTYPE html")) {
+      throw new Error("Host CSS served as HTML");
+    }
   }
 
   const ogHead = await head(ogPath);
