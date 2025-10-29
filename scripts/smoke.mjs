@@ -186,6 +186,11 @@ async function main() {
       text.includes("atlas-host-v2") && text.includes("__debugResolve"),
       "codex-modal-host.iife.js does not include expected debug/version markers (atlas-host-v2, __debugResolve).",
     );
+    assert(
+      !/process\.env/.test(text),
+      'Host bundle still contains process.env; would crash at runtime',
+    );
+    console.log('✓ Host JS has no process.env substrings');
   }
   const modalCssHead = await head("/codex-modal-host.css");
   assert.equal(
