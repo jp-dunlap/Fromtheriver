@@ -98,8 +98,11 @@ async function main() {
 
   const origin = process.env.SMOKE_ORIGIN || "http://127.0.0.1:4173";
 
-  const head = async (pathname) =>
-    fetchImpl(`${origin}${pathname}`, { method: "HEAD" });
+  const head = async (pathname, { manualRedirect = false } = {}) =>
+    fetchImpl(`${origin}${pathname}`, {
+      method: "HEAD",
+      ...(manualRedirect ? { redirect: "manual" } : {}),
+    });
 
   const get = async (pathname) => fetchImpl(`${origin}${pathname}`);
 
@@ -144,7 +147,7 @@ async function main() {
   const atlasResponse = await fetchImpl(`${origin}/atlas`);
   assert(atlasResponse.ok, "GET /atlas should 200");
 
-  const atlasHtmlHead = await head("/atlas.html");
+  const atlasHtmlHead = await head("/atlas.html", { manualRedirect: true });
   assert(
     String(atlasHtmlHead.status).startsWith("3"),
     "atlas.html should redirect",
@@ -178,6 +181,10 @@ async function main() {
     assert(
       text && text.length > 1024,
       "codex-modal-host.iife.js appears too small; ensure Netlify did not rewrite it to HTML",
+    );
+    assert(
+      text.includes("atlas-host-v2") && text.includes("__debugResolve"),
+      "codex-modal-host.iife.js does not include expected debug/version markers (atlas-host-v2, __debugResolve).",
     );
   }
   const modalCssHead = await head("/codex-modal-host.css");

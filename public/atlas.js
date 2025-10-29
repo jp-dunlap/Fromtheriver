@@ -155,6 +155,12 @@ window.addEventListener('codex:close', () => {
   pendingCodexSlug = null;
 });
 
+window.addEventListener('codex:open:unknown-slug', (e) => {
+  try {
+    console.warn('[atlas] host reported unknown slug:', e.detail?.slug);
+  } catch {}
+});
+
 async function loadVillages() {
   const candidates = [
     '/villages.json',
@@ -482,6 +488,20 @@ export async function initializeAtlas(L) {
     ensureHost()
       .then(() => {
         if (!tryOpen()) {
+          setTimeout(() => {
+            tryOpen();
+          }, 0);
+          setTimeout(() => {
+            tryOpen();
+          }, 250);
+          if (window.CodexModal?.__debugResolve) {
+            try {
+              const probe = window.CodexModal.__debugResolve(normalized);
+              if (!probe?.found) {
+                console.warn('[atlas] Codex cannot resolve slug:', normalized);
+              }
+            } catch {}
+          }
           const once = () => {
             tryOpen();
           };
