@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import CodexModal from './components/CodexModal';
 import type { Village } from './data/types';
 import { villages } from './data/villages';
+import { normalizeSlug } from './lib/slug';
 
 import './i18n';
 import './index.css';
@@ -12,19 +13,6 @@ let root: ReturnType<typeof createRoot> | null = null;
 let hostEl: HTMLElement | null = null;
 let isMounted = false;
 let lastFocused: Element | null = null;
-
-// --- Robust slug normalization (hyphens, spacing, diacritics, hamza-like marks) ---
-function normalizeSlug(input: string | null | undefined): string {
-  if (!input) return '';
-  return input
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[ʿ’‘'`´]/g, '')
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
 type AnyVillage = Village & {
   slug?: string;
@@ -47,11 +35,17 @@ for (const v of villages as AnyVillage[]) {
   }
 
   const normalized = Array.from(candidates)
-    .map(normalizeSlug)
+    .map((candidate) => normalizeSlug(candidate))
     .filter(Boolean);
   const primary = normalized[0];
-  if (primary) _bySlug.set(primary, v);
-  for (const n of normalized) _aliases.set(n, v);
+  if (primary && !_bySlug.has(primary)) {
+    _bySlug.set(primary, v);
+  }
+  for (const n of normalized) {
+    if (!_aliases.has(n)) {
+      _aliases.set(n, v);
+    }
+  }
 }
 
 function resolveVillageStrict(slug: string): AnyVillage | null {
@@ -265,7 +259,14 @@ try {
   (window as Window & typeof globalThis).CodexModal = api;
 
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event('codex:host:ready'));
+  window.dispatchEvent(
+    new CustomEvent('codex:host:ready', {
+      detail: {
+        version: HOST_VERSION,
+        timestamp: Date.now(),
+      },
+    }),
+  );
   }
 } catch (err) {
   console.error('[CodexModalHost] failed to attach', err);

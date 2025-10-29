@@ -1,6 +1,54 @@
-const normalizeText = (value) => (value ?? '').toString().trim().toLowerCase();
-const normalizeSlug = (value) => normalizeText(value);
-const slugifyFallback = (value) => normalizeText(value).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+const COMBINING_MARKS_REGEX = /[\u0300-\u036f]/g;
+const HAMZA_REGEX = /[ʿ’‘'`´]/g;
+
+const normalizeText = (value) => {
+  if (value == null) {
+    return '';
+  }
+
+  const stringValue = value.toString().trim();
+  if (!stringValue) {
+    return '';
+  }
+
+  return stringValue
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(COMBINING_MARKS_REGEX, '')
+    .replace(HAMZA_REGEX, '')
+    .replace(/\s+/g, ' ');
+};
+
+const normalizeSlug = (value) =>
+  normalizeText(value)
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
+
+const slugifyFallback = (value) => {
+  const slug = normalizeSlug(value);
+  if (slug) {
+    return slug;
+  }
+
+  const text = (value ?? '').toString().trim();
+  if (!text) {
+    return '';
+  }
+
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
+};
+
+const dispatchAtlasDebug = (detail) => {
+  try {
+    window.dispatchEvent(new CustomEvent('atlas:debug', { detail }));
+  } catch {}
+};
 const escapeHtml = (value) =>
   (value ?? '')
     .toString()
@@ -129,7 +177,9 @@ const getVillagesArray = (payload) => {
 
 let pendingCodexSlug = null;
 
-window.addEventListener('codex:host:ready', () => {
+window.addEventListener('codex:host:ready', (event) => {
+  const version = typeof event?.detail?.version === 'string' ? event.detail.version : null;
+  dispatchAtlasDebug({ source: 'host', event: 'ready', version });
   if (pendingCodexSlug && window.CodexModal?.open) {
     const slug = pendingCodexSlug;
     pendingCodexSlug = null;
@@ -159,6 +209,7 @@ window.addEventListener('codex:open:unknown-slug', (e) => {
   try {
     console.warn('[atlas] host reported unknown slug:', e.detail?.slug);
   } catch {}
+  dispatchAtlasDebug({ source: 'host', event: 'unknown-slug', slug: e.detail?.slug ?? null });
 });
 
 async function loadVillages() {
@@ -246,8 +297,34 @@ async function loadVillages() {
         })
         .filter(Boolean);
 
-      if (normalized.length > 0) {
-        return normalized;
+      const deduped = [];
+      const seenSlugs = new Set();
+
+      normalized.forEach((village) => {
+        const slug = getVillageSlug(village);
+        if (!slug) {
+          return;
+        }
+        if (seenSlugs.has(slug)) {
+          try {
+            console.warn('[atlas] Duplicate slug skipped:', slug);
+          } catch {}
+          return;
+        }
+        seenSlugs.add(slug);
+        deduped.push(village);
+      });
+
+      if (deduped.length > 0) {
+        const duplicatesSkipped = normalized.length - deduped.length;
+        if (duplicatesSkipped > 0) {
+          dispatchAtlasDebug({
+            source: 'dataset',
+            event: 'duplicates-skipped',
+            count: duplicatesSkipped,
+          });
+        }
+        return deduped;
       }
 
       lastErr = new Error('Normalized list empty');
@@ -462,6 +539,8 @@ export async function initializeAtlas(L) {
       return;
     }
 
+    dispatchAtlasDebug({ source: 'codex', event: 'open-attempt', slug: normalized });
+
     const ensureHost =
       typeof window.ensureCodexHostLoaded === 'function'
         ? window.ensureCodexHostLoaded
@@ -472,10 +551,12 @@ export async function initializeAtlas(L) {
       try {
         window.CodexModal.open(normalized);
         pendingCodexSlug = null;
+        dispatchAtlasDebug({ source: 'codex', event: 'open-success', slug: normalized });
         return true;
       } catch (error) {
         console.error('Failed to open Codex modal:', error);
         pendingCodexSlug = normalized;
+        dispatchAtlasDebug({ source: 'codex', event: 'open-error', slug: normalized });
         return false;
       }
     };
@@ -494,11 +575,17 @@ export async function initializeAtlas(L) {
           setTimeout(() => {
             tryOpen();
           }, 250);
+          dispatchAtlasDebug({ source: 'codex', event: 'open-retry', slug: normalized });
           if (window.CodexModal?.__debugResolve) {
             try {
               const probe = window.CodexModal.__debugResolve(normalized);
               if (!probe?.found) {
                 console.warn('[atlas] Codex cannot resolve slug:', normalized);
+                dispatchAtlasDebug({
+                  source: 'codex',
+                  event: 'resolve-miss',
+                  slug: normalized,
+                });
               }
             } catch {}
           }
