@@ -55,6 +55,32 @@ function resolveVillageStrict(slug: string): AnyVillage | null {
 
 const HOST_VERSION = 'atlas-host-v2';
 
+type CodexModalAPI = {
+  open: (slug: string) => void;
+  close: () => void;
+  __debugResolve?: (slug: string) => { found: boolean; resolvedSlug: string | null };
+  version?: string;
+  isReady?: () => boolean;
+};
+
+const runtimeApi = initializeMinimalHost();
+
+function ensureSafetyStyles() {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  if (!document.head.querySelector('style[data-codex-host-safety="1"]')) {
+    const style = document.createElement('style');
+    style.setAttribute('data-codex-host-safety', '1');
+    style.textContent = `
+      [data-codex-host-root]{position:fixed;inset:0;z-index:2147483647;pointer-events:none;}
+      [data-codex-modal-root]{pointer-events:auto;}
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 function ensureStylesInjected() {
   if (typeof document === 'undefined') {
     return;
@@ -95,30 +121,25 @@ function ensureHost() {
   }
 
   ensureStylesInjected();
+  ensureSafetyStyles();
 
   if (!hostEl || !document.body.contains(hostEl)) {
-    hostEl = (hostEl || document.querySelector('[data-codex-host-root]')) as HTMLElement | null;
+    hostEl = document.querySelector('[data-codex-host-root]') as HTMLElement | null;
     if (!hostEl) {
       hostEl = document.createElement('div');
       hostEl.setAttribute('data-codex-host-root', '1');
-      Object.assign(hostEl.style, {
-        position: 'fixed',
-        inset: '0',
-        zIndex: '2147483647',
-        pointerEvents: 'none',
-      } as Partial<CSSStyleDeclaration>);
       document.body.appendChild(hostEl);
-
-      if (!document.head.querySelector('style[data-codex-host-safety="1"]')) {
-        const style = document.createElement('style');
-        style.setAttribute('data-codex-host-safety', '1');
-        style.textContent = `
-      [data-codex-host-root]{position:fixed;inset:0;z-index:2147483647;pointer-events:none;}
-      [data-codex-modal-root]{pointer-events:auto;}
-    `;
-        document.head.appendChild(style);
-      }
     }
+  }
+
+  if (hostEl) {
+    hostEl.setAttribute('data-codex-host-root', '1');
+    Object.assign(hostEl.style, {
+      position: 'fixed',
+      inset: '0',
+      zIndex: '2147483647',
+      pointerEvents: 'none',
+    } as Partial<CSSStyleDeclaration>);
   }
 
   if (!root && hostEl) {
@@ -126,10 +147,68 @@ function ensureHost() {
   }
 }
 
+function initializeMinimalHost(): CodexModalAPI & { isReady: () => boolean } {
+  const globalTarget =
+    typeof window !== 'undefined' ? (window as Window & typeof globalThis) : undefined;
+  const api =
+    (globalTarget?.CodexModal as CodexModalAPI & { isReady?: () => boolean }) ??
+    ({} as CodexModalAPI & { isReady?: () => boolean });
+
+  try {
+    if (typeof document !== 'undefined') {
+      hostEl = document.querySelector('[data-codex-host-root]') as HTMLElement | null;
+      if (!hostEl) {
+        hostEl = document.createElement('div');
+        hostEl.setAttribute('data-codex-host-root', '1');
+        document.body.appendChild(hostEl);
+      }
+      if (hostEl) {
+        hostEl.setAttribute('data-codex-host-root', '1');
+        Object.assign(hostEl.style, {
+          position: 'fixed',
+          inset: '0',
+          zIndex: '2147483647',
+          pointerEvents: 'none',
+        } as Partial<CSSStyleDeclaration>);
+      }
+      ensureSafetyStyles();
+    }
+  } catch (fatal) {
+    console.error('[codex] fatal boot error:', fatal);
+  }
+
+  if (typeof api.open !== 'function') {
+    api.open = (slug: string) =>
+      console.warn('[codex] open() called before full host boot; slug=', slug);
+  }
+  if (typeof api.close !== 'function') {
+    api.close = () => {};
+  }
+
+  api.isReady = () => true;
+  api.version = HOST_VERSION;
+
+  if (globalTarget) {
+    globalTarget.CodexModal = api;
+    try {
+      globalTarget.dispatchEvent(
+        new CustomEvent('codex:host:ready', {
+          detail: { version: HOST_VERSION, timestamp: Date.now() },
+        }),
+      );
+    } catch {}
+  }
+
+  return api as CodexModalAPI & { isReady: () => boolean };
+}
+
 function render(village: AnyVillage | null) {
   ensureHost();
 
   const handleClose = () => {
+    if (hostEl) {
+      hostEl.style.pointerEvents = 'none';
+    }
     if (root) {
       root.render(<React.Fragment />);
     }
@@ -148,6 +227,10 @@ function render(village: AnyVillage | null) {
   if (!village) {
     handleClose();
     return;
+  }
+
+  if (hostEl) {
+    hostEl.style.pointerEvents = 'auto';
   }
 
   const ModalPortal: React.FC = () => {
@@ -204,17 +287,13 @@ function closeModal() {
   if (!root || !isMounted) {
     return;
   }
+  if (hostEl) {
+    hostEl.style.pointerEvents = 'none';
+  }
   root.render(<React.Fragment />);
   isMounted = false;
   window.dispatchEvent(new Event('codex:close'));
 }
-
-type CodexModalAPI = {
-  open: (slug: string) => void;
-  close: () => void;
-  __debugResolve?: (slug: string) => { found: boolean; resolvedSlug: string | null };
-  version?: string;
-};
 
 const api: CodexModalAPI = {
   open: (slug: string) => {
@@ -246,6 +325,7 @@ const api: CodexModalAPI = {
         : null,
     };
   },
+  isReady: () => true,
   version: HOST_VERSION,
 };
 
@@ -256,20 +336,14 @@ declare global {
 }
 
 try {
-  (window as Window & typeof globalThis).CodexModal = api;
-
+  Object.assign(runtimeApi, api);
+  runtimeApi.version = HOST_VERSION;
+  runtimeApi.isReady = () => true;
   if (typeof window !== 'undefined') {
-  window.dispatchEvent(
-    new CustomEvent('codex:host:ready', {
-      detail: {
-        version: HOST_VERSION,
-        timestamp: Date.now(),
-      },
-    }),
-  );
+    (window as Window & typeof globalThis).CodexModal = runtimeApi;
   }
 } catch (err) {
-  console.error('[CodexModalHost] failed to attach', err);
+  console.error('[codex] host heavy boot failed:', err);
 }
 
-export default api;
+export default runtimeApi;
